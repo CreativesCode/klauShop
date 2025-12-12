@@ -1,8 +1,8 @@
+import { siteConfig } from "@/config/site";
 import { NavItemWithOptionalChildren } from "@/types";
 import Link from "next/link";
-import NewsletterForm from "./NewsletterForm";
 import Branding from "./Branding";
-import { siteConfig } from "@/config/site";
+import NewsletterForm from "./NewsletterForm";
 import SocialMedias from "./SocialMedias";
 
 type Props = {};
@@ -65,7 +65,7 @@ function MainFooter({}: Props) {
       ],
     },
     {
-      title: "About HIYORI",
+      title: `About ${siteConfig.name}`,
       items: [
         {
           title: "Our Story",

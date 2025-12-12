@@ -1,11 +1,8 @@
 import type { NavItemWithOptionalChildren } from "@/types";
-
-import { slugify } from "@/lib/utils";
-
-export type SiteConfig = typeof siteConfig;
+import type { Metadata } from "next";
 
 export const siteConfig = {
-  name: "HIYORI",
+  name: "Klau's Shop",
   description: "Ecommerce Application built with NextJS 14",
   url: "https://hiyori.hugo-coding.com",
   address: "1600 Amphitheatre Parkway in Mountain View, California",
@@ -43,4 +40,29 @@ export const siteConfig = {
       items: [],
     },
   ] satisfies NavItemWithOptionalChildren[],
-};
+} as const;
+
+/**
+ * Genera el título de una página con el formato: "Nombre del Sitio | Título de la Página"
+ */
+export function getPageTitle(pageTitle?: string): string {
+  if (pageTitle) {
+    return `${siteConfig.name} | ${pageTitle}`;
+  }
+  return `${siteConfig.name} | Ecommerce Platform Built with Nextjs 14.`;
+}
+
+/**
+ * Genera metadata para una página
+ */
+export function getPageMetadata(
+  title?: string,
+  description?: string
+): Metadata {
+  return {
+    title: getPageTitle(title),
+    description: description || siteConfig.description,
+  };
+}
+
+export type SiteConfig = typeof siteConfig;

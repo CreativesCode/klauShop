@@ -1,6 +1,7 @@
 import SectionHeading from "@/components/layouts/SectionHeading";
 import { Shell } from "@/components/layouts/Shell";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getPageTitle, siteConfig } from "@/config/site";
 import { CollectionBanner } from "@/features/collections";
 import { SearchProductsGridSkeleton } from "@/features/products";
 import {
@@ -23,9 +24,10 @@ interface CategoryPageProps {
 }
 
 export function generateMetadata({ params }: CategoryPageProps) {
+  const collectionTitle = toTitleCase(unslugify(params.collectionSlug));
   return {
-    title: `HIYORI | ${toTitleCase(unslugify(params.collectionSlug))}`,
-    description: `HIYORI | Buy ${params.collectionSlug} funiture.`,
+    title: getPageTitle(collectionTitle),
+    description: `${siteConfig.name} | Buy ${params.collectionSlug} furniture.`,
   };
 }
 
@@ -59,7 +61,7 @@ const CollectionRouteQuery = gql(/* GraphQL */ `
   }
 `);
 
-async function CategoryPage({ params, searchParams }: CategoryPageProps) {
+async function CategoryPage({ params }: CategoryPageProps) {
   const { collectionSlug } = params;
 
   const { data } = await getClient().query(CollectionRouteQuery, {

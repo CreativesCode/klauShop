@@ -1,9 +1,7 @@
 import { type Metadata } from "next";
-import { Suspense } from "react";
 import Link from "next/link";
+import { Suspense } from "react";
 
-import OAuthLoginButtons from "@/features/auth/components/OAuthLoginButtons";
-import { SignupForm } from "@/features/auth";
 import {
   Card,
   CardContent,
@@ -12,11 +10,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getPageMetadata } from "@/config/site";
+import { SignupForm } from "@/features/auth";
+import OAuthLoginButtons from "@/features/auth/components/OAuthLoginButtons";
 
-export const metadata: Metadata = {
-  title: "Sign Up",
-  description: "Sign up for an account",
-};
+export const metadata: Metadata = getPageMetadata(
+  "Sign Up",
+  "Sign up for an account"
+);
 
 export default function SignUpPage() {
   return (

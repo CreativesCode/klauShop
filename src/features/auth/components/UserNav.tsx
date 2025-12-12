@@ -43,12 +43,12 @@ function UserNav() {
                 <AvatarImage
                   src="/avatars/01.png"
                   alt={getNameInitials(
-                    (user.user_metadata.name as string) ?? "Name",
+                    (user.user_metadata.name as string) ?? "Name"
                   )}
                 />
                 <AvatarFallback>
                   {getNameInitials(
-                    (user.user_metadata.name as string) ?? "Name",
+                    (user.user_metadata.name as string) ?? "Name"
                   )}
                 </AvatarFallback>
               </Avatar>
@@ -115,7 +115,7 @@ function UserNav() {
       ) : (
         <Link href="/sign-in" className="flex items-center text-foreground">
           <Icons.user className="h-4 w-4 mr-3" />
-          <p className="text-sm">Sign in or Sign up</p>
+          <p className="text-sm">Sign in</p>
         </Link>
       )}
     </>

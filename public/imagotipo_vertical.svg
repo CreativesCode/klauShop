@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="380" viewBox="0 0 300 380" fill="none">
+  <!-- Symbol (centered) -->
+  <g transform="translate(20 20)">
+    <path d="M145.31 189.54 A74 74 0 1 1 145.31 50.46" stroke="#6D28D9" stroke-width="12" stroke-linecap="round"/>
+    <path d="M180.62 77.56 A74 74 0 0 1 172.33 172.33" stroke="#F59E0B" stroke-width="12" stroke-linecap="round"/>
+    <path d="M100 78V162" stroke="#5B21B6" stroke-width="12" stroke-linecap="round"/>
+    <path d="M148 84L112 120L152 158" stroke="#5B21B6" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M155 64L178 44" stroke="#F59E0B" stroke-width="8" stroke-linecap="round"/>
+  </g>
+
+  <!-- Text (centered) -->
+  <text x="140" y="270" text-anchor="middle" font-size="72" font-weight="700" fill="#111827" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif">
+    Klau's
+  </text>
+  <text x="140" y="320" text-anchor="middle" font-size="50" font-weight="800" fill="#5B21B6" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif" letter-spacing="2">
+    SHOP
+  </text>
+</svg>

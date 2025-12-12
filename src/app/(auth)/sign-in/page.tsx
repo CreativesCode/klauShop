@@ -10,14 +10,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import OAuthLoginButtons from "@/features/auth/components/OAuthLoginButtons";
+import { getPageMetadata, siteConfig } from "@/config/site";
 import { SigninForm } from "@/features/auth";
+import OAuthLoginButtons from "@/features/auth/components/OAuthLoginButtons";
 import { Suspense } from "react";
 
-export const metadata: Metadata = {
-  title: "HIYORI | Sign In",
-  description: "Sign in to HIYORI",
-};
+export const metadata: Metadata = getPageMetadata(
+  "Sign In",
+  `Sign in to ${siteConfig.name}`
+);
 
 export default function SignInPage() {
   return (
