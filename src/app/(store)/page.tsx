@@ -1,18 +1,13 @@
-import { getCurrentUser } from "@/features/users/actions";
-import { Icons } from "@/components/layouts/icons";
 import { Shell } from "@/components/layouts/Shell";
+import { Icons } from "@/components/layouts/icons";
 import { buttonVariants } from "@/components/ui/button";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import {
-  CollectionCardFragment,
-  CollectionsCard,
-  CollectionsCardSkeleton,
-} from "@/features/collections";
+import { CollectionCardFragment } from "@/features/collections";
 import {
   ProductCard,
   ProductCardFragment,
   ProductCardSkeleton,
 } from "@/features/products";
+import { getCurrentUser } from "@/features/users/actions";
 import { DocumentType, gql } from "@/gql";
 import { getClient } from "@/lib/urql";
 import { cn, keytoUrl } from "@/lib/utils";
@@ -107,11 +102,12 @@ function HeroSection() {
       <div className="relative w-full h-full md:h-[800px]">
         <Image
           alt="Furniture"
-          src="https://hiyori-backpack.s3.us-west-2.amazonaws.com/public/hero-image.jpg"
-          width={1920}
-          height={1200}
+          src="https://bhwyagfoyylgrdgyngrm.supabase.co/storage/v1/object/public/klaushop/public/bg-hero.png"
           priority={true}
-          className="h-full w-full object-cover "
+          width={1920}
+          height={800}
+          quality={100}
+          className="h-full w-full object-cover object-center"
         />
       </div>
 
@@ -120,7 +116,7 @@ function HeroSection() {
           <p className="text-sm md:text-md uppercase tracking-widest text-white ">
             hugolam
           </p>
-          <h1 className="text-5xl md:text-9xl font-bold text-white my-4 shadow-md">
+          <h1 className="text-5xl md:text-9xl font-bold text-white my-4">
             Utilized with
             <br />
             GraphQL:
@@ -133,7 +129,7 @@ function HeroSection() {
                 buttonVariants({ variant: "outline", size: "lg" }),
                 "border-2 border-white text-white rounded px-8 py-3 ",
                 "md:px-16 md:py-6",
-                "hover:text-zinc-600 hover:bg-white",
+                "hover:text-zinc-600 hover:bg-white"
               )}
             >
               New in
@@ -145,7 +141,7 @@ function HeroSection() {
               className={cn(
                 buttonVariants({ variant: "default", size: "lg" }),
                 "border-2 border-primary text-white rounded px-8 py-3 ",
-                "md:px-16 md:py-6",
+                "md:px-16 md:py-6"
               )}
             >
               View the Code
@@ -176,7 +172,7 @@ function ProductSubCollectionsCircles({ collections }: CollectionsCardsProps) {
           <div
             className={cn(
               "relative bg-secondary rounded-full flex justify-center items-center",
-              "w-[280px] h-[280px]",
+              "w-[280px] h-[280px]"
               // "md:w-[320px] md:h-[320px]"
               // "lg:w-[360px] lg:h-[360px]"
             )}
@@ -188,7 +184,7 @@ function ProductSubCollectionsCircles({ collections }: CollectionsCardsProps) {
               height={320}
               className={cn(
                 "object-center object-cover hover:scale-105 transition-all duration-500",
-                "w-[240px] h-[240px]",
+                "w-[240px] h-[240px]"
                 // "md:w-[280px] md:h-[280px]",
                 // "lg:w-[320px] lg:h-[320px]"
               )}
@@ -280,25 +276,6 @@ function CollectionGrid() {
         </div>
       </div>
     </section>
-  );
-}
-
-function CollectionRectCard({ collections }: CollectionsCardsProps) {
-  return (
-    <ScrollArea className="whitespace-nowrap relative container">
-      <div className="flex w-max space-x-10 py-5 overflow-auto">
-        <Suspense
-          fallback={[...Array(6)].map((_, index) => (
-            <CollectionsCardSkeleton key={`Collections-sekelton-${index}`} />
-          ))}
-        >
-          {collections.map(({ node }) => (
-            <CollectionsCard collection={node} key={node.id} />
-          ))}
-        </Suspense>
-      </div>
-      <ScrollBar orientation="horizontal" />
-    </ScrollArea>
   );
 }
 
