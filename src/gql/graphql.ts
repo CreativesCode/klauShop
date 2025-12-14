@@ -200,6 +200,8 @@ export type Mutation = {
   deleteFromcollectionsCollection: CollectionsDeleteResponse;
   /** Deletes zero or more records from the `comments` collection */
   deleteFromcommentsCollection: CommentsDeleteResponse;
+  /** Deletes zero or more records from the `inventory_reservations` collection */
+  deleteFrominventory_reservationsCollection: Inventory_ReservationsDeleteResponse;
   /** Deletes zero or more records from the `medias` collection */
   deleteFrommediasCollection: MediasDeleteResponse;
   /** Deletes zero or more records from the `order_lines` collection */
@@ -222,6 +224,8 @@ export type Mutation = {
   insertIntocollectionsCollection?: Maybe<CollectionsInsertResponse>;
   /** Adds one or more `comments` records to the collection */
   insertIntocommentsCollection?: Maybe<CommentsInsertResponse>;
+  /** Adds one or more `inventory_reservations` records to the collection */
+  insertIntoinventory_reservationsCollection?: Maybe<Inventory_ReservationsInsertResponse>;
   /** Adds one or more `medias` records to the collection */
   insertIntomediasCollection?: Maybe<MediasInsertResponse>;
   /** Adds one or more `order_lines` records to the collection */
@@ -245,6 +249,8 @@ export type Mutation = {
   updatecollectionsCollection: CollectionsUpdateResponse;
   /** Updates zero or more records in the `comments` collection */
   updatecommentsCollection: CommentsUpdateResponse;
+  /** Updates zero or more records in the `inventory_reservations` collection */
+  updateinventory_reservationsCollection: Inventory_ReservationsUpdateResponse;
   /** Updates zero or more records in the `medias` collection */
   updatemediasCollection: MediasUpdateResponse;
   /** Updates zero or more records in the `order_lines` collection */
@@ -283,6 +289,12 @@ export type MutationDeleteFromcollectionsCollectionArgs = {
 export type MutationDeleteFromcommentsCollectionArgs = {
   atMost?: Scalars["Int"];
   filter?: InputMaybe<CommentsFilter>;
+};
+
+/** The root type for creating and mutating data */
+export type MutationDeleteFrominventory_ReservationsCollectionArgs = {
+  atMost?: Scalars["Int"];
+  filter?: InputMaybe<Inventory_ReservationsFilter>;
 };
 
 /** The root type for creating and mutating data */
@@ -348,6 +360,11 @@ export type MutationInsertIntocommentsCollectionArgs = {
 };
 
 /** The root type for creating and mutating data */
+export type MutationInsertIntoinventory_ReservationsCollectionArgs = {
+  objects: Array<Inventory_ReservationsInsertInput>;
+};
+
+/** The root type for creating and mutating data */
 export type MutationInsertIntomediasCollectionArgs = {
   objects: Array<MediasInsertInput>;
 };
@@ -408,6 +425,13 @@ export type MutationUpdatecommentsCollectionArgs = {
   atMost?: Scalars["Int"];
   filter?: InputMaybe<CommentsFilter>;
   set: CommentsUpdateInput;
+};
+
+/** The root type for creating and mutating data */
+export type MutationUpdateinventory_ReservationsCollectionArgs = {
+  atMost?: Scalars["Int"];
+  filter?: InputMaybe<Inventory_ReservationsFilter>;
+  set: Inventory_ReservationsUpdateInput;
 };
 
 /** The root type for creating and mutating data */
@@ -501,6 +525,8 @@ export type Query = {
   collectionsCollection?: Maybe<CollectionsConnection>;
   /** A pagable collection of type `comments` */
   commentsCollection?: Maybe<CommentsConnection>;
+  /** A pagable collection of type `inventory_reservations` */
+  inventory_reservationsCollection?: Maybe<Inventory_ReservationsConnection>;
   /** A pagable collection of type `medias` */
   mediasCollection?: Maybe<MediasConnection>;
   /** Retrieve a record by its `ID` */
@@ -561,6 +587,17 @@ export type QueryCommentsCollectionArgs = {
   last?: InputMaybe<Scalars["Int"]>;
   offset?: InputMaybe<Scalars["Int"]>;
   orderBy?: InputMaybe<Array<CommentsOrderBy>>;
+};
+
+/** The root type for querying data */
+export type QueryInventory_ReservationsCollectionArgs = {
+  after?: InputMaybe<Scalars["Cursor"]>;
+  before?: InputMaybe<Scalars["Cursor"]>;
+  filter?: InputMaybe<Inventory_ReservationsFilter>;
+  first?: InputMaybe<Scalars["Int"]>;
+  last?: InputMaybe<Scalars["Int"]>;
+  offset?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<Array<Inventory_ReservationsOrderBy>>;
 };
 
 /** The root type for querying data */
@@ -815,6 +852,7 @@ export type Carts = Node & {
   __typename?: "carts";
   color?: Maybe<Scalars["String"]>;
   created_at: Scalars["Datetime"];
+  id: Scalars["String"];
   material?: Maybe<Scalars["String"]>;
   /** Globally Unique Record Identifier */
   nodeId: Scalars["ID"];
@@ -850,6 +888,7 @@ export type CartsFilter = {
   and?: InputMaybe<Array<CartsFilter>>;
   color?: InputMaybe<StringFilter>;
   created_at?: InputMaybe<DatetimeFilter>;
+  id?: InputMaybe<StringFilter>;
   material?: InputMaybe<StringFilter>;
   nodeId?: InputMaybe<IdFilter>;
   /** Negates a filter */
@@ -865,6 +904,7 @@ export type CartsFilter = {
 export type CartsInsertInput = {
   color?: InputMaybe<Scalars["String"]>;
   created_at?: InputMaybe<Scalars["Datetime"]>;
+  id?: InputMaybe<Scalars["String"]>;
   material?: InputMaybe<Scalars["String"]>;
   product_id?: InputMaybe<Scalars["String"]>;
   quantity?: InputMaybe<Scalars["Int"]>;
@@ -883,6 +923,7 @@ export type CartsInsertResponse = {
 export type CartsOrderBy = {
   color?: InputMaybe<OrderByDirection>;
   created_at?: InputMaybe<OrderByDirection>;
+  id?: InputMaybe<OrderByDirection>;
   material?: InputMaybe<OrderByDirection>;
   product_id?: InputMaybe<OrderByDirection>;
   quantity?: InputMaybe<OrderByDirection>;
@@ -893,6 +934,7 @@ export type CartsOrderBy = {
 export type CartsUpdateInput = {
   color?: InputMaybe<Scalars["String"]>;
   created_at?: InputMaybe<Scalars["Datetime"]>;
+  id?: InputMaybe<Scalars["String"]>;
   material?: InputMaybe<Scalars["String"]>;
   product_id?: InputMaybe<Scalars["String"]>;
   quantity?: InputMaybe<Scalars["Int"]>;
@@ -1126,6 +1168,119 @@ export type CommentsUpdateResponse = {
   records: Array<Comments>;
 };
 
+export type Inventory_Reservations = Node & {
+  __typename?: "inventory_reservations";
+  color?: Maybe<Scalars["String"]>;
+  created_at: Scalars["Datetime"];
+  id: Scalars["String"];
+  material?: Maybe<Scalars["String"]>;
+  /** Globally Unique Record Identifier */
+  nodeId: Scalars["ID"];
+  order_id: Scalars["String"];
+  orders?: Maybe<Orders>;
+  product_id: Scalars["String"];
+  products?: Maybe<Products>;
+  quantity: Scalars["Int"];
+  size?: Maybe<Scalars["String"]>;
+  status: Scalars["String"];
+  updated_at: Scalars["Datetime"];
+};
+
+export type Inventory_ReservationsConnection = {
+  __typename?: "inventory_reservationsConnection";
+  edges: Array<Inventory_ReservationsEdge>;
+  pageInfo: PageInfo;
+};
+
+export type Inventory_ReservationsDeleteResponse = {
+  __typename?: "inventory_reservationsDeleteResponse";
+  /** Count of the records impacted by the mutation */
+  affectedCount: Scalars["Int"];
+  /** Array of records impacted by the mutation */
+  records: Array<Inventory_Reservations>;
+};
+
+export type Inventory_ReservationsEdge = {
+  __typename?: "inventory_reservationsEdge";
+  cursor: Scalars["String"];
+  node: Inventory_Reservations;
+};
+
+export type Inventory_ReservationsFilter = {
+  /** Returns true only if all its inner filters are true, otherwise returns false */
+  and?: InputMaybe<Array<Inventory_ReservationsFilter>>;
+  color?: InputMaybe<StringFilter>;
+  created_at?: InputMaybe<DatetimeFilter>;
+  id?: InputMaybe<StringFilter>;
+  material?: InputMaybe<StringFilter>;
+  nodeId?: InputMaybe<IdFilter>;
+  /** Negates a filter */
+  not?: InputMaybe<Inventory_ReservationsFilter>;
+  /** Returns true if at least one of its inner filters is true, otherwise returns false */
+  or?: InputMaybe<Array<Inventory_ReservationsFilter>>;
+  order_id?: InputMaybe<StringFilter>;
+  product_id?: InputMaybe<StringFilter>;
+  quantity?: InputMaybe<IntFilter>;
+  size?: InputMaybe<StringFilter>;
+  status?: InputMaybe<StringFilter>;
+  updated_at?: InputMaybe<DatetimeFilter>;
+};
+
+export type Inventory_ReservationsInsertInput = {
+  color?: InputMaybe<Scalars["String"]>;
+  created_at?: InputMaybe<Scalars["Datetime"]>;
+  id?: InputMaybe<Scalars["String"]>;
+  material?: InputMaybe<Scalars["String"]>;
+  order_id?: InputMaybe<Scalars["String"]>;
+  product_id?: InputMaybe<Scalars["String"]>;
+  quantity?: InputMaybe<Scalars["Int"]>;
+  size?: InputMaybe<Scalars["String"]>;
+  status?: InputMaybe<Scalars["String"]>;
+  updated_at?: InputMaybe<Scalars["Datetime"]>;
+};
+
+export type Inventory_ReservationsInsertResponse = {
+  __typename?: "inventory_reservationsInsertResponse";
+  /** Count of the records impacted by the mutation */
+  affectedCount: Scalars["Int"];
+  /** Array of records impacted by the mutation */
+  records: Array<Inventory_Reservations>;
+};
+
+export type Inventory_ReservationsOrderBy = {
+  color?: InputMaybe<OrderByDirection>;
+  created_at?: InputMaybe<OrderByDirection>;
+  id?: InputMaybe<OrderByDirection>;
+  material?: InputMaybe<OrderByDirection>;
+  order_id?: InputMaybe<OrderByDirection>;
+  product_id?: InputMaybe<OrderByDirection>;
+  quantity?: InputMaybe<OrderByDirection>;
+  size?: InputMaybe<OrderByDirection>;
+  status?: InputMaybe<OrderByDirection>;
+  updated_at?: InputMaybe<OrderByDirection>;
+};
+
+export type Inventory_ReservationsUpdateInput = {
+  color?: InputMaybe<Scalars["String"]>;
+  created_at?: InputMaybe<Scalars["Datetime"]>;
+  id?: InputMaybe<Scalars["String"]>;
+  material?: InputMaybe<Scalars["String"]>;
+  order_id?: InputMaybe<Scalars["String"]>;
+  product_id?: InputMaybe<Scalars["String"]>;
+  quantity?: InputMaybe<Scalars["Int"]>;
+  size?: InputMaybe<Scalars["String"]>;
+  status?: InputMaybe<Scalars["String"]>;
+  updated_at?: InputMaybe<Scalars["Datetime"]>;
+};
+
+export type Inventory_ReservationsUpdateResponse = {
+  __typename?: "inventory_reservationsUpdateResponse";
+  /** Count of the records impacted by the mutation */
+  affectedCount: Scalars["Int"];
+  /** Array of records impacted by the mutation */
+  records: Array<Inventory_Reservations>;
+};
+
 export type Medias = Node & {
   __typename?: "medias";
   alt: Scalars["String"];
@@ -1344,8 +1499,10 @@ export type Orders = Node & {
   amount: Scalars["BigFloat"];
   created_at: Scalars["Datetime"];
   currency: Scalars["String"];
+  customer_data?: Maybe<Scalars["JSON"]>;
   email?: Maybe<Scalars["String"]>;
   id: Scalars["String"];
+  inventory_reservationsCollection?: Maybe<Inventory_ReservationsConnection>;
   name?: Maybe<Scalars["String"]>;
   /** Globally Unique Record Identifier */
   nodeId: Scalars["ID"];
@@ -1353,9 +1510,22 @@ export type Orders = Node & {
   order_status?: Maybe<Scalars["String"]>;
   payment_method?: Maybe<Scalars["String"]>;
   payment_status: Scalars["String"];
+  phone?: Maybe<Scalars["String"]>;
   profiles?: Maybe<Profiles>;
+  shipping_cost?: Maybe<Scalars["BigFloat"]>;
   stripe_payment_intent_id?: Maybe<Scalars["String"]>;
   user_id?: Maybe<Scalars["UUID"]>;
+  zone?: Maybe<Scalars["String"]>;
+};
+
+export type OrdersInventory_ReservationsCollectionArgs = {
+  after?: InputMaybe<Scalars["Cursor"]>;
+  before?: InputMaybe<Scalars["Cursor"]>;
+  filter?: InputMaybe<Inventory_ReservationsFilter>;
+  first?: InputMaybe<Scalars["Int"]>;
+  last?: InputMaybe<Scalars["Int"]>;
+  offset?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<Array<Inventory_ReservationsOrderBy>>;
 };
 
 export type OrdersOrder_LinesCollectionArgs = {
@@ -1406,8 +1576,11 @@ export type OrdersFilter = {
   order_status?: InputMaybe<StringFilter>;
   payment_method?: InputMaybe<StringFilter>;
   payment_status?: InputMaybe<StringFilter>;
+  phone?: InputMaybe<StringFilter>;
+  shipping_cost?: InputMaybe<BigFloatFilter>;
   stripe_payment_intent_id?: InputMaybe<StringFilter>;
   user_id?: InputMaybe<UuidFilter>;
+  zone?: InputMaybe<StringFilter>;
 };
 
 export type OrdersInsertInput = {
@@ -1415,14 +1588,18 @@ export type OrdersInsertInput = {
   amount?: InputMaybe<Scalars["BigFloat"]>;
   created_at?: InputMaybe<Scalars["Datetime"]>;
   currency?: InputMaybe<Scalars["String"]>;
+  customer_data?: InputMaybe<Scalars["JSON"]>;
   email?: InputMaybe<Scalars["String"]>;
   id?: InputMaybe<Scalars["String"]>;
   name?: InputMaybe<Scalars["String"]>;
   order_status?: InputMaybe<Scalars["String"]>;
   payment_method?: InputMaybe<Scalars["String"]>;
   payment_status?: InputMaybe<Scalars["String"]>;
+  phone?: InputMaybe<Scalars["String"]>;
+  shipping_cost?: InputMaybe<Scalars["BigFloat"]>;
   stripe_payment_intent_id?: InputMaybe<Scalars["String"]>;
   user_id?: InputMaybe<Scalars["UUID"]>;
+  zone?: InputMaybe<Scalars["String"]>;
 };
 
 export type OrdersInsertResponse = {
@@ -1444,8 +1621,11 @@ export type OrdersOrderBy = {
   order_status?: InputMaybe<OrderByDirection>;
   payment_method?: InputMaybe<OrderByDirection>;
   payment_status?: InputMaybe<OrderByDirection>;
+  phone?: InputMaybe<OrderByDirection>;
+  shipping_cost?: InputMaybe<OrderByDirection>;
   stripe_payment_intent_id?: InputMaybe<OrderByDirection>;
   user_id?: InputMaybe<OrderByDirection>;
+  zone?: InputMaybe<OrderByDirection>;
 };
 
 export type OrdersUpdateInput = {
@@ -1453,14 +1633,18 @@ export type OrdersUpdateInput = {
   amount?: InputMaybe<Scalars["BigFloat"]>;
   created_at?: InputMaybe<Scalars["Datetime"]>;
   currency?: InputMaybe<Scalars["String"]>;
+  customer_data?: InputMaybe<Scalars["JSON"]>;
   email?: InputMaybe<Scalars["String"]>;
   id?: InputMaybe<Scalars["String"]>;
   name?: InputMaybe<Scalars["String"]>;
   order_status?: InputMaybe<Scalars["String"]>;
   payment_method?: InputMaybe<Scalars["String"]>;
   payment_status?: InputMaybe<Scalars["String"]>;
+  phone?: InputMaybe<Scalars["String"]>;
+  shipping_cost?: InputMaybe<Scalars["BigFloat"]>;
   stripe_payment_intent_id?: InputMaybe<Scalars["String"]>;
   user_id?: InputMaybe<Scalars["UUID"]>;
+  zone?: InputMaybe<Scalars["String"]>;
 };
 
 export type OrdersUpdateResponse = {
@@ -1568,6 +1752,7 @@ export type Products = Node & {
   featured_image_id: Scalars["String"];
   id: Scalars["String"];
   images: Scalars["JSON"];
+  inventory_reservationsCollection?: Maybe<Inventory_ReservationsConnection>;
   materials?: Maybe<Scalars["JSON"]>;
   medias?: Maybe<Medias>;
   name: Scalars["String"];
@@ -1604,6 +1789,16 @@ export type ProductsCommentsCollectionArgs = {
   last?: InputMaybe<Scalars["Int"]>;
   offset?: InputMaybe<Scalars["Int"]>;
   orderBy?: InputMaybe<Array<CommentsOrderBy>>;
+};
+
+export type ProductsInventory_ReservationsCollectionArgs = {
+  after?: InputMaybe<Scalars["Cursor"]>;
+  before?: InputMaybe<Scalars["Cursor"]>;
+  filter?: InputMaybe<Inventory_ReservationsFilter>;
+  first?: InputMaybe<Scalars["Int"]>;
+  last?: InputMaybe<Scalars["Int"]>;
+  offset?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<Array<Inventory_ReservationsOrderBy>>;
 };
 
 export type ProductsOrder_LinesCollectionArgs = {
@@ -2599,46 +2794,8 @@ export type FetchGuestCartQueryQuery = {
   } | null;
 };
 
-export type FetchCartQueryQueryVariables = Exact<{
-  userId?: InputMaybe<Scalars["UUID"]>;
-  first?: InputMaybe<Scalars["Int"]>;
-  after?: InputMaybe<Scalars["Cursor"]>;
-}>;
-
-export type FetchCartQueryQuery = {
-  __typename?: "Query";
-  cartsCollection?: {
-    __typename: "cartsConnection";
-    edges: Array<{
-      __typename: "cartsEdge";
-      node: {
-        __typename: "carts";
-        product_id: string;
-        user_id: any;
-        quantity: number;
-        color?: string | null;
-        size?: string | null;
-        material?: string | null;
-        product?: {
-          __typename?: "products";
-          id: string;
-          slug: string;
-          name: string;
-          price: any;
-          description?: string | null;
-          featuredImage?: {
-            __typename?: "medias";
-            id: string;
-            key: string;
-            alt: string;
-          } | null;
-        } | null;
-      };
-    }>;
-  } | null;
-};
-
 export type CreateCartMutationMutationVariables = Exact<{
+  id: Scalars["String"];
   productId?: InputMaybe<Scalars["String"]>;
   userId?: InputMaybe<Scalars["UUID"]>;
   quantity?: InputMaybe<Scalars["Int"]>;
@@ -2654,6 +2811,7 @@ export type CreateCartMutationMutation = {
     affectedCount: number;
     records: Array<{
       __typename: "carts";
+      id: string;
       product_id: string;
       user_id: any;
       quantity: number;
@@ -2679,8 +2837,7 @@ export type CreateCartMutationMutation = {
 };
 
 export type RemoveCartsMutationMutationVariables = Exact<{
-  productId: Scalars["String"];
-  userId: Scalars["UUID"];
+  id: Scalars["String"];
 }>;
 
 export type RemoveCartsMutationMutation = {
@@ -2692,12 +2849,8 @@ export type RemoveCartsMutationMutation = {
 };
 
 export type UpdateCartsMutationMutationVariables = Exact<{
-  userId?: InputMaybe<Scalars["UUID"]>;
-  productId?: InputMaybe<Scalars["String"]>;
+  id: Scalars["String"];
   newQuantity?: InputMaybe<Scalars["Int"]>;
-  color?: InputMaybe<Scalars["String"]>;
-  size?: InputMaybe<Scalars["String"]>;
-  material?: InputMaybe<Scalars["String"]>;
 }>;
 
 export type UpdateCartsMutationMutation = {
@@ -2708,6 +2861,7 @@ export type UpdateCartsMutationMutation = {
     records: Array<{
       __typename: "carts";
       nodeId: string;
+      id: string;
       product_id: string;
       user_id: any;
       quantity: number;
@@ -6938,199 +7092,6 @@ export const FetchGuestCartQueryDocument = {
   FetchGuestCartQueryQuery,
   FetchGuestCartQueryQueryVariables
 >;
-export const FetchCartQueryDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "FetchCartQuery" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "userId" },
-          },
-          type: { kind: "NamedType", name: { kind: "Name", value: "UUID" } },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "first" },
-          },
-          type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "after" },
-          },
-          type: { kind: "NamedType", name: { kind: "Name", value: "Cursor" } },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "cartsCollection" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "first" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "first" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "filter" },
-                value: {
-                  kind: "ObjectValue",
-                  fields: [
-                    {
-                      kind: "ObjectField",
-                      name: { kind: "Name", value: "user_id" },
-                      value: {
-                        kind: "ObjectValue",
-                        fields: [
-                          {
-                            kind: "ObjectField",
-                            name: { kind: "Name", value: "eq" },
-                            value: {
-                              kind: "Variable",
-                              name: { kind: "Name", value: "userId" },
-                            },
-                          },
-                        ],
-                      },
-                    },
-                  ],
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "after" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "after" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "__typename" } },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "edges" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "__typename" },
-                      },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "node" },
-                        selectionSet: {
-                          kind: "SelectionSet",
-                          selections: [
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "__typename" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "product_id" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "user_id" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "quantity" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "color" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "size" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "material" },
-                            },
-                            {
-                              kind: "Field",
-                              alias: { kind: "Name", value: "product" },
-                              name: { kind: "Name", value: "products" },
-                              selectionSet: {
-                                kind: "SelectionSet",
-                                selections: [
-                                  {
-                                    kind: "FragmentSpread",
-                                    name: {
-                                      kind: "Name",
-                                      value: "CartItemCardFragment",
-                                    },
-                                  },
-                                ],
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "CartItemCardFragment" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "products" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "slug" } },
-          { kind: "Field", name: { kind: "Name", value: "name" } },
-          { kind: "Field", name: { kind: "Name", value: "price" } },
-          { kind: "Field", name: { kind: "Name", value: "description" } },
-          {
-            kind: "Field",
-            alias: { kind: "Name", value: "featuredImage" },
-            name: { kind: "Name", value: "medias" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "key" } },
-                { kind: "Field", name: { kind: "Name", value: "alt" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<FetchCartQueryQuery, FetchCartQueryQueryVariables>;
 export const CreateCartMutationDocument = {
   kind: "Document",
   definitions: [
@@ -7139,6 +7100,17 @@ export const CreateCartMutationDocument = {
       operation: "mutation",
       name: { kind: "Name", value: "createCartMutation" },
       variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
         {
           kind: "VariableDefinition",
           variable: {
@@ -7198,6 +7170,14 @@ export const CreateCartMutationDocument = {
                 value: {
                   kind: "ObjectValue",
                   fields: [
+                    {
+                      kind: "ObjectField",
+                      name: { kind: "Name", value: "id" },
+                      value: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "id" },
+                      },
+                    },
                     {
                       kind: "ObjectField",
                       name: { kind: "Name", value: "user_id" },
@@ -7267,6 +7247,7 @@ export const CreateCartMutationDocument = {
                         kind: "Field",
                         name: { kind: "Name", value: "__typename" },
                       },
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
                       {
                         kind: "Field",
                         name: { kind: "Name", value: "product_id" },
@@ -7357,27 +7338,13 @@ export const RemoveCartsMutationDocument = {
       variableDefinitions: [
         {
           kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "productId" },
-          },
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
               name: { kind: "Name", value: "String" },
             },
-          },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "userId" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "UUID" } },
           },
         },
       ],
@@ -7396,7 +7363,7 @@ export const RemoveCartsMutationDocument = {
                   fields: [
                     {
                       kind: "ObjectField",
-                      name: { kind: "Name", value: "product_id" },
+                      name: { kind: "Name", value: "id" },
                       value: {
                         kind: "ObjectValue",
                         fields: [
@@ -7405,24 +7372,7 @@ export const RemoveCartsMutationDocument = {
                             name: { kind: "Name", value: "eq" },
                             value: {
                               kind: "Variable",
-                              name: { kind: "Name", value: "productId" },
-                            },
-                          },
-                        ],
-                      },
-                    },
-                    {
-                      kind: "ObjectField",
-                      name: { kind: "Name", value: "user_id" },
-                      value: {
-                        kind: "ObjectValue",
-                        fields: [
-                          {
-                            kind: "ObjectField",
-                            name: { kind: "Name", value: "eq" },
-                            value: {
-                              kind: "Variable",
-                              name: { kind: "Name", value: "userId" },
+                              name: { kind: "Name", value: "id" },
                             },
                           },
                         ],
@@ -7460,19 +7410,14 @@ export const UpdateCartsMutationDocument = {
       variableDefinitions: [
         {
           kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "userId" },
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
           },
-          type: { kind: "NamedType", name: { kind: "Name", value: "UUID" } },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "productId" },
-          },
-          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
         },
         {
           kind: "VariableDefinition",
@@ -7481,27 +7426,6 @@ export const UpdateCartsMutationDocument = {
             name: { kind: "Name", value: "newQuantity" },
           },
           type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "color" },
-          },
-          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "size" } },
-          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "material" },
-          },
-          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
         },
       ],
       selectionSet: {
@@ -7519,7 +7443,7 @@ export const UpdateCartsMutationDocument = {
                   fields: [
                     {
                       kind: "ObjectField",
-                      name: { kind: "Name", value: "product_id" },
+                      name: { kind: "Name", value: "id" },
                       value: {
                         kind: "ObjectValue",
                         fields: [
@@ -7528,24 +7452,7 @@ export const UpdateCartsMutationDocument = {
                             name: { kind: "Name", value: "eq" },
                             value: {
                               kind: "Variable",
-                              name: { kind: "Name", value: "productId" },
-                            },
-                          },
-                        ],
-                      },
-                    },
-                    {
-                      kind: "ObjectField",
-                      name: { kind: "Name", value: "user_id" },
-                      value: {
-                        kind: "ObjectValue",
-                        fields: [
-                          {
-                            kind: "ObjectField",
-                            name: { kind: "Name", value: "eq" },
-                            value: {
-                              kind: "Variable",
-                              name: { kind: "Name", value: "userId" },
+                              name: { kind: "Name", value: "id" },
                             },
                           },
                         ],
@@ -7566,30 +7473,6 @@ export const UpdateCartsMutationDocument = {
                       value: {
                         kind: "Variable",
                         name: { kind: "Name", value: "newQuantity" },
-                      },
-                    },
-                    {
-                      kind: "ObjectField",
-                      name: { kind: "Name", value: "color" },
-                      value: {
-                        kind: "Variable",
-                        name: { kind: "Name", value: "color" },
-                      },
-                    },
-                    {
-                      kind: "ObjectField",
-                      name: { kind: "Name", value: "size" },
-                      value: {
-                        kind: "Variable",
-                        name: { kind: "Name", value: "size" },
-                      },
-                    },
-                    {
-                      kind: "ObjectField",
-                      name: { kind: "Name", value: "material" },
-                      value: {
-                        kind: "Variable",
-                        name: { kind: "Name", value: "material" },
                       },
                     },
                   ],
@@ -7617,6 +7500,7 @@ export const UpdateCartsMutationDocument = {
                         kind: "Field",
                         name: { kind: "Name", value: "nodeId" },
                       },
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
                       {
                         kind: "Field",
                         name: { kind: "Name", value: "product_id" },

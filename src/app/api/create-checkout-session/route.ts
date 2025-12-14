@@ -29,8 +29,6 @@ export async function POST(request: Request) {
     guest: boolean;
   };
 
-  let user: User | undefined;
-
   const validation = orderProductsSchema.safeParse(data);
   const supabase = createRouteHandlerClient({ cookies });
 
@@ -54,7 +52,7 @@ export async function POST(request: Request) {
           : null,
         currency: "cad",
         amount: `${amount}`,
-        order_status: "pending",
+        order_status: "pending_payment",
         payment_status: "unpaid",
         payment_method: "card",
       })
