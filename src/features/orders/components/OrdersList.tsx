@@ -40,6 +40,7 @@ export const OrdersListFragment = gql(/* GraphQL */ `
               id
               featured
               price
+              discount
               name
               slug
               description

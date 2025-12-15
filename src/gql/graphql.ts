@@ -1748,6 +1748,7 @@ export type Products = Node & {
   commentsCollection?: Maybe<CommentsConnection>;
   created_at: Scalars["Datetime"];
   description?: Maybe<Scalars["String"]>;
+  discount?: Maybe<Scalars["BigFloat"]>;
   featured?: Maybe<Scalars["Boolean"]>;
   featured_image_id: Scalars["String"];
   id: Scalars["String"];
@@ -1858,6 +1859,7 @@ export type ProductsFilter = {
   collection_id?: InputMaybe<StringFilter>;
   created_at?: InputMaybe<DatetimeFilter>;
   description?: InputMaybe<StringFilter>;
+  discount?: InputMaybe<BigFloatFilter>;
   featured?: InputMaybe<BooleanFilter>;
   featured_image_id?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
@@ -1881,6 +1883,7 @@ export type ProductsInsertInput = {
   colors?: InputMaybe<Scalars["JSON"]>;
   created_at?: InputMaybe<Scalars["Datetime"]>;
   description?: InputMaybe<Scalars["String"]>;
+  discount?: InputMaybe<Scalars["BigFloat"]>;
   featured?: InputMaybe<Scalars["Boolean"]>;
   featured_image_id?: InputMaybe<Scalars["String"]>;
   id?: InputMaybe<Scalars["String"]>;
@@ -1910,6 +1913,7 @@ export type ProductsOrderBy = {
   collection_id?: InputMaybe<OrderByDirection>;
   created_at?: InputMaybe<OrderByDirection>;
   description?: InputMaybe<OrderByDirection>;
+  discount?: InputMaybe<OrderByDirection>;
   featured?: InputMaybe<OrderByDirection>;
   featured_image_id?: InputMaybe<OrderByDirection>;
   id?: InputMaybe<OrderByDirection>;
@@ -1928,6 +1932,7 @@ export type ProductsUpdateInput = {
   colors?: InputMaybe<Scalars["JSON"]>;
   created_at?: InputMaybe<Scalars["Datetime"]>;
   description?: InputMaybe<Scalars["String"]>;
+  discount?: InputMaybe<Scalars["BigFloat"]>;
   featured?: InputMaybe<Scalars["Boolean"]>;
   featured_image_id?: InputMaybe<Scalars["String"]>;
   id?: InputMaybe<Scalars["String"]>;
@@ -2304,6 +2309,7 @@ export type CollectionRouteQueryQuery = {
               slug: string;
               badge?: string | null;
               price: any;
+              discount?: any | null;
               stock?: number | null;
               colors?: any | null;
               sizes?: any | null;
@@ -2415,6 +2421,7 @@ export type OrderPageQueryQuery = {
                 id: string;
                 featured?: boolean | null;
                 price: any;
+                discount?: any | null;
                 name: string;
                 slug: string;
                 description?: string | null;
@@ -2462,6 +2469,7 @@ export type OrderPageQueryQuery = {
         id: string;
         featured?: boolean | null;
         price: any;
+        discount?: any | null;
         name: string;
         slug: string;
         description?: string | null;
@@ -2495,6 +2503,7 @@ export type LandingRouteQueryQuery = {
         slug: string;
         badge?: string | null;
         price: any;
+        discount?: any | null;
         stock?: number | null;
         colors?: any | null;
         sizes?: any | null;
@@ -2543,6 +2552,7 @@ export type LandingRouteQueryQuery = {
         slug: string;
         badge?: string | null;
         price: any;
+        discount?: any | null;
         stock?: number | null;
         colors?: any | null;
         sizes?: any | null;
@@ -2628,6 +2638,7 @@ export type ProductDetailPageQueryQuery = {
         description?: string | null;
         rating: any;
         price: any;
+        discount?: any | null;
         stock?: number | null;
         tags: any;
         totalComments: number;
@@ -2692,6 +2703,7 @@ export type ProductDetailPageQueryQuery = {
         slug: string;
         badge?: string | null;
         price: any;
+        discount?: any | null;
         stock?: number | null;
         colors?: any | null;
         sizes?: any | null;
@@ -2779,6 +2791,7 @@ export type CartItemCardFragmentFragment = {
   slug: string;
   name: string;
   price: any;
+  discount?: any | null;
   description?: string | null;
   featuredImage?: {
     __typename?: "medias";
@@ -2806,6 +2819,7 @@ export type FetchGuestCartQueryQuery = {
         slug: string;
         name: string;
         price: any;
+        discount?: any | null;
         description?: string | null;
         featuredImage?: {
           __typename?: "medias";
@@ -2848,6 +2862,7 @@ export type CreateCartMutationMutation = {
         slug: string;
         name: string;
         price: any;
+        discount?: any | null;
         description?: string | null;
         featuredImage?: {
           __typename?: "medias";
@@ -2898,6 +2913,7 @@ export type UpdateCartsMutationMutation = {
         slug: string;
         name: string;
         price: any;
+        discount?: any | null;
         description?: string | null;
         featuredImage?: {
           __typename?: "medias";
@@ -3112,6 +3128,7 @@ export type BuyAgainCardFragmentFragment = {
     id: string;
     featured?: boolean | null;
     price: any;
+    discount?: any | null;
     name: string;
     slug: string;
     description?: string | null;
@@ -3145,6 +3162,7 @@ export type OrdersListFragmentFragment = {
             id: string;
             featured?: boolean | null;
             price: any;
+            discount?: any | null;
             name: string;
             slug: string;
             description?: string | null;
@@ -3199,6 +3217,7 @@ export type ProductCardFragmentFragment = {
   slug: string;
   badge?: string | null;
   price: any;
+  discount?: any | null;
   stock?: number | null;
   colors?: any | null;
   sizes?: any | null;
@@ -3285,6 +3304,7 @@ export type ProductSliderQueryQuery = {
         slug: string;
         badge?: string | null;
         price: any;
+        discount?: any | null;
         stock?: number | null;
         colors?: any | null;
         sizes?: any | null;
@@ -3341,6 +3361,7 @@ export type RecomendationProductsQueryQuery = {
         slug: string;
         badge?: string | null;
         price: any;
+        discount?: any | null;
         stock?: number | null;
         colors?: any | null;
         sizes?: any | null;
@@ -3400,6 +3421,7 @@ export type WishlistProductsQueryQuery = {
           slug: string;
           badge?: string | null;
           price: any;
+          discount?: any | null;
           stock?: number | null;
           colors?: any | null;
           sizes?: any | null;
@@ -3501,6 +3523,7 @@ export type SearchQuery = {
         slug: string;
         badge?: string | null;
         price: any;
+        discount?: any | null;
         stock?: number | null;
         colors?: any | null;
         sizes?: any | null;
@@ -3591,6 +3614,7 @@ export const CartItemCardFragmentFragmentDoc = {
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
           { kind: "Field", name: { kind: "Name", value: "price" } },
+          { kind: "Field", name: { kind: "Name", value: "discount" } },
           { kind: "Field", name: { kind: "Name", value: "description" } },
           {
             kind: "Field",
@@ -3891,6 +3915,7 @@ export const BuyAgainCardFragmentFragmentDoc = {
                 { kind: "Field", name: { kind: "Name", value: "id" } },
                 { kind: "Field", name: { kind: "Name", value: "featured" } },
                 { kind: "Field", name: { kind: "Name", value: "price" } },
+                { kind: "Field", name: { kind: "Name", value: "discount" } },
                 { kind: "Field", name: { kind: "Name", value: "name" } },
                 { kind: "Field", name: { kind: "Name", value: "slug" } },
                 { kind: "Field", name: { kind: "Name", value: "description" } },
@@ -3990,6 +4015,13 @@ export const OrdersListFragmentFragmentDoc = {
                                           name: {
                                             kind: "Name",
                                             value: "price",
+                                          },
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "discount",
                                           },
                                         },
                                         {
@@ -4194,6 +4226,7 @@ export const ProductCardFragmentFragmentDoc = {
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "badge" } },
           { kind: "Field", name: { kind: "Name", value: "price" } },
+          { kind: "Field", name: { kind: "Name", value: "discount" } },
           { kind: "Field", name: { kind: "Name", value: "stock" } },
           { kind: "Field", name: { kind: "Name", value: "colors" } },
           { kind: "Field", name: { kind: "Name", value: "sizes" } },
@@ -5328,6 +5361,7 @@ export const CollectionRouteQueryDocument = {
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "badge" } },
           { kind: "Field", name: { kind: "Name", value: "price" } },
+          { kind: "Field", name: { kind: "Name", value: "discount" } },
           { kind: "Field", name: { kind: "Name", value: "stock" } },
           { kind: "Field", name: { kind: "Name", value: "colors" } },
           { kind: "Field", name: { kind: "Name", value: "sizes" } },
@@ -5786,6 +5820,13 @@ export const OrderPageQueryDocument = {
                                         },
                                         {
                                           kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "discount",
+                                          },
+                                        },
+                                        {
+                                          kind: "Field",
                                           name: { kind: "Name", value: "name" },
                                         },
                                         {
@@ -5927,6 +5968,7 @@ export const OrderPageQueryDocument = {
                 { kind: "Field", name: { kind: "Name", value: "id" } },
                 { kind: "Field", name: { kind: "Name", value: "featured" } },
                 { kind: "Field", name: { kind: "Name", value: "price" } },
+                { kind: "Field", name: { kind: "Name", value: "discount" } },
                 { kind: "Field", name: { kind: "Name", value: "name" } },
                 { kind: "Field", name: { kind: "Name", value: "slug" } },
                 { kind: "Field", name: { kind: "Name", value: "description" } },
@@ -6377,6 +6419,7 @@ export const LandingRouteQueryDocument = {
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "badge" } },
           { kind: "Field", name: { kind: "Name", value: "price" } },
+          { kind: "Field", name: { kind: "Name", value: "discount" } },
           { kind: "Field", name: { kind: "Name", value: "stock" } },
           { kind: "Field", name: { kind: "Name", value: "colors" } },
           { kind: "Field", name: { kind: "Name", value: "sizes" } },
@@ -6603,6 +6646,10 @@ export const ProductDetailPageQueryDocument = {
                             {
                               kind: "Field",
                               name: { kind: "Name", value: "price" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "discount" },
                             },
                             {
                               kind: "Field",
@@ -6898,6 +6945,7 @@ export const ProductDetailPageQueryDocument = {
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "badge" } },
           { kind: "Field", name: { kind: "Name", value: "price" } },
+          { kind: "Field", name: { kind: "Name", value: "discount" } },
           { kind: "Field", name: { kind: "Name", value: "stock" } },
           { kind: "Field", name: { kind: "Name", value: "colors" } },
           { kind: "Field", name: { kind: "Name", value: "sizes" } },
@@ -7327,6 +7375,7 @@ export const FetchGuestCartQueryDocument = {
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
           { kind: "Field", name: { kind: "Name", value: "price" } },
+          { kind: "Field", name: { kind: "Name", value: "discount" } },
           { kind: "Field", name: { kind: "Name", value: "description" } },
           {
             kind: "Field",
@@ -7563,6 +7612,7 @@ export const CreateCartMutationDocument = {
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
           { kind: "Field", name: { kind: "Name", value: "price" } },
+          { kind: "Field", name: { kind: "Name", value: "discount" } },
           { kind: "Field", name: { kind: "Name", value: "description" } },
           {
             kind: "Field",
@@ -7816,6 +7866,7 @@ export const UpdateCartsMutationDocument = {
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
           { kind: "Field", name: { kind: "Name", value: "price" } },
+          { kind: "Field", name: { kind: "Name", value: "discount" } },
           { kind: "Field", name: { kind: "Name", value: "description" } },
           {
             kind: "Field",
@@ -8735,6 +8786,7 @@ export const ProductSliderQueryDocument = {
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "badge" } },
           { kind: "Field", name: { kind: "Name", value: "price" } },
+          { kind: "Field", name: { kind: "Name", value: "discount" } },
           { kind: "Field", name: { kind: "Name", value: "stock" } },
           { kind: "Field", name: { kind: "Name", value: "colors" } },
           { kind: "Field", name: { kind: "Name", value: "sizes" } },
@@ -8940,6 +8992,7 @@ export const RecomendationProductsQueryDocument = {
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "badge" } },
           { kind: "Field", name: { kind: "Name", value: "price" } },
+          { kind: "Field", name: { kind: "Name", value: "discount" } },
           { kind: "Field", name: { kind: "Name", value: "stock" } },
           { kind: "Field", name: { kind: "Name", value: "colors" } },
           { kind: "Field", name: { kind: "Name", value: "sizes" } },
@@ -9172,6 +9225,7 @@ export const WishlistProductsQueryDocument = {
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "badge" } },
           { kind: "Field", name: { kind: "Name", value: "price" } },
+          { kind: "Field", name: { kind: "Name", value: "discount" } },
           { kind: "Field", name: { kind: "Name", value: "stock" } },
           { kind: "Field", name: { kind: "Name", value: "colors" } },
           { kind: "Field", name: { kind: "Name", value: "sizes" } },
@@ -9651,6 +9705,7 @@ export const SearchDocument = {
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "badge" } },
           { kind: "Field", name: { kind: "Name", value: "price" } },
+          { kind: "Field", name: { kind: "Name", value: "discount" } },
           { kind: "Field", name: { kind: "Name", value: "stock" } },
           { kind: "Field", name: { kind: "Name", value: "colors" } },
           { kind: "Field", name: { kind: "Name", value: "sizes" } },

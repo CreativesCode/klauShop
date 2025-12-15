@@ -64,6 +64,13 @@
       "when": 1734186000000,
       "tag": "0009_fix_inventory_reservations",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1765806782236,
+      "tag": "0009_fresh_tusk",
+      "breakpoints": true
     }
   ]
 }

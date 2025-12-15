@@ -15,6 +15,7 @@ export const BuyAgainCardFragment = gql(/* GraphQL */ `
       id
       featured
       price
+      discount
       name
       slug
       description
@@ -34,31 +35,53 @@ function BuyAgainCard({ products }: BuyAgainCardProps) {
         <h2 className="text-lg font-semibold text-primary">Comprar de nuevo</h2>
       </CardHeader>
       <CardContent className="flex flex-col gap-y-5 py-5">
-        {products.map(({ node }) => (
-          <div key={node.id} className="flex gap-5">
-            <div className="relative w-[80px] h-[80px]">
-              <Image
-                width={120}
-                height={120}
-                src={keytoUrl(node.featuredImage.key)}
-                alt={node.featuredImage.alt}
-                className="object-cover w-[80px] h-[80px] rounded-md"
-              />
-            </div>
+        {products.map(({ node }) => {
+          const discountValue = node.discount
+            ? parseFloat(node.discount.toString())
+            : 0;
+          const hasDiscount = discountValue > 0;
+          const priceValue = parseFloat(node.price.toString());
+          const discountedPrice = hasDiscount
+            ? priceValue - (priceValue * discountValue) / 100
+            : priceValue;
 
-            <div className="flex flex-col gap-2">
-              <Link
-                href={"/shop/" + node.slug}
-                className="text-primary-800 line-clamp-2"
-              >
-                {node.name}
-              </Link>
-              <Link href={"/shop/" + node.slug} className="font-bold">
-                <p>${node.price}</p>
-              </Link>
+          return (
+            <div key={node.id} className="flex gap-5">
+              <div className="relative w-[80px] h-[80px]">
+                <Image
+                  width={120}
+                  height={120}
+                  src={keytoUrl(node.featuredImage.key)}
+                  alt={node.featuredImage.alt}
+                  className="object-cover w-[80px] h-[80px] rounded-md"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Link
+                  href={"/shop/" + node.slug}
+                  className="text-primary-800 line-clamp-2"
+                >
+                  {node.name}
+                </Link>
+                <div className="flex items-center gap-2">
+                  {hasDiscount ? (
+                    <>
+                      <p className="font-bold text-red-600">
+                        ${discountedPrice.toFixed(2)}
+                      </p>
+                      <p className="text-sm text-gray-500 line-through">
+                        ${priceValue.toFixed(2)}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="font-bold">${priceValue.toFixed(2)}</p>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </CardContent>
     </Card>
   );

@@ -37,6 +37,7 @@ const ProductDetailPageQuery = gql(/* GraphQL */ `
           description
           rating
           price
+          discount
           stock
           tags
           totalComments
@@ -78,11 +79,19 @@ async function ProductDetailPage({ params }: Props) {
   if (!data || !data.productsCollection || !data.productsCollection.edges)
     return notFound();
 
-  const { id, name, description, price, colors, sizes, materials } =
+  const { id, name, description, price, discount, colors, sizes, materials } =
     data.productsCollection.edges[0].node;
 
+  // Calcular el precio con descuento
+  const discountValue = discount ? parseFloat(discount.toString()) : 0;
+  const hasDiscount = discountValue > 0;
+  const priceValue = parseFloat(price.toString());
+  const discountedPrice = hasDiscount
+    ? priceValue - (priceValue * discountValue) / 100
+    : priceValue;
+
   return (
-    <Shell>
+    <Shell className="max-w-screen-2xl mx-auto">
       <div className="grid grid-cols-12 gap-x-8">
         <div className="space-y-8 relative col-span-12 md:col-span-7">
           <ProductImageShowcase data={data.productsCollection.edges[0].node} />
@@ -94,7 +103,23 @@ async function ProductDetailPage({ params }: Props) {
               <h1 className="text-4xl font-semibold tracking-wide mb-2">
                 {name}
               </h1>
-              <p className="text-2xl font-semibold mb-2">{`$${price}`}</p>
+              <div className="flex items-center gap-3 mb-2">
+                {hasDiscount ? (
+                  <>
+                    <p className="text-3xl font-bold text-red-600">
+                      ${discountedPrice.toFixed(2)}
+                    </p>
+                    <p className="text-xl text-gray-500 line-through">
+                      ${priceValue.toFixed(2)}
+                    </p>
+                    <span className="bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold">
+                      -{discountValue}%
+                    </span>
+                  </>
+                ) : (
+                  <p className="text-3xl font-bold">${priceValue.toFixed(2)}</p>
+                )}
+              </div>
             </div>
             <AddToWishListButton productId={id} />
           </section>

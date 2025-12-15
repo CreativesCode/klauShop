@@ -37,6 +37,7 @@ type CartItemWithProduct = {
     slug: string;
     name: string;
     price: number;
+    discount?: number | null;
     description: string;
     featuredImage: {
       id: string;
@@ -76,7 +77,11 @@ function UserCartSection({ user }: UserCartSectionProps) {
 
   const subtotal = useMemo(() => {
     return cart.reduce((acc, item) => {
-      return acc + item.quantity * Number(item.product?.price || 0);
+      const price = Number(item.product?.price || 0);
+      const discount = Number(item.product?.discount || 0);
+      const discountedPrice =
+        discount > 0 ? price - (price * discount) / 100 : price;
+      return acc + item.quantity * discountedPrice;
     }, 0);
   }, [cart]);
 

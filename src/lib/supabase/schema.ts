@@ -173,6 +173,7 @@ export const products = pgTable(
     price: decimal("price", { precision: 8, scale: 2 })
       .notNull()
       .default("0.00"),
+    discount: decimal("discount", { precision: 5, scale: 2 }).default("0.00"),
     totalComments: integer("totalComments").default(0).notNull(),
     createdAt: timestamp("created_at", {
       withTimezone: true,

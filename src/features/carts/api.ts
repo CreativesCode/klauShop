@@ -53,6 +53,7 @@ export async function getCartItems(userId: string) {
         slug,
         name,
         price,
+        discount,
         description,
         featuredImage:medias!featured_image (
           id,

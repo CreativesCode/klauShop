@@ -1,6 +1,6 @@
 {
-  "id": "9999ee35-ecba-4962-9214-b8a1eb465e09",
-  "prevId": "8888ee35-ecba-4962-9214-b8a1eb465e08",
+  "id": "bba9ab77-219f-43e4-acd8-1e6a5dc12f24",
+  "prevId": "9999ee35-ecba-4962-9214-b8a1eb465e09",
   "version": "5",
   "dialect": "pg",
   "tables": {
@@ -937,6 +937,13 @@
           "type": "numeric(8, 2)",
           "primaryKey": false,
           "notNull": true,
+          "default": "'0.00'"
+        },
+        "discount": {
+          "name": "discount",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false,
           "default": "'0.00'"
         },
         "totalComments": {

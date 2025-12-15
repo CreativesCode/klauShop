@@ -395,6 +395,36 @@ function ProductFrom({
             <FormMessage />
           </FormItem>
 
+          <FormField
+            control={control}
+            name="discount"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm">Discount (%)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="100"
+                    placeholder="0.00"
+                    {...field}
+                    value={field.value || ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === "" ? "0.00" : value);
+                    }}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Porcentaje de descuento (0-100). Por defecto: 0 (sin
+                  descuento)
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormItem>
             <FormLabel className="text-sm">Stock*</FormLabel>
             <FormControl>

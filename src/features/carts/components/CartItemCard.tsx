@@ -26,6 +26,7 @@ export const CartItemCardFragment = gql(/* GraphQL */ `
     slug
     name
     price
+    discount
     description
     featuredImage: medias {
       id
@@ -59,6 +60,16 @@ function CartItemCard({
   selectedMaterial,
 }: CartItemCardProps) {
   const hasOptions = selectedColor || selectedSize || selectedMaterial;
+
+  // Calcular el precio con descuento
+  const discountValue = product.discount
+    ? parseFloat(product.discount.toString())
+    : 0;
+  const hasDiscount = discountValue > 0;
+  const priceValue = parseFloat(product.price.toString());
+  const discountedPrice = hasDiscount
+    ? priceValue - (priceValue * discountValue) / 100
+    : priceValue;
 
   return (
     <Card className="flex items-center justify-between gap-x-6 gap-y-8 px-5 py-3 shadow-none border-0 border-b">
@@ -135,8 +146,24 @@ function CartItemCard({
         </CardHeader>
       </div>
 
-      <CardFooter className="gap-x-2 md:gap-x-5 p-0 ">
-        <p>$ {product.price}</p>
+      <CardFooter className="gap-x-2 md:gap-x-5 p-0 flex-col items-end">
+        <div className="flex flex-col items-end gap-1">
+          {hasDiscount ? (
+            <>
+              <p className="text-lg font-bold text-red-600">
+                ${discountedPrice.toFixed(2)}
+              </p>
+              <p className="text-sm text-gray-500 line-through">
+                ${priceValue.toFixed(2)}
+              </p>
+              <span className="text-xs bg-red-500 text-white px-2 py-0.5 rounded">
+                -{discountValue}%
+              </span>
+            </>
+          ) : (
+            <p className="text-lg font-bold">${priceValue.toFixed(2)}</p>
+          )}
+        </div>
 
         <Button
           aria-label="Remove Item Button"

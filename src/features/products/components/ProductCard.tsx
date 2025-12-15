@@ -35,6 +35,7 @@ export const ProductCardFragment = gql(/* GraphQL */ `
     slug
     badge
     price
+    discount
     stock
     colors
     sizes
@@ -88,7 +89,7 @@ export function ProductCard({
   hoverImage,
   ...props
 }: ProductCardProps) {
-  const { name, slug, featuredImage, badge, price, images } = product;
+  const { name, slug, featuredImage, badge, price, discount, images } = product;
 
   // Obtener la segunda imagen si existe
   const secondImage = hoverImage ?? images?.edges?.[0]?.node?.media;
@@ -104,6 +105,14 @@ export function ProductCard({
   const remainingColors = normalizedColors.length - MAX_DISPLAY;
   const sizesToShow = normalizedSizes.slice(0, MAX_DISPLAY);
   const remainingSizes = normalizedSizes.length - MAX_DISPLAY;
+
+  // Calcular el precio con descuento
+  const discountValue = discount ? parseFloat(discount.toString()) : 0;
+  const hasDiscount = discountValue > 0;
+  const priceValue = parseFloat(price.toString());
+  const discountedPrice = hasDiscount
+    ? priceValue - (priceValue * discountValue) / 100
+    : priceValue;
 
   return (
     <Card
@@ -150,6 +159,11 @@ export function ProductCard({
                 : "Destacado"}
           </Badge>
         )}
+        {hasDiscount && (
+          <Badge className="absolute bottom-2 left-2 bg-red-500 hover:bg-red-600 text-white">
+            -{discountValue}%
+          </Badge>
+        )}
         <div className="absolute top-2 right-2">
           <Suspense
             fallback={
@@ -175,7 +189,22 @@ export function ProductCard({
           </CardTitle>
 
           <div className="flex md:justify-between flex-col md:flex-row">
-            <div className="">${price}</div>
+            <div className="flex items-center gap-2">
+              {hasDiscount ? (
+                <>
+                  <span className="text-lg font-bold text-red-600">
+                    ${discountedPrice.toFixed(2)}
+                  </span>
+                  <span className="text-sm text-gray-500 line-through">
+                    ${priceValue.toFixed(2)}
+                  </span>
+                </>
+              ) : (
+                <span className="text-lg font-bold">
+                  ${priceValue.toFixed(2)}
+                </span>
+              )}
+            </div>
 
             <div className="text-sm">
               {product.stock === 0 ? (
