@@ -6,7 +6,7 @@ import { CartLink, CartNav } from "../../features/carts";
 import Branding from "./Branding";
 import MobileNavbar from "./MobileNavbar";
 import SearchInput from "./SearchInput";
-import { SideMenu } from "./SideMenu";
+import SideMenuServer from "./SideMenuServer";
 import { Icons } from "./icons";
 
 interface MainNavbarProps {
@@ -26,7 +26,7 @@ async function MainNavbar({ adminLayout = false }: MainNavbarProps) {
         <div className="hidden md:flex gap-x-8 justify-between items-center">
           {/* Menu & branding */}
           <div className="flex gap-x-3 items-center">
-            <SideMenu />
+            <SideMenuServer />
             <Branding />
           </div>
 

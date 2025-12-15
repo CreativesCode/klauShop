@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 export const siteConfig = {
   name: "Klau's Shop",
-  description: "Ecommerce Application built with NextJS 14",
+  description: "Tu tienda favorita de ropa y accesorios.",
   url: "https://hiyori.hugo-coding.com",
   address: "1600 Amphitheatre Parkway in Mountain View, California",
   phone: "+1(234)-567-8901",

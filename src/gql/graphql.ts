@@ -2785,6 +2785,29 @@ export type FooterCategoriesQueryQuery = {
   } | null;
 };
 
+export type SideMenuCollectionsQueryQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type SideMenuCollectionsQueryQuery = {
+  __typename?: "Query";
+  collectionsCollection?: {
+    __typename?: "collectionsConnection";
+    edges: Array<{
+      __typename?: "collectionsEdge";
+      node: {
+        __typename?: "collections";
+        id: string;
+        label: string;
+        slug: string;
+        title: string;
+        parent_id?: string | null;
+        order?: number | null;
+      };
+    }>;
+  } | null;
+};
+
 export type CartItemCardFragmentFragment = {
   __typename?: "products";
   id: string;
@@ -7230,6 +7253,96 @@ export const FooterCategoriesQueryDocument = {
 } as unknown as DocumentNode<
   FooterCategoriesQueryQuery,
   FooterCategoriesQueryQueryVariables
+>;
+export const SideMenuCollectionsQueryDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "SideMenuCollectionsQuery" },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "collectionsCollection" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "orderBy" },
+                value: {
+                  kind: "ListValue",
+                  values: [
+                    {
+                      kind: "ObjectValue",
+                      fields: [
+                        {
+                          kind: "ObjectField",
+                          name: { kind: "Name", value: "order" },
+                          value: { kind: "EnumValue", value: "DescNullsLast" },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "edges" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "node" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "label" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "slug" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "title" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "parent_id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "order" },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  SideMenuCollectionsQueryQuery,
+  SideMenuCollectionsQueryQueryVariables
 >;
 export const FetchGuestCartQueryDocument = {
   kind: "Document",

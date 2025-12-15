@@ -72,16 +72,16 @@ function UserNav() {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <Link href="/orders">
-                <DropdownMenuItem>Orders</DropdownMenuItem>
+                <DropdownMenuItem>Órdenes</DropdownMenuItem>
               </Link>
               <Link href="/wish-list">
-                <DropdownMenuItem>Wishlist</DropdownMenuItem>
+                <DropdownMenuItem>Lista de Deseos</DropdownMenuItem>
               </Link>
               <Link href="/cart">
-                <DropdownMenuItem>Cart</DropdownMenuItem>
+                <DropdownMenuItem>Carrito</DropdownMenuItem>
               </Link>
               <Link href="/setting">
-                <DropdownMenuItem>Setting</DropdownMenuItem>
+                <DropdownMenuItem>Configuración</DropdownMenuItem>
               </Link>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
@@ -91,19 +91,10 @@ function UserNav() {
                 <DropdownMenuGroup>
                   <Link href="/admin">
                     <DropdownMenuItem>
-                      Admin
+                      Administración
                       <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                     </DropdownMenuItem>
                   </Link>
-                  <DropdownMenuItem>
-                    Billing
-                    <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    Settings
-                    <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>New Team</DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
               </>

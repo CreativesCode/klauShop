@@ -35,6 +35,8 @@ const documents = {
     types.CategoriesSubNavQueryDocument,
   "\n  query FooterCategoriesQuery {\n    collectionsCollection(orderBy: [{ order: DescNullsLast }]) {\n      edges {\n        node {\n          id\n          label\n          slug\n          parent_id\n        }\n      }\n    }\n  }\n":
     types.FooterCategoriesQueryDocument,
+  "\n  query SideMenuCollectionsQuery {\n    collectionsCollection(orderBy: [{ order: DescNullsLast }]) {\n      edges {\n        node {\n          id\n          label\n          slug\n          title\n          parent_id\n          order\n        }\n      }\n    }\n  }\n":
+    types.SideMenuCollectionsQueryDocument,
   "\n  fragment CartItemCardFragment on products {\n    id\n    slug\n    name\n    price\n    discount\n    description\n    featuredImage: medias {\n      id\n      key\n      alt\n    }\n  }\n":
     types.CartItemCardFragmentFragmentDoc,
   "\n  query FetchGuestCartQuery(\n    $cartItems: [String!]\n    $first: Int\n    $after: Cursor\n  ) {\n    productsCollection(\n      first: $first\n      after: $after\n      filter: { id: { in: $cartItems } }\n    ) {\n      edges {\n        node {\n          id\n          ...CartItemCardFragment\n        }\n      }\n    }\n  }\n":
@@ -179,6 +181,12 @@ export function gql(
 export function gql(
   source: "\n  query FooterCategoriesQuery {\n    collectionsCollection(orderBy: [{ order: DescNullsLast }]) {\n      edges {\n        node {\n          id\n          label\n          slug\n          parent_id\n        }\n      }\n    }\n  }\n",
 ): (typeof documents)["\n  query FooterCategoriesQuery {\n    collectionsCollection(orderBy: [{ order: DescNullsLast }]) {\n      edges {\n        node {\n          id\n          label\n          slug\n          parent_id\n        }\n      }\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(
+  source: "\n  query SideMenuCollectionsQuery {\n    collectionsCollection(orderBy: [{ order: DescNullsLast }]) {\n      edges {\n        node {\n          id\n          label\n          slug\n          title\n          parent_id\n          order\n        }\n      }\n    }\n  }\n",
+): (typeof documents)["\n  query SideMenuCollectionsQuery {\n    collectionsCollection(orderBy: [{ order: DescNullsLast }]) {\n      edges {\n        node {\n          id\n          label\n          slug\n          title\n          parent_id\n          order\n        }\n      }\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
