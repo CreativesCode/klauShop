@@ -97,10 +97,7 @@ export default function OrderActionsButtons({
     }
   };
 
-  const canMarkAsPaid =
-    paymentStatus !== "paid" &&
-    (orderStatus === "pending_confirmation" ||
-      orderStatus === "pending_payment");
+  const canMarkAsPaid = paymentStatus !== "paid" && orderStatus !== "cancelled";
 
   const canCancel =
     orderStatus !== "cancelled" &&

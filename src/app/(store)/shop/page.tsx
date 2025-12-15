@@ -20,7 +20,7 @@ async function ProductsPage({}: ProductsPageProps) {
 
   return (
     <Shell className="max-w-screen-2xl mx-auto">
-      <Header heading="Shop Now" />
+      <Header heading="Compra ahora" />
 
       {/* <Suspense
         fallback={

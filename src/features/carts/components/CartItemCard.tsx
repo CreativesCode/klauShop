@@ -80,7 +80,7 @@ function CartItemCard({
             alt={product.featuredImage.alt}
             width={150}
             height={150}
-            className="aspect-square object-cover"
+            className="aspect-square object-cover rounded-md"
           />
         </CardContent>
 

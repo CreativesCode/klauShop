@@ -1,8 +1,11 @@
 import { Shell } from "@/components/layouts/Shell";
+import { Icons } from "@/components/layouts/icons";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { OrderProgress } from "@/features/orders";
 import { getOrderStatusInfo } from "@/features/orders/utils/orderStatus";
+import { getPaymentStatusInfo } from "@/features/orders/utils/paymentStatus";
 import { formatOrderNumber } from "@/features/orders/utils/whatsapp";
 import db from "@/lib/supabase/db";
 import {
@@ -83,14 +86,29 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
 
   const orderNumber = formatOrderNumber(order.id);
   const customerData = order.customer_data as any;
-  const orderStatus = (order.order_status ||
+  const rawOrderStatus = (order.order_status ||
     "pending_confirmation") as OrderStatus;
+  // Evita inconsistencias visuales si existe alguna orden vieja desincronizada:
+  // "paid" implica pago confirmado; si payment_status no es "paid", mostramos "pending_payment".
+  const orderStatus =
+    rawOrderStatus === "paid" && order.payment_status !== "paid"
+      ? ("pending_payment" as const)
+      : rawOrderStatus;
   const statusInfo = getOrderStatusInfo(orderStatus);
   const StatusIcon = statusInfo?.icon;
+  const paymentInfo = getPaymentStatusInfo(order.payment_status);
 
   return (
     <Shell className="max-w-screen-2xl mx-auto">
       <div className="space-y-6">
+        <div className="mb-4">
+          <Link href="/orders">
+            <Button variant="outline" className="gap-2">
+              <Icons.chevronLeft className="h-4 w-4" />
+              Ver todas las órdenes
+            </Button>
+          </Link>
+        </div>
         {/* Header con estado */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
@@ -215,17 +233,36 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
             <CardHeader className="font-semibold">
               Información de Envío
             </CardHeader>
-            <CardContent className="space-y-1">
+            <CardContent className="space-y-3">
               {customerData?.name && (
-                <p className="font-medium">{customerData.name}</p>
+                <div>
+                  <p className="text-sm text-muted-foreground">Nombre</p>
+                  <p className="font-medium">{customerData.name}</p>
+                </div>
               )}
               {customerData?.phone && (
-                <p className="text-sm">{customerData.phone}</p>
+                <div>
+                  <p className="text-sm text-muted-foreground">Teléfono</p>
+                  <p className="text-sm">{customerData.phone}</p>
+                </div>
               )}
               {customerData?.zone && (
-                <p className="text-sm text-muted-foreground">
-                  Zona: {customerData.zone}
-                </p>
+                <div>
+                  <p className="text-sm text-muted-foreground">Zona</p>
+                  <p className="text-sm font-medium">{customerData.zone}</p>
+                </div>
+              )}
+              {customerData?.address && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Dirección</p>
+                  <p className="text-sm">{customerData.address}</p>
+                </div>
+              )}
+              {customerData?.notes && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Notas</p>
+                  <p className="text-sm italic">{customerData.notes}</p>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -256,15 +293,16 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
 
           <Card>
             <CardHeader className="font-semibold">Estado de Pago</CardHeader>
-            <CardContent>
-              <Badge
-                variant={
-                  order.payment_status === "paid" ? "default" : "secondary"
-                }
-                className="text-sm"
-              >
-                {order.payment_status === "paid" ? "Pagado" : "Pendiente"}
-              </Badge>
+            <CardContent className="space-y-2">
+              <div className="pt-2">
+                <p className="text-sm text-muted-foreground">Estado del pago</p>
+                <Badge
+                  variant={paymentInfo.badgeVariant}
+                  className="text-sm mt-1"
+                >
+                  {paymentInfo.label}
+                </Badge>
+              </div>
               {order.payment_method && (
                 <p className="text-sm text-muted-foreground mt-2">
                   Método: {order.payment_method}

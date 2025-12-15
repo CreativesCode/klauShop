@@ -1,11 +1,11 @@
 import { SettingSidebarNav } from "@/components/layouts/SettingSidebar";
 import { Separator } from "@/components/ui/separator";
 import { Metadata } from "next";
-import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "Forms",
-  description: "Advanced form example using react-hook-form and Zod.",
+  title: "Configuración",
+  description:
+    "Gestiona tus configuraciones y preferencias de correo electrónico.",
 };
 
 const sidebarNavItems = [
@@ -46,7 +46,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
           <aside className="-mx-4 lg:w-1/5">
             <SettingSidebarNav items={sidebarNavItems} />
           </aside>
-          <div className="flex-1 lg:max-w-xl min-h-[30vh]">{children}</div>
+          <div className="flex-1 min-h-[30vh]">{children}</div>
         </div>
       </div>
     </>

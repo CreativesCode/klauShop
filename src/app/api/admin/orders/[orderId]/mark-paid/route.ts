@@ -1,8 +1,8 @@
 import db from "@/lib/supabase/db";
-import { orders } from "@/lib/supabase/schema";
+import { inventoryReservations, orders } from "@/lib/supabase/schema";
 import { NextResponse } from "next/server";
 import { consumeReservationsAndDeductStock } from "@/features/orders/utils/inventory";
-import { eq, and, inArray } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
@@ -47,21 +47,30 @@ export async function POST(
         throw new Error("Orden no encontrada");
       }
 
-      if (
-        order.order_status !== "pending_confirmation" &&
-        order.order_status !== "pending_payment"
-      ) {
-        throw new Error(
-          `La orden no puede ser marcada como pagada. Estado actual: ${order.order_status}`,
-        );
+      if (order.order_status === "cancelled") {
+        throw new Error("No se puede marcar como pagada una orden cancelada");
       }
 
       if (order.payment_status === "paid") {
         throw new Error("La orden ya está marcada como pagada");
       }
 
-      // 2. Consumir reservas y descontar stock
-      await consumeReservationsAndDeductStock(tx, orderId);
+      // 2. Consumir reservas y descontar stock (si aún existen reservas activas)
+      // Esto hace el endpoint más robusto ante órdenes desincronizadas (order_status=paid pero payment_status=unpaid).
+      const activeReservations = await tx
+        .select({ id: inventoryReservations.id })
+        .from(inventoryReservations)
+        .where(
+          and(
+            eq(inventoryReservations.orderId, orderId),
+            eq(inventoryReservations.status, "active"),
+          ),
+        )
+        .limit(1);
+
+      if (activeReservations.length > 0) {
+        await consumeReservationsAndDeductStock(tx, orderId);
+      }
 
       // 3. Actualizar estado de la orden
       const [updatedOrder] = await tx

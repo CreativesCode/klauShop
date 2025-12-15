@@ -1,8 +1,9 @@
 import AdminShell from "@/components/admin/AdminShell";
+import { Icons } from "@/components/layouts/icons";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import OrderActionsButtons from "@/features/orders/components/admin/OrderActionsButtons";
 import OrderStatusChanger from "@/features/orders/components/admin/OrderStatusChanger";
 import { getOrderStatusInfo } from "@/features/orders/utils/orderStatus";
 import { formatOrderNumber } from "@/features/orders/utils/whatsapp";
@@ -17,6 +18,7 @@ import {
 import { formatPrice, keytoUrl } from "@/lib/utils";
 import { eq } from "drizzle-orm";
 import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 type AdminOrderDetailPageProps = {
@@ -78,6 +80,14 @@ export default async function AdminOrderDetailPage({
       heading={`Orden ${orderNumber}`}
       description="Detalles y gestión de la orden"
     >
+      <div className="mb-6">
+        <Link href="/admin/orders">
+          <Button variant="outline" className="gap-2">
+            <Icons.chevronLeft className="h-4 w-4" />
+            Ver todas las órdenes
+          </Button>
+        </Link>
+      </div>
       <div className="grid gap-6 md:grid-cols-3">
         {/* Columna principal - Detalles */}
         <div className="md:col-span-2 space-y-6">
@@ -209,21 +219,11 @@ export default async function AdminOrderDetailPage({
         {/* Columna lateral - Cliente y acciones */}
         <div className="space-y-6">
           {/* Cambiar Estado */}
-          <OrderStatusChanger orderId={order.id} currentStatus={orderStatus} />
-
-          {/* Acciones */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Acciones</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <OrderActionsButtons
-                orderId={order.id}
-                orderStatus={order.order_status || "pending"}
-                paymentStatus={order.payment_status}
-              />
-            </CardContent>
-          </Card>
+          <OrderStatusChanger
+            orderId={order.id}
+            currentStatus={orderStatus}
+            paymentStatus={order.payment_status}
+          />
 
           {/* Información del cliente */}
           <Card>

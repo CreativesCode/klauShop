@@ -13,15 +13,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { OrderStatus } from "@/lib/supabase/schema";
+import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
@@ -32,21 +26,63 @@ import {
 type OrderStatusChangerProps = {
   orderId: string;
   currentStatus: OrderStatus;
+  paymentStatus: string;
 };
 
 export default function OrderStatusChanger({
   orderId,
   currentStatus,
+  paymentStatus,
 }: OrderStatusChangerProps) {
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | null>(
     null,
   );
   const [isChanging, setIsChanging] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [actionType, setActionType] = useState<
+    "change" | "mark-paid" | "cancel"
+  >("change");
   const { toast } = useToast();
   const router = useRouter();
 
   const validNextStatuses = getValidNextStatuses(currentStatus);
+
+  // Función helper para obtener el color hover más fuerte basado en el bgColor
+  const getHoverColor = (bgColor: string): string => {
+    const colorMap: Record<string, string> = {
+      "bg-yellow-50": "hover:bg-yellow-100",
+      "bg-orange-50": "hover:bg-orange-100",
+      "bg-green-50": "hover:bg-green-100",
+      "bg-blue-50": "hover:bg-blue-100",
+      "bg-indigo-50": "hover:bg-indigo-100",
+      "bg-emerald-50": "hover:bg-emerald-100",
+      "bg-red-50": "hover:bg-red-100",
+    };
+    return colorMap[bgColor] || "hover:bg-opacity-80";
+  };
+
+  // Agregar "paid" a los estados posibles si puede marcarse como pagada
+  const canMarkAsPaid =
+    paymentStatus !== "paid" &&
+    currentStatus !== "cancelled" &&
+    (currentStatus === "pending_confirmation" ||
+      currentStatus === "pending_payment");
+
+  // Agregar "cancelled" si puede cancelarse
+  const canCancel =
+    currentStatus !== "cancelled" &&
+    currentStatus !== "delivered" &&
+    currentStatus !== "shipped";
+
+  // Construir lista de estados disponibles
+  const availableStatuses: OrderStatus[] = [...validNextStatuses];
+  if (canMarkAsPaid && !availableStatuses.includes("paid")) {
+    availableStatuses.push("paid");
+  }
+  if (canCancel && !availableStatuses.includes("cancelled")) {
+    availableStatuses.push("cancelled");
+  }
+
   const currentStatusInfo = getOrderStatusInfo(currentStatus) || {
     label: "Desconocido",
     description: "Estado desconocido",
@@ -57,14 +93,45 @@ export default function OrderStatusChanger({
   };
   const CurrentIcon = currentStatusInfo.icon;
 
-  const handleStatusChange = async () => {
+  const handleStatusChange = async (status: OrderStatus) => {
+    setSelectedStatus(status);
+
+    // Determinar qué tipo de acción usar
+    if (status === "paid") {
+      setActionType("mark-paid");
+    } else if (status === "cancelled") {
+      setActionType("cancel");
+    } else {
+      setActionType("change");
+    }
+
+    setShowConfirmDialog(true);
+  };
+
+  const confirmStatusChange = async () => {
     if (!selectedStatus) return;
 
     setIsChanging(true);
     try {
-      const response = await fetch(
-        `/api/admin/orders/${orderId}/change-status`,
-        {
+      let response;
+      let successMessage = "";
+
+      if (actionType === "mark-paid") {
+        // Usar endpoint de mark-paid (descuenta stock y sincroniza payment_status)
+        response = await fetch(`/api/admin/orders/${orderId}/mark-paid`, {
+          method: "POST",
+        });
+        successMessage =
+          "Orden marcada como pagada. El stock ha sido descontado.";
+      } else if (actionType === "cancel") {
+        // Usar endpoint de cancel (libera reservas)
+        response = await fetch(`/api/admin/orders/${orderId}/cancel`, {
+          method: "POST",
+        });
+        successMessage = "Orden cancelada. Las reservas han sido liberadas.";
+      } else {
+        // Usar endpoint de change-status (solo cambia estado)
+        response = await fetch(`/api/admin/orders/${orderId}/change-status`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -72,8 +139,9 @@ export default function OrderStatusChanger({
           body: JSON.stringify({
             newStatus: selectedStatus,
           }),
-        },
-      );
+        });
+        successMessage = `La orden ahora está en estado: ${getOrderStatusInfo(selectedStatus)?.label || selectedStatus}`;
+      }
 
       const data = await response.json();
 
@@ -83,7 +151,7 @@ export default function OrderStatusChanger({
 
       toast({
         title: "Estado actualizado",
-        description: `La orden ahora está en estado: ${getOrderStatusInfo(selectedStatus)?.label || selectedStatus}`,
+        description: successMessage,
       });
 
       setShowConfirmDialog(false);
@@ -101,16 +169,6 @@ export default function OrderStatusChanger({
     }
   };
 
-  const handleSelectChange = (value: string) => {
-    setSelectedStatus(value as OrderStatus);
-  };
-
-  const handleConfirmClick = () => {
-    if (selectedStatus) {
-      setShowConfirmDialog(true);
-    }
-  };
-
   return (
     <>
       <Card>
@@ -124,11 +182,15 @@ export default function OrderStatusChanger({
               Estado Actual
             </Label>
             <div
-              className={`mt-2 flex items-center gap-3 p-3 rounded-lg border ${currentStatusInfo.borderColor} ${currentStatusInfo.bgColor}`}
+              className={cn(
+                "mt-2 flex items-center gap-3 p-3 rounded-lg border",
+                currentStatusInfo.borderColor,
+                currentStatusInfo.bgColor,
+              )}
             >
               <CurrentIcon size={20} className={currentStatusInfo.color} />
               <div>
-                <p className={`font-medium ${currentStatusInfo.color}`}>
+                <p className={cn("font-medium", currentStatusInfo.color)}>
                   {currentStatusInfo.label}
                 </p>
                 <p className="text-sm text-muted-foreground">
@@ -138,40 +200,41 @@ export default function OrderStatusChanger({
             </div>
           </div>
 
-          {/* Selector de nuevo estado */}
-          {validNextStatuses.length > 0 ? (
+          {/* Botones de estados posibles */}
+          {availableStatuses.length > 0 ? (
             <div className="space-y-3">
-              <Label htmlFor="new-status">Cambiar Estado</Label>
-              <Select
-                value={selectedStatus || undefined}
-                onValueChange={handleSelectChange}
-              >
-                <SelectTrigger id="new-status">
-                  <SelectValue placeholder="Selecciona un nuevo estado" />
-                </SelectTrigger>
-                <SelectContent>
-                  {validNextStatuses.map((status) => {
-                    const statusInfo = getOrderStatusInfo(status);
-                    const Icon = statusInfo.icon;
-                    return (
-                      <SelectItem key={status} value={status}>
-                        <div className="flex items-center gap-2">
-                          <Icon size={16} />
+              <Label>Cambiar a Estado</Label>
+              <div className="grid grid-cols-1 gap-2">
+                {availableStatuses.map((status) => {
+                  const statusInfo = getOrderStatusInfo(status);
+                  if (!statusInfo) return null;
+                  const Icon = statusInfo.icon;
+                  return (
+                    <Button
+                      key={status}
+                      onClick={() => handleStatusChange(status)}
+                      disabled={isChanging}
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start gap-2 h-auto py-3 transition-colors",
+                        statusInfo.borderColor,
+                        statusInfo.bgColor,
+                        getHoverColor(statusInfo.bgColor),
+                      )}
+                    >
+                      <Icon size={18} className={statusInfo.color} />
+                      <div className="flex flex-col items-start flex-1">
+                        <span className={cn("font-medium", statusInfo.color)}>
                           {statusInfo.label}
-                        </div>
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-
-              <Button
-                onClick={handleConfirmClick}
-                disabled={!selectedStatus || isChanging}
-                className="w-full"
-              >
-                {isChanging ? "Actualizando..." : "Actualizar Estado"}
-              </Button>
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {statusInfo.description}
+                        </span>
+                      </div>
+                    </Button>
+                  );
+                })}
+              </div>
             </div>
           ) : (
             <div className="text-sm text-muted-foreground p-3 bg-muted rounded-lg">
@@ -198,16 +261,35 @@ export default function OrderStatusChanger({
                   .
                   <br />
                   <br />
-                  Esta acción se registrará y puede afectar el inventario o
-                  notificaciones al cliente.
+                  {actionType === "mark-paid" && (
+                    <>
+                      Esta acción marcará la orden como pagada y descontará el
+                      stock de los productos. Esta acción no se puede deshacer.
+                    </>
+                  )}
+                  {actionType === "cancel" && (
+                    <>
+                      Esta acción liberará las reservas de stock. Si la orden ya
+                      fue pagada, no podrás cancelarla.
+                    </>
+                  )}
+                  {actionType === "change" && (
+                    <>
+                      Esta acción se registrará y puede afectar el inventario o
+                      notificaciones al cliente.
+                    </>
+                  )}
                 </>
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleStatusChange}>
-              Confirmar Cambio
+            <AlertDialogAction
+              onClick={confirmStatusChange}
+              disabled={isChanging}
+            >
+              {isChanging ? "Actualizando..." : "Confirmar Cambio"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

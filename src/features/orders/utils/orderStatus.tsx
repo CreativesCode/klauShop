@@ -92,7 +92,8 @@ export function getOrderStatusInfo(
  */
 export const VALID_STATUS_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   pending_confirmation: ["pending_payment", "cancelled"],
-  pending_payment: ["paid", "cancelled"],
+  // El paso a "paid" debe hacerse vía la acción "mark-paid" (descuenta stock y sincroniza payment_status)
+  pending_payment: ["cancelled"],
   paid: ["processing", "cancelled"],
   processing: ["shipped", "cancelled"],
   shipped: ["delivered", "cancelled"],

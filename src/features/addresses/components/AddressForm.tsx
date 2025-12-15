@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -15,27 +16,31 @@ import { Textarea } from "@/components/ui/textarea";
 import { siteConfig } from "@/config/site";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { CustomerInfoInput, customerInfoSchema } from "../validations";
+import { AddressInput, addressSchema } from "../validations";
 
-type CustomerInfoFormProps = {
-  onSubmit: (data: CustomerInfoInput) => void;
+type AddressFormProps = {
+  onSubmit: (data: AddressInput) => void;
   isLoading?: boolean;
-  initialData?: Partial<CustomerInfoInput>;
+  initialData?: Partial<AddressInput>;
+  submitLabel?: string;
 };
 
-export function CustomerInfoForm({
+export function AddressForm({
   onSubmit,
   isLoading = false,
   initialData,
-}: CustomerInfoFormProps) {
-  const form = useForm<CustomerInfoInput>({
-    resolver: zodResolver(customerInfoSchema),
+  submitLabel = "Guardar dirección",
+}: AddressFormProps) {
+  const form = useForm<AddressInput>({
+    resolver: zodResolver(addressSchema),
     defaultValues: {
       name: initialData?.name || "",
+      recipientName: initialData?.recipientName || "",
       phone: initialData?.phone || "",
       zone: initialData?.zone || "",
-      address: initialData?.address || "",
+      fullAddress: initialData?.fullAddress || "",
       notes: initialData?.notes || "",
+      isDefault: initialData?.isDefault || false,
     },
   });
 
@@ -47,7 +52,28 @@ export function CustomerInfoForm({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nombre completo *</FormLabel>
+              <FormLabel>Nombre de la dirección *</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Casa, Trabajo, etc."
+                  {...field}
+                  disabled={isLoading}
+                />
+              </FormControl>
+              <FormDescription>
+                Un nombre para identificar esta dirección
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="recipientName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nombre completo del destinatario *</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Juan Pérez"
@@ -96,7 +122,8 @@ export function CustomerInfoForm({
                 />
               </FormControl>
               <FormDescription>
-                Zonas disponibles: {siteConfig.zones}
+                Zonas disponibles: {siteConfig.zones}. Si usted es de otra zona,
+                insértela e intentaremos ponernos de acuerdo para entregársela.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -105,7 +132,7 @@ export function CustomerInfoForm({
 
         <FormField
           control={form.control}
-          name="address"
+          name="fullAddress"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Dirección completa (opcional)</FormLabel>
@@ -113,13 +140,11 @@ export function CustomerInfoForm({
                 <Textarea
                   placeholder="Calle, número, referencias..."
                   {...field}
+                  value={field.value || ""}
                   disabled={isLoading}
                   rows={3}
                 />
               </FormControl>
-              <FormDescription>
-                Puedes coordinar los detalles por WhatsApp
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -135,6 +160,7 @@ export function CustomerInfoForm({
                 <Textarea
                   placeholder="Preferencias de entrega, instrucciones especiales..."
                   {...field}
+                  value={field.value || ""}
                   disabled={isLoading}
                   rows={3}
                 />
@@ -144,12 +170,34 @@ export function CustomerInfoForm({
           )}
         />
 
+        <FormField
+          control={form.control}
+          name="isDefault"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  disabled={isLoading}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>Establecer como dirección predeterminada</FormLabel>
+                <FormDescription>
+                  Esta dirección se usará automáticamente en tus pedidos
+                </FormDescription>
+              </div>
+            </FormItem>
+          )}
+        />
+
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Procesando..." : "Continuar con WhatsApp"}
+          {isLoading ? "Guardando..." : submitLabel}
         </Button>
       </form>
     </Form>
   );
 }
 
-export default CustomerInfoForm;
+export default AddressForm;

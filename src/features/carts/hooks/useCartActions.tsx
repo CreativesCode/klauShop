@@ -69,7 +69,7 @@ function useCartActions(user: User | null, productId: string) {
         });
       }
 
-      toast({ title: "Success, Added a Product to the Cart." });
+      toast({ title: "Producto agregado al carrito." });
 
       // Refrescar el carrito (se hará mediante el componente padre)
       window.dispatchEvent(new Event("cart-updated"));
@@ -92,7 +92,7 @@ function useCartActions(user: User | null, productId: string) {
     material?: string | null,
   ) => {
     addProductStorage(productId, quantity, color, size, material);
-    toast({ title: "Success, Added a Product to the Cart." });
+    toast({ title: "Producto agregado al carrito." });
   };
 
   const addProductToCart = (

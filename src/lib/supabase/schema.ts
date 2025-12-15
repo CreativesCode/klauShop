@@ -435,15 +435,38 @@ export const address = pgTable("address", {
     .notNull()
     .primaryKey()
     .$defaultFn(() => createId()),
+  userProfileId: uuid("userProfileId")
+    .notNull()
+    .references(() => profiles.id, {
+      onDelete: "cascade",
+    }),
+  // Campos nuevos adaptados al sistema de WhatsApp checkout
+  name: text("name").notNull(), // Nombre descriptivo: "Casa", "Trabajo", etc.
+  recipientName: text("recipient_name").notNull(), // Nombre de quien recibe
+  phone: text("phone").notNull(),
+  zone: text("zone").notNull(), // Zona de entrega (Santa Clara, Placetas, etc.)
+  fullAddress: text("full_address"), // Dirección completa (opcional)
+  notes: text("notes"), // Notas adicionales
+  isDefault: boolean("is_default").default(false).notNull(),
+  // Campos originales (mantenidos para compatibilidad futura)
   city: text("city"),
   country: text("country"),
   line1: text("line1"),
   line2: text("line2"),
   postal_code: text("postal_code"),
   state: text("state"),
-  userProfileId: uuid("userProfileId").references(() => profiles.id, {
-    onDelete: "cascade",
-  }),
+  createdAt: timestamp("created_at", {
+    withTimezone: true,
+    mode: "string",
+  })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", {
+    withTimezone: true,
+    mode: "string",
+  })
+    .defaultNow()
+    .notNull(),
 });
 
 export const addressRelations = relations(address, ({ one }) => ({
@@ -452,6 +475,8 @@ export const addressRelations = relations(address, ({ one }) => ({
     references: [profiles.id],
   }),
 }));
+
+export type SelectAddress = InferSelectModel<typeof address>;
 export type InsertAddress = InferInsertModel<typeof address>;
 
 export const productMedias = pgTable(

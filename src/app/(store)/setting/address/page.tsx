@@ -1,12 +1,12 @@
-import CartSection from "@/features/carts/components/CartSection";
-import CartSectionSkeleton from "@/features/carts/components/CartSectionSkeleton";
+import db from "@/lib/supabase/db";
+import { address } from "@/lib/supabase/schema";
 import { createClient } from "@/lib/supabase/server";
+import { desc, eq } from "drizzle-orm";
 import { cookies } from "next/headers";
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Suspense } from "react";
+import { AddressManagementClient } from "./AddressManagementClient";
 
-async function CartPage() {
+async function AddressPage() {
   const cookieStore = cookies();
   const supabase = createClient({ cookieStore });
 
@@ -14,22 +14,29 @@ async function CartPage() {
     data: { user },
     error: authError,
   } = await supabase.auth.getUser();
+
   if (authError || !user) {
     redirect("/sign-in");
   }
 
-  return (
-    <div className="min-h-screen w-full">
-      <section className="flex justify-between items-center py-8">
-        <h1 className="text-3xl">Your Cart</h1>
-        <Link href="/shop">Continue shopping</Link>
-      </section>
+  // Obtener direcciones del usuario
+  const addresses = await db
+    .select()
+    .from(address)
+    .where(eq(address.userProfileId, user.id))
+    .orderBy(desc(address.isDefault), desc(address.createdAt));
 
-      <Suspense fallback={<CartSectionSkeleton />}>
-        <CartSection />
-      </Suspense>
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-medium">Direcciones de entrega</h3>
+        <p className="text-sm text-muted-foreground">
+          Gestiona tus direcciones de entrega para agilizar tus pedidos
+        </p>
+      </div>
+      <AddressManagementClient initialAddresses={addresses} />
     </div>
   );
 }
 
-export default CartPage;
+export default AddressPage;

@@ -43,6 +43,18 @@ export async function POST(
       return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
 
+    // "paid" no debe setearse por cambio de estado: requiere consumir reservas y descontar stock.
+    if (newStatus === "paid") {
+      return NextResponse.json(
+        {
+          error: "Estado inválido",
+          message:
+            "Para marcar una orden como pagada usa la acción 'Marcar como Pagada' (endpoint mark-paid).",
+        },
+        { status: 400 },
+      );
+    }
+
     // Realizar operación en transacción
     const result = await db.transaction(async (tx) => {
       // 1. Verificar que la orden existe
@@ -57,6 +69,19 @@ export async function POST(
       }
 
       const currentStatus = order.order_status as OrderStatus;
+
+      // No permitir avanzar a estados operativos si el pago no está confirmado
+      // (evita órdenes "processing/shipped/delivered" con payment_status = unpaid).
+      if (
+        (newStatus === "processing" ||
+          newStatus === "shipped" ||
+          newStatus === "delivered") &&
+        order.payment_status !== "paid"
+      ) {
+        throw new Error(
+          "No puedes avanzar el pedido si el pago no está confirmado. Marca la orden como pagada primero.",
+        );
+      }
 
       // 2. Verificar que la transición de estado es válida
       if (!isValidStatusTransition(currentStatus, newStatus)) {
