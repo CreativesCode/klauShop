@@ -66,7 +66,7 @@ async function MainFooter({}: Props) {
       items: [
         {
           title: "Sobre Nosotros",
-          href: "/sobre-nosotros",
+          href: "/about-us",
           items: [],
         },
       ],

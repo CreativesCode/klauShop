@@ -100,33 +100,59 @@ export default function SpecialOrdersPage() {
         />
 
         {/* CTA Section */}
-        <div className="bg-primary-50 border border-primary-200 rounded-lg p-6 md:p-8 mb-12 text-center">
-          <h2 className="text-xl md:text-2xl font-semibold text-primary mb-4">
-            ¿Listo para hacer tu encargo?
-          </h2>
-          <p className="text-sm md:text-base text-primary-800 mb-6 max-w-2xl mx-auto">
-            Contáctanos por WhatsApp y comparte el link del producto que deseas.
-            Te responderemos con la cotización en breve.
-          </p>
-          <Link
-            href={`https://wa.me/${siteConfig.whatsappPhone.replace(/[^0-9]/g, "")}?text=Hola, me gustaría hacer un encargo`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(
-              buttonVariants({ variant: "default", size: "lg" }),
-              "bg-green-600 hover:bg-green-700 text-white",
-            )}
-          >
-            <Image
-              src="/assets/whatsapp.svg"
-              alt="WhatsApp"
-              width={20}
-              height={20}
-              className="mr-2 h-5 w-5"
-            />
-            Contactar por WhatsApp
-          </Link>
-        </div>
+        <section className="mb-14">
+          <div className="relative overflow-hidden rounded-2xl border border-primary-100/80 bg-gradient-to-br from-primary-50 via-white to-accent-50 p-6 text-center shadow-sm md:p-10">
+            <div className="pointer-events-none absolute inset-0 opacity-70 [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]">
+              <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-primary-200 blur-3xl" />
+              <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-accent-200 blur-3xl" />
+            </div>
+
+            <div className="relative mx-auto max-w-3xl">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-xs font-medium text-primary-700 ring-1 ring-primary-200/60 backdrop-blur">
+                <Globe className="h-4 w-4 text-accent-600" />
+                Encargos desde Shein, Temu y Amazon
+              </div>
+
+              <h2 className="mt-4 text-2xl font-semibold tracking-tight text-primary-950 md:text-3xl">
+                ¿Listo para hacer tu encargo?
+              </h2>
+              <p className="mt-3 text-sm leading-relaxed text-primary-800 md:text-base">
+                Contáctanos por WhatsApp y comparte el link del producto que
+                deseas. Te responderemos con la cotización en breve.
+              </p>
+
+              <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                <Link
+                  href={`https://wa.me/${siteConfig.whatsappPhone.replace(/[^0-9]/g, "")}?text=Hola, me gustaría hacer un encargo`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    buttonVariants({ variant: "default", size: "lg" }),
+                    "bg-green-600 hover:bg-green-700 text-white shadow-sm",
+                  )}
+                >
+                  <Image
+                    src="/assets/whatsapp.svg"
+                    alt="WhatsApp"
+                    width={20}
+                    height={20}
+                    className="mr-2 h-5 w-5"
+                  />
+                  Contactar por WhatsApp
+                </Link>
+                <Link
+                  href="#faq"
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "lg" }),
+                    "border-primary-200 bg-white/60 text-primary-800 shadow-sm hover:bg-accent-50 hover:text-primary-950",
+                  )}
+                >
+                  Ver preguntas frecuentes
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Process Steps */}
         <section className="mb-16">
@@ -139,22 +165,23 @@ export default function SpecialOrdersPage() {
               return (
                 <div
                   key={index}
-                  className="relative bg-white border border-primary-200 rounded-lg p-6 hover:shadow-lg transition-shadow"
+                  className="group relative overflow-hidden rounded-2xl border border-primary-100/80 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg"
                 >
+                  <div className="pointer-events-none absolute -right-12 -top-12 h-28 w-28 rounded-full bg-accent-100 blur-2xl opacity-0 transition-opacity group-hover:opacity-70" />
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
-                        <Icon className="h-6 w-6 text-primary-600" />
+                      <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center ring-1 ring-primary-200/70">
+                        <Icon className="h-6 w-6 text-primary-700" />
                       </div>
                     </div>
                     <div className="flex-1">
-                      <div className="text-xs font-mono text-primary-500 mb-1">
-                        {step.number}
+                      <div className="mb-2 inline-flex items-center rounded-full bg-accent-100 px-2 py-0.5 text-xs font-mono text-accent-800 ring-1 ring-accent-200">
+                        Paso {step.number}
                       </div>
                       <h3 className="text-lg font-semibold text-primary mb-2">
                         {step.title}
                       </h3>
-                      <p className="text-sm text-primary-700 leading-relaxed">
+                      <p className="text-sm text-primary-800 leading-relaxed">
                         {step.description}
                       </p>
                     </div>
@@ -170,7 +197,7 @@ export default function SpecialOrdersPage() {
           <h2 className="text-2xl md:text-3xl font-semibold text-center mb-4 text-primary">
             Plataformas disponibles
           </h2>
-          <p className="text-center text-primary-700 mb-8 max-w-2xl mx-auto">
+          <p className="text-center text-primary-800 mb-8 max-w-2xl mx-auto">
             Trabajamos con las principales plataformas de comercio electrónico
             internacional
           </p>
@@ -178,15 +205,18 @@ export default function SpecialOrdersPage() {
             {platforms.map((platform, index) => (
               <div
                 key={index}
-                className="bg-white border border-primary-200 rounded-lg p-6 text-center hover:shadow-md transition-shadow"
+                className="group relative overflow-hidden rounded-2xl border border-primary-100/80 bg-white p-6 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg"
               >
+                <div className="pointer-events-none absolute -left-10 -top-10 h-28 w-28 rounded-full bg-primary-100 blur-2xl opacity-0 transition-opacity group-hover:opacity-70" />
                 <div className="mb-4">
-                  <Globe className="h-12 w-12 text-primary-600 mx-auto" />
+                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-100 to-accent-100 ring-1 ring-primary-200/60">
+                    <Globe className="h-7 w-7 text-primary-800" />
+                  </div>
                 </div>
                 <h3 className="text-xl font-semibold text-primary mb-2">
                   {platform.name}
                 </h3>
-                <p className="text-sm text-primary-700">
+                <p className="text-sm text-primary-800">
                   {platform.description}
                 </p>
               </div>
@@ -203,16 +233,18 @@ export default function SpecialOrdersPage() {
             {benefits.map((benefit, index) => (
               <div
                 key={index}
-                className="flex gap-4 bg-white border border-primary-200 rounded-lg p-6"
+                className="flex gap-4 rounded-2xl border border-primary-100/80 bg-white p-6 shadow-sm"
               >
                 <div className="flex-shrink-0">
-                  <CheckCircle className="h-6 w-6 text-primary-600 mt-1" />
+                  <div className="mt-1 flex h-10 w-10 items-center justify-center rounded-full bg-accent-100 text-accent-700 ring-1 ring-accent-200">
+                    <CheckCircle className="h-5 w-5" />
+                  </div>
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-primary mb-2">
                     {benefit.title}
                   </h3>
-                  <p className="text-sm text-primary-700 leading-relaxed">
+                  <p className="text-sm text-primary-800 leading-relaxed">
                     {benefit.description}
                   </p>
                 </div>
@@ -222,47 +254,53 @@ export default function SpecialOrdersPage() {
         </section>
 
         {/* FAQ Section */}
-        <section className="bg-primary-50 border border-primary-200 rounded-lg p-6 md:p-8">
+        <section
+          id="faq"
+          className="relative overflow-hidden rounded-2xl border border-primary-100/80 bg-gradient-to-br from-primary-50 via-white to-accent-50 p-6 shadow-sm md:p-10"
+        >
+          <div className="pointer-events-none absolute inset-0 opacity-70 [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]">
+            <div className="absolute -bottom-24 left-1/3 h-72 w-72 -translate-x-1/2 rounded-full bg-accent-200 blur-3xl" />
+          </div>
           <h2 className="text-2xl md:text-3xl font-semibold text-center mb-8 text-primary">
             Preguntas frecuentes
           </h2>
-          <div className="space-y-6 max-w-3xl mx-auto">
-            <div>
+          <div className="relative space-y-6 max-w-3xl mx-auto">
+            <div className="rounded-2xl border border-primary-100/80 bg-white/70 p-5 shadow-sm ring-1 ring-primary-200/40 backdrop-blur">
               <h3 className="text-lg font-semibold text-primary mb-2">
                 ¿Cuánto tiempo tarda en llegar mi encargo?
               </h3>
-              <p className="text-sm text-primary-700">
+              <p className="text-sm text-primary-800">
                 El tiempo de entrega varía según la plataforma y el producto.
                 Generalmente, los pedidos internacionales pueden tardar entre 2
                 a 4 semanas. Te informaremos el tiempo estimado al momento de la
                 cotización.
               </p>
             </div>
-            <div>
+            <div className="rounded-2xl border border-primary-100/80 bg-white/70 p-5 shadow-sm ring-1 ring-primary-200/40 backdrop-blur">
               <h3 className="text-lg font-semibold text-primary mb-2">
                 ¿Cómo se calcula el precio?
               </h3>
-              <p className="text-sm text-primary-700">
+              <p className="text-sm text-primary-800">
                 El precio incluye el costo del producto, gastos de envío
                 internacional, impuestos y nuestra comisión de gestión. Todo se
                 detalla claramente en la cotización que te enviamos.
               </p>
             </div>
-            <div>
+            <div className="rounded-2xl border border-primary-100/80 bg-white/70 p-5 shadow-sm ring-1 ring-primary-200/40 backdrop-blur">
               <h3 className="text-lg font-semibold text-primary mb-2">
                 ¿Puedo cancelar mi pedido?
               </h3>
-              <p className="text-sm text-primary-700">
+              <p className="text-sm text-primary-800">
                 Puedes cancelar tu pedido antes de que confirmemos la compra.
                 Una vez realizado el pago y procesada la compra, no es posible
                 cancelar. Consulta con nosotros para más detalles.
               </p>
             </div>
-            <div>
+            <div className="rounded-2xl border border-primary-100/80 bg-white/70 p-5 shadow-sm ring-1 ring-primary-200/40 backdrop-blur">
               <h3 className="text-lg font-semibold text-primary mb-2">
                 ¿Qué zonas cubren para la entrega?
               </h3>
-              <p className="text-sm text-primary-700">
+              <p className="text-sm text-primary-800">
                 Realizamos entregas a domicilio en{" "}
                 <strong>{siteConfig.zones}</strong>. Si vives fuera de estas
                 zonas, contáctanos para evaluar opciones.
@@ -273,7 +311,7 @@ export default function SpecialOrdersPage() {
 
         {/* Final CTA */}
         <div className="mt-12 text-center">
-          <p className="text-lg text-primary-700 mb-6">
+          <p className="text-lg text-primary-800 mb-6">
             ¿Tienes más preguntas? Estamos aquí para ayudarte
           </p>
           <Link
@@ -282,7 +320,7 @@ export default function SpecialOrdersPage() {
             rel="noopener noreferrer"
             className={cn(
               buttonVariants({ variant: "default", size: "lg" }),
-              "bg-green-600 hover:bg-green-700 text-white",
+              "bg-green-600 hover:bg-green-700 text-white shadow-sm",
             )}
           >
             <Image
