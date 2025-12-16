@@ -52,55 +52,75 @@ async function MainFooter({}: Props) {
       items: rootCategories,
     },
     {
-      title: "Customer Service",
+      title: "Servicios",
       items: [
         {
-          title: "Shipping & Returns",
-          disabled: true,
-          items: [],
-        },
-        {
-          title: "Store Policy",
-          disabled: true,
-          items: [],
-        },
-        {
-          title: "Payment Methods",
-          disabled: true,
-          items: [],
-        },
-        {
-          title: "FAQ",
-          disabled: true,
+          title: "Encargos",
+          href: "/special-orders",
           items: [],
         },
       ],
     },
     {
-      title: `About ${siteConfig.name}`,
+      title: "Información",
       items: [
         {
-          title: "Our Story",
-          href: "https://github.com/clonglam/HIYORI-master",
-          items: [],
-        },
-        {
-          title: "Brands & Designers",
-          disabled: true,
-          items: [],
-        },
-        {
-          title: "Stores",
-          disabled: true,
-          items: [],
-        },
-        {
-          title: "Contact",
-          disabled: true,
+          title: "Sobre Nosotros",
+          href: "/sobre-nosotros",
           items: [],
         },
       ],
     },
+    // {
+    //   title: "Customer Service",
+    //   items: [
+    //     {
+    //       title: "Shipping & Returns",
+    //       disabled: true,
+    //       items: [],
+    //     },
+    //     {
+    //       title: "Store Policy",
+    //       disabled: true,
+    //       items: [],
+    //     },
+    //     {
+    //       title: "Payment Methods",
+    //       disabled: true,
+    //       items: [],
+    //     },
+    //     {
+    //       title: "FAQ",
+    //       disabled: true,
+    //       items: [],
+    //     },
+    //   ],
+    // },
+    // {
+    //   title: `About ${siteConfig.name}`,
+    //   items: [
+    //     {
+    //       title: "Our Story",
+    //       href: "https://github.com/clonglam/HIYORI-master",
+    //       items: [],
+    //     },
+    //     {
+    //       title: "Brands & Designers",
+    //       disabled: true,
+    //       items: [],
+    //     },
+    //     {
+    //       title: "Stores",
+    //       disabled: true,
+    //       items: [],
+    //     },
+    //     {
+    //       title: "Contact",
+    //       disabled: true,
+    //       items: [],
+    //     },
+    //   ],
+    // },
   ];
 
   return (
@@ -126,7 +146,7 @@ async function MainFooter({}: Props) {
             </div>
 
             {/* Categories section: centered on tablet, right-aligned on desktop */}
-            <div className="grid grid-cols-3 lg:col-span-3 gap-x-6 max-w-[680px] mx-auto lg:mx-0">
+            <div className="grid grid-cols-3 lg:col-span-3 gap-x-6">
               {footerSiteMap.map(({ title, items }, index) => (
                 <div key={index}>
                   <p className="font-semibold mb-3 text-primary">{title}</p>

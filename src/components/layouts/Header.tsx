@@ -10,6 +10,7 @@ interface HeaderProps
   description?: string;
   children?: ReactNode;
   className?: string;
+  descriptionClassName?: string;
 }
 
 function Header({
@@ -17,6 +18,7 @@ function Header({
   description,
   children,
   className,
+  descriptionClassName,
   ...props
 }: HeaderProps) {
   return (
@@ -26,7 +28,12 @@ function Header({
       >
         {heading}
       </h1>
-      <p className="max-w-4xl text-sm md:text-md leading-[1.5] tracking-[-2%] mb-2">
+      <p
+        className={cn(
+          "text-sm md:text-md leading-[1.5] tracking-[-2%] mb-2",
+          descriptionClassName,
+        )}
+      >
         {description}
       </p>
       {children}
