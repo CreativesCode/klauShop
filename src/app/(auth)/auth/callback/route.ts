@@ -1,20 +1,33 @@
 import { createClient } from "@/lib/supabase/server";
 import { type EmailOtpType } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
-import { type NextRequest, NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
   const cookieStore = cookies();
 
   const { searchParams } = new URL(request.url);
+  const code = searchParams.get("code");
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
   const next = searchParams.get("next") ?? "/";
 
   const redirectTo = request.nextUrl.clone();
   redirectTo.pathname = next;
+  redirectTo.searchParams.delete("code");
+  redirectTo.searchParams.delete("flow");
   redirectTo.searchParams.delete("token_hash");
   redirectTo.searchParams.delete("type");
+
+  // PKCE flow (Supabase sends `?code=...`)
+  if (code) {
+    const supabase = createClient({ cookieStore });
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error) {
+      redirectTo.searchParams.delete("next");
+      return NextResponse.redirect(redirectTo);
+    }
+  }
 
   if (token_hash && type) {
     const supabase = createClient({ cookieStore });

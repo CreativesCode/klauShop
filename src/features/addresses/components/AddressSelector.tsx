@@ -24,10 +24,10 @@ export function AddressSelector({
   isLoading = false,
 }: AddressSelectorProps) {
   const [selectedMode, setSelectedMode] = useState<"existing" | "new">(
-    addresses.length > 0 ? "existing" : "new"
+    addresses.length > 0 ? "existing" : "new",
   );
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
-    addresses.find((a) => a.isDefault)?.id || addresses[0]?.id || null
+    addresses.find((a) => a.isDefault)?.id || addresses[0]?.id || null,
   );
 
   const handleModeChange = (mode: "existing" | "new") => {

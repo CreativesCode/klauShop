@@ -58,7 +58,7 @@ function SearchInput() {
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Find your Favour Furniture and Bring them to Home"
+                  placeholder="Encuentra tus artículos favoritos y llevalos a tu casa"
                   className={cn(
                     isFocused ? "pl-6" : "pl-10",
                     "rounded-full transition-all duration-500",

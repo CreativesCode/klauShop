@@ -89,6 +89,7 @@ export function getNameInitials(fullName: string): string {
   for (const part of nameParts) {
     if (part.length > 0) {
       initials += part[0].toUpperCase();
+      initials = initials.slice(0, 2);
     }
   }
 

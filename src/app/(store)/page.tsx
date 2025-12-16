@@ -16,8 +16,12 @@ import { getServiceClient } from "@/lib/urql-service";
 import { cn, keytoUrl } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
+
+// This route must run on every request so we can handle Supabase email redirects
+// like `/?code=...` and forward them to `/auth/callback`.
+export const dynamic = "force-dynamic";
 const LandingRouteQuery = gql(/* GraphQL */ `
   query LandingRouteQuery($user_id: UUID) {
     products: productsCollection(
@@ -78,7 +82,48 @@ const LandingRouteQuery = gql(/* GraphQL */ `
   }
 `);
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams?: Record<string, string | string[] | undefined>;
+}) {
+  // If a Supabase email link lands on the home page, forward it to our callback
+  // route to exchange the code/otp and then redirect accordingly.
+  const codeParam = searchParams?.code;
+  const code = Array.isArray(codeParam) ? codeParam[0] : codeParam;
+  const tokenHashParam = searchParams?.token_hash;
+  const token_hash = Array.isArray(tokenHashParam)
+    ? tokenHashParam[0]
+    : tokenHashParam;
+  const typeParam = searchParams?.type;
+  const type = Array.isArray(typeParam) ? typeParam[0] : typeParam;
+  const nextParam = searchParams?.next;
+  const next = Array.isArray(nextParam) ? nextParam[0] : nextParam;
+
+  // Prefer explicit hints (`next` or `type=recovery`) to choose where to continue.
+  // If Supabase lands us on `/?code=...` without any extra hint, default to the
+  // password reset UI (this is the common case for recovery links).
+  const targetNext =
+    next || (type === "recovery" || code ? "/sign-in/reset-password" : "/");
+
+  if (code) {
+    redirect(
+      `/auth/callback?code=${encodeURIComponent(code)}&next=${encodeURIComponent(
+        targetNext,
+      )}`,
+    );
+  }
+
+  if (token_hash && type) {
+    redirect(
+      `/auth/callback?token_hash=${encodeURIComponent(
+        token_hash,
+      )}&type=${encodeURIComponent(type)}&next=${encodeURIComponent(
+        targetNext,
+      )}`,
+    );
+  }
+
   const currentUser = await getCurrentUser();
 
   const { data } = await getServiceClient().query(LandingRouteQuery, {

@@ -48,7 +48,7 @@ const adminCreateOrderSchema = z.object({
         color: z.string().nullable().optional(),
         size: z.string().nullable().optional(),
         material: z.string().nullable().optional(),
-      })
+      }),
     )
     .min(1, "Debes agregar al menos un producto"),
   customerData: customerInfoSchema,
@@ -164,7 +164,7 @@ export default function AdminOrderCreateForm({
 
       if (!res.ok) {
         throw new Error(
-          data?.message || data?.error || "No se pudo crear la orden"
+          data?.message || data?.error || "No se pudo crear la orden",
         );
       }
 
@@ -302,7 +302,7 @@ export default function AdminOrderCreateForm({
                                         const raw = e.target.value;
                                         const v = parseInt(raw || "1", 10);
                                         field.onChange(
-                                          Number.isFinite(v) ? v : 1
+                                          Number.isFinite(v) ? v : 1,
                                         );
                                       }}
                                     />
@@ -581,7 +581,7 @@ export default function AdminOrderCreateForm({
                       onClick={async () => {
                         try {
                           await navigator.clipboard.writeText(
-                            created.whatsappMessage
+                            created.whatsappMessage,
                           );
                           toast({
                             title: "Copiado",

@@ -2781,6 +2781,7 @@ export type FooterCategoriesQueryQuery = {
         label: string;
         slug: string;
         parent_id?: string | null;
+        order?: number | null;
       };
     }>;
   } | null;
@@ -7240,6 +7241,10 @@ export const FooterCategoriesQueryDocument = {
                             {
                               kind: "Field",
                               name: { kind: "Name", value: "parent_id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "order" },
                             },
                           ],
                         },

@@ -102,7 +102,7 @@ function UserNav() {
             )}
 
             <DropdownMenuItem onClick={logout}>
-              Log out
+              Cerrar sesión
               <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -110,7 +110,7 @@ function UserNav() {
       ) : (
         <Link href="/sign-in" className="flex items-center text-foreground">
           <Icons.user className="h-5 w-5 mr-2 text-primary" />
-          <p className="text-sm text-primary hidden sm:inline-block">Sign in</p>
+          <p className="text-sm text-primary hidden sm:inline-block">Entrar</p>
         </Link>
       )}
     </>

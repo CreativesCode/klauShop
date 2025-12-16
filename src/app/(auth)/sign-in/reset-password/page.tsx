@@ -46,6 +46,8 @@ export default function ResetPasswordPage() {
 
     try {
       setIsLoading(true);
+      // Supabase recommends landing on a callback route that exchanges `?code=...`
+      // for a session, then we redirect into the reset-password UI.
       const redirectTo = `${window.location.origin}/auth/callback?next=/sign-in/reset-password`;
       const { error } = await supabaseClient.auth.resetPasswordForEmail(
         nextEmail,
@@ -142,12 +144,12 @@ export default function ResetPasswordPage() {
           {mode === "request" ? (
             <form className="grid gap-4" onSubmit={onRequestReset}>
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">Correo electrónico</Label>
                 <Input
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="tu@email.com"
+                  placeholder="tu@correo.com"
                   autoComplete="email"
                 />
               </div>

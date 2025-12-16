@@ -15,8 +15,8 @@ import { SigninForm } from "@/features/auth";
 import { Suspense } from "react";
 
 export const metadata: Metadata = getPageMetadata(
-  "Sign In",
-  `Sign in to ${siteConfig.name}`,
+  "Iniciar sesión",
+  `Inicia sesión para acceder a tu ${siteConfig.name}`,
 );
 
 export default function SignInPage() {
@@ -26,10 +26,12 @@ export default function SignInPage() {
         <CardHeader className="space-y-6 text-center">
           <div className="flex flex-col items-center space-y-4">
             <Branding className="mb-2" />
-            <h1 className="text-3xl font-bold text-primary">Welcome Back!</h1>
+            <h1 className="text-3xl font-bold text-primary">
+              ¡Bienvenido de nuevo!
+            </h1>
             <p className="text-sm text-muted-foreground">
-              Sign in to access your{" "}
-              <span className="text-primary font-medium">account</span>
+              Inicia sesión para acceder a tu{" "}
+              <span className="text-primary font-medium">cuenta</span>
             </p>
           </div>
         </CardHeader>
@@ -61,13 +63,13 @@ export default function SignInPage() {
 
         <CardFooter className="flex flex-col space-y-4">
           <div className="text-sm text-muted-foreground text-center">
-            Don&apos;t have an account?{" "}
+            ¿No tienes una cuenta?{" "}
             <Link
               aria-label="Sign up"
               href="/sign-up"
               className="text-primary underline-offset-4 transition-colors hover:underline"
             >
-              Sign up here
+              Regístrate aquí
             </Link>
           </div>
           <Link
@@ -75,7 +77,7 @@ export default function SignInPage() {
             className="flex items-center justify-center text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <Icons.chevronLeft className="h-4 w-4 mr-1" />
-            Back to home
+            Volver a la página principal
           </Link>
         </CardFooter>
       </Card>

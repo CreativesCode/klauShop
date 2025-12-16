@@ -197,15 +197,17 @@ function FilterSelections({ collectionsSection, shopLayout = true }: Props) {
       </section>
 
       <Sheet>
-        <SheetTrigger className="block md:hidden">All filters</SheetTrigger>
+        <SheetTrigger className="block md:hidden">
+          Todos los filtros
+        </SheetTrigger>
         <SheetContent className="w-full">
           <SheetHeader>
-            <SheetTitle>All Filters</SheetTitle>
+            <SheetTitle>Todos los filtros</SheetTitle>
             <SheetDescription className="flex flex-col items-start">
               {shopLayout && (
                 <div className="grid">
                   <label className="text-primary font-semibold text-left">
-                    Collections
+                    Colecciones
                   </label>
                   <CollectionsSelection
                     className="flex items-center"
@@ -217,11 +219,11 @@ function FilterSelections({ collectionsSection, shopLayout = true }: Props) {
               )}
               <div className="grid">
                 <label className="text-primary font-semibold text-left">
-                  Price Range
+                  Rango de precios
                 </label>
 
                 <PriceRange
-                  label={"Price Range"}
+                  label={"Rango de precios"}
                   defaultValue={query.priceRange}
                   value={query.priceRange}
                   onMinChange={(data) =>
@@ -249,7 +251,7 @@ function FilterSelections({ collectionsSection, shopLayout = true }: Props) {
               </div>
 
               <label htmlFor="sort" className="text-nowrap">
-                Sort by:
+                Ordenar por:
               </label>
 
               <SortSelection
@@ -264,7 +266,7 @@ function FilterSelections({ collectionsSection, shopLayout = true }: Props) {
                   value: key,
                   label: value,
                 }))}
-                placeholder="Sort"
+                placeholder="Ordenar"
               />
             </SheetDescription>
           </SheetHeader>

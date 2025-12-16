@@ -4,6 +4,7 @@ import { getServiceClient } from "@/lib/urql-service";
 import { NavItemWithOptionalChildren } from "@/types";
 import Link from "next/link";
 import Branding from "./Branding";
+import FooterCategoriesAccordion from "./FooterCategoriesAccordion";
 
 type Props = {};
 
@@ -16,6 +17,7 @@ const FooterCategoriesQuery = gql(/* GraphQL */ `
           label
           slug
           parent_id
+          order
         }
       }
     }
@@ -23,15 +25,24 @@ const FooterCategoriesQuery = gql(/* GraphQL */ `
 `);
 
 async function MainFooter({}: Props) {
-  // Obtener categorías root (sin parent_id)
+  // Obtener todas las categorías
   const { data } = await getServiceClient().query(FooterCategoriesQuery, {});
 
+  const allCategories =
+    data?.collectionsCollection?.edges.map((edge) => ({
+      id: edge.node.id,
+      label: edge.node.label,
+      slug: edge.node.slug,
+      parent_id: edge.node.parent_id,
+      order: edge.node.order,
+    })) || [];
+
   const rootCategories =
-    data?.collectionsCollection?.edges
-      .filter((edge) => edge.node.parent_id === null)
-      .map((edge) => ({
-        title: edge.node.label,
-        href: `/collections/${edge.node.slug}`,
+    allCategories
+      .filter((cat) => cat.parent_id === null)
+      .map((cat) => ({
+        title: cat.label,
+        href: `/collections/${cat.slug}`,
         items: [],
       })) || [];
 
@@ -133,6 +144,13 @@ async function MainFooter({}: Props) {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+
+        {/* Mobile view: Categories Accordion */}
+        <div className="md:hidden mb-6">
+          <div className="mb-4">
+            <FooterCategoriesAccordion categories={allCategories} />
           </div>
         </div>
 

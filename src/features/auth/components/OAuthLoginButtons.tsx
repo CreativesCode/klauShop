@@ -16,10 +16,12 @@ function OAuthLoginButtons() {
   const signWithGoogle = async () => {
     setIsLoading(true);
 
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: getURL(),
+        // Use the server callback route so we can exchange `?code=...` for a session
+        // and then redirect deterministically.
+        redirectTo: `${getURL()}auth/callback`,
       },
     });
 
@@ -36,7 +38,7 @@ function OAuthLoginButtons() {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "github",
       options: {
-        redirectTo: getURL(),
+        redirectTo: `${getURL()}auth/callback`,
       },
     });
 

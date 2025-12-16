@@ -18,10 +18,10 @@ export default function SignUpPage() {
         <CardHeader className="space-y-6 text-center">
           <div className="flex flex-col items-center space-y-4">
             <Branding className="mb-2" />
-            <h1 className="text-3xl font-bold text-primary">Create Account</h1>
+            <h1 className="text-3xl font-bold text-primary">Crear cuenta</h1>
             <p className="text-sm text-muted-foreground">
-              Sign up to start your{" "}
-              <span className="text-primary font-medium">journey</span>
+              Regístrate para empezar tu{" "}
+              <span className="text-primary font-medium">viaje</span>
             </p>
           </div>
         </CardHeader>
@@ -53,13 +53,13 @@ export default function SignUpPage() {
 
         <CardFooter className="flex flex-col space-y-4">
           <div className="text-sm text-muted-foreground text-center">
-            Already have an account?{" "}
+            ¿Ya tienes una cuenta?{" "}
             <Link
               aria-label="Sign in"
               href="/sign-in"
               className="text-primary underline-offset-4 transition-colors hover:underline"
             >
-              Sign in here
+              Iniciar sesión aquí
             </Link>
           </div>
           <Link
@@ -67,7 +67,7 @@ export default function SignUpPage() {
             className="flex items-center justify-center text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <Icons.chevronLeft className="h-4 w-4 mr-1" />
-            Back to home
+            Volver a la página principal
           </Link>
         </CardFooter>
       </Card>

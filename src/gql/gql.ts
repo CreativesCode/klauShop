@@ -33,7 +33,7 @@ const documents = {
     types.ProductDetailPageQueryDocument,
   "\n  query CategoriesSubNavQuery {\n    collectionsCollection(orderBy: [{ order: DescNullsLast }]) {\n      edges {\n        node {\n          id\n          label\n          slug\n          title\n          parent_id\n          order\n        }\n      }\n    }\n  }\n":
     types.CategoriesSubNavQueryDocument,
-  "\n  query FooterCategoriesQuery {\n    collectionsCollection(orderBy: [{ order: DescNullsLast }]) {\n      edges {\n        node {\n          id\n          label\n          slug\n          parent_id\n        }\n      }\n    }\n  }\n":
+  "\n  query FooterCategoriesQuery {\n    collectionsCollection(orderBy: [{ order: DescNullsLast }]) {\n      edges {\n        node {\n          id\n          label\n          slug\n          parent_id\n          order\n        }\n      }\n    }\n  }\n":
     types.FooterCategoriesQueryDocument,
   "\n  query SideMenuCollectionsQuery {\n    collectionsCollection(orderBy: [{ order: DescNullsLast }]) {\n      edges {\n        node {\n          id\n          label\n          slug\n          title\n          parent_id\n          order\n        }\n      }\n    }\n  }\n":
     types.SideMenuCollectionsQueryDocument,
@@ -179,8 +179,8 @@ export function gql(
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(
-  source: "\n  query FooterCategoriesQuery {\n    collectionsCollection(orderBy: [{ order: DescNullsLast }]) {\n      edges {\n        node {\n          id\n          label\n          slug\n          parent_id\n        }\n      }\n    }\n  }\n",
-): (typeof documents)["\n  query FooterCategoriesQuery {\n    collectionsCollection(orderBy: [{ order: DescNullsLast }]) {\n      edges {\n        node {\n          id\n          label\n          slug\n          parent_id\n        }\n      }\n    }\n  }\n"];
+  source: "\n  query FooterCategoriesQuery {\n    collectionsCollection(orderBy: [{ order: DescNullsLast }]) {\n      edges {\n        node {\n          id\n          label\n          slug\n          parent_id\n          order\n        }\n      }\n    }\n  }\n",
+): (typeof documents)["\n  query FooterCategoriesQuery {\n    collectionsCollection(orderBy: [{ order: DescNullsLast }]) {\n      edges {\n        node {\n          id\n          label\n          slug\n          parent_id\n          order\n        }\n      }\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

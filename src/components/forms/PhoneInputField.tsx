@@ -74,7 +74,7 @@ export function splitPhoneByCountry(value: string) {
   const digits = cleaned.replace(/[^\d+]/g, "");
   const afterPlus = digits.startsWith("+") ? digits.slice(1) : digits;
   const dialCodes = Array.from(new Set(COUNTRIES.map((c) => c.dialCode))).sort(
-    (a, b) => b.length - a.length
+    (a, b) => b.length - a.length,
   );
 
   const matchedDial = dialCodes.find((d) => afterPlus.startsWith(d));
@@ -101,7 +101,7 @@ export function splitPhoneByCountry(value: string) {
 
 export function composeInternationalPhone(
   country: CountryOption,
-  nationalNumber: string
+  nationalNumber: string,
 ) {
   const cleanedNational = normalizePhoneInput(nationalNumber)
     .replace(/\+/g, "")
@@ -128,15 +128,15 @@ export function PhoneInputField({
 }: PhoneInputFieldProps) {
   const initialSplit = React.useMemo(
     () => splitPhoneByCountry(field.value || ""),
-    [field.value]
+    [field.value],
   );
 
   const [countryOpen, setCountryOpen] = React.useState(false);
   const [selectedCountry, setSelectedCountry] = React.useState<CountryOption>(
-    initialSplit.country
+    initialSplit.country,
   );
   const [nationalNumber, setNationalNumber] = React.useState(
-    initialSplit.nationalNumber
+    initialSplit.nationalNumber,
   );
 
   // Mantener `phone` (form) sincronizado con selector + número

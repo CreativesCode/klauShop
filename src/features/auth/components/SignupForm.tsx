@@ -1,10 +1,10 @@
 "use client";
 
-import * as React from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
 import { createClient } from "@/lib/supabase/client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter, useSearchParams } from "next/navigation";
+import * as React from "react";
+import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
 import { Icons } from "@/components/layouts/icons";
@@ -20,8 +20,8 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { useToast } from "@/components/ui/use-toast";
-import { PasswordInput } from "./PasswordInput";
 import { signupSchema } from "../validations";
+import { PasswordInput } from "./PasswordInput";
 
 type FormData = z.infer<typeof signupSchema>;
 
@@ -81,9 +81,9 @@ export function SignUpForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>Nombre</FormLabel>
               <FormControl>
-                <Input placeholder="How should we call you?" {...field} />
+                <Input placeholder="¿Cómo deberíamos llamarte?" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -95,9 +95,9 @@ export function SignUpForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Correo electrónico</FormLabel>
               <FormControl>
-                <Input placeholder="email@domain.com" {...field} />
+                <Input placeholder="tu@correo.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -108,9 +108,9 @@ export function SignUpForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Contraseña</FormLabel>
               <FormControl>
-                <PasswordInput placeholder="**********" {...field} />
+                <PasswordInput placeholder="Ingresa tu contraseña" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -123,8 +123,10 @@ export function SignUpForm() {
               aria-hidden="true"
             />
           )}
-          Continue
-          <span className="sr-only">Continue to email verification page</span>
+          Continuar
+          <span className="sr-only">
+            Continuar a la página de verificación de correo electrónico
+          </span>
         </Button>
       </form>
     </Form>

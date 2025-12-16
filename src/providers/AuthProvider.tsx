@@ -1,12 +1,12 @@
 "use client";
 
-import { CartItems, useCartStore } from "@/features/carts";
 import { useToast } from "@/components/ui/use-toast";
+import { CartItems, useCartStore } from "@/features/carts";
+import useWishlistStore from "@/features/wishlists/useWishlistStore";
 import { AuthUser, Session } from "@supabase/supabase-js";
 import { nanoid } from "nanoid";
 import { createContext, useContext, useEffect, useState } from "react";
 import supabase from "../lib/supabase/client";
-import useWishlistStore from "@/features/wishlists/useWishlistStore";
 
 type SupabaseAuthContextType = {
   user: AuthUser | null;
@@ -78,7 +78,7 @@ export const SupabaseAuthProvider: React.FC<SupabaseAuthProviderProps> = ({
             supabase
               .from("carts")
               .insert(storageCarts)
-              .then((data) => {
+              .then(() => {
                 // console.log("sync Cart Data Res", data)
               });
           });
@@ -103,8 +103,8 @@ export const SupabaseAuthProvider: React.FC<SupabaseAuthProviderProps> = ({
             });
 
           toast({
-            title: "Welcome Back.",
-            description: "Your are arleady signed in.",
+            title: "¡Bienvenido de nuevo!",
+            description: "Ya estás autenticado.",
           });
           break;
         case "SIGNED_OUT":

@@ -41,7 +41,7 @@ function GuestCartSection() {
   const productIds = useMemo(
     () =>
       Array.from(new Set(Object.keys(cartItems).map(getProductIdFromCartKey))),
-    [cartItems]
+    [cartItems],
   );
 
   const [{ data, fetching, error }, _] = useQuery({
@@ -55,12 +55,12 @@ function GuestCartSection() {
 
   const subtotal = useMemo(
     () => calcSubtotal({ prdouctsDetails: data, quantity: cartItems }),
-    [data, cartItems]
+    [data, cartItems],
   );
 
   const productCount = useMemo(
     () => calcProductCountStorage(cartItems),
-    [cartItems]
+    [cartItems],
   );
   if (fetching && productIds.length > 0) return LoadingCartSection();
   if (error) return <div>Error</div>;
@@ -87,7 +87,7 @@ function GuestCartSection() {
           1,
           currentItem?.color,
           currentItem?.size,
-          currentItem?.material
+          currentItem?.material,
         );
       } else {
         toast({ title: "Product Limit is reached." });
@@ -107,7 +107,7 @@ function GuestCartSection() {
           -1,
           currentItem?.color,
           currentItem?.size,
-          currentItem?.material
+          currentItem?.material,
         );
       } finally {
         setIsLoading(false);
@@ -122,7 +122,7 @@ function GuestCartSection() {
       removeProduct(cartKey);
       // Verificar si el carrito quedará vacío después de eliminar
       const remainingItems = Object.keys(cartItems).filter(
-        (key) => key !== cartKey
+        (key) => key !== cartKey,
       );
 
       if (remainingItems.length === 0) {

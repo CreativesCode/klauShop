@@ -147,7 +147,7 @@ const SearchResultPage = ({
           {isLastPage && products.pageInfo.hasNextPage && (
             <div className="w-full flex justify-center items-center mt-3">
               <Button onClick={() => onLoadMore(products.pageInfo.endCursor)}>
-                cargar más
+                Cargar más
               </Button>
             </div>
           )}

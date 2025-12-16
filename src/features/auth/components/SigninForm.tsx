@@ -58,7 +58,7 @@ export function SignInForm() {
       if (error) {
         toast({ title: "Error", description: error.message });
       } else {
-        toast({ title: "Login Sucess" });
+        toast({ title: "Inicio de sesión exitoso" });
         router.push(searchParams?.get("from") || "/");
       }
     });
@@ -75,12 +75,12 @@ export function SignInForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email Address</FormLabel>
+              <FormLabel>Correo electrónico</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Icons.mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="your@example.com"
+                    placeholder="tu@correo.com"
                     className="pl-10"
                     {...field}
                   />
@@ -95,10 +95,10 @@ export function SignInForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Contraseña</FormLabel>
               <FormControl>
                 <PasswordInput
-                  placeholder="Enter your password"
+                  placeholder="Ingresa tu contraseña"
                   {...field}
                   className="w-full"
                 />
@@ -114,22 +114,22 @@ export function SignInForm() {
               htmlFor="remember"
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
-              Remember me
+              Recordarme
             </label>
           </div>
           <Link
             href="/sign-in/reset-password"
             className="text-sm text-primary underline-offset-4 transition-colors hover:underline"
           >
-            Forgot your password?
+            ¿Olvidaste tu contraseña?
           </Link>
         </div>
         <Button disabled={isPending} className="w-full rounded-full">
           {isPending && (
             <Spinner className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
           )}
-          Sign In
-          <span className="sr-only">Sign in</span>
+          Iniciar sesión
+          <span className="sr-only">Iniciar sesión</span>
         </Button>
       </form>
     </Form>
