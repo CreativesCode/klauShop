@@ -1,8 +1,8 @@
-import React, { Suspense } from "react";
-import { notFound } from "next/navigation";
 import AdminShell from "@/components/admin/AdminShell";
 import { ProductForm } from "@/features/products";
 import db from "@/lib/supabase/db";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 async function NewProjectPage() {
   const products = await db.query.products.findMany();
@@ -10,8 +10,8 @@ async function NewProjectPage() {
 
   return (
     <AdminShell
-      heading="Add Project"
-      description="Input the field below, after that press Add Project button to save the project."
+      heading="Nuevo Producto"
+      description="Ingrese los campos a continuación y presione el botón Agregar Producto para guardar el producto."
     >
       <Suspense>
         <ProductForm />

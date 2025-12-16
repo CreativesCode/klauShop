@@ -1,6 +1,6 @@
+import { getProductAdditionalImages } from "@/_actions/products";
 import AdminShell from "@/components/admin/AdminShell";
 import { ProductForm } from "@/features/products";
-import { getProductAdditionalImages } from "@/_actions/products";
 import db from "@/lib/supabase/db";
 import { products } from "@/lib/supabase/schema";
 import { eq } from "drizzle-orm";
@@ -25,8 +25,8 @@ async function EditProjectPage({
 
   return (
     <AdminShell
-      heading="Add Project"
-      description="Input the field below, after that press Add Project button to save the project."
+      heading="Editar Producto"
+      description="Ingrese los campos a continuación y presione el botón Actualizar Producto para guardar el producto."
     >
       <Suspense>
         <ProductForm

@@ -35,12 +35,12 @@ async function ProductsPage({ searchParams }: AdminProjectsPageProps) {
 
   return (
     <AdminShell
-      heading="Products"
-      description={"Edit products from the dashboard. "}
+      heading="Productos"
+      description={"Editar productos desde el dashboard. "}
     >
       <section className="flex justify-end items-center pb-5 w-full">
         <Link href="/admin/products/new" className={cn(buttonVariants())}>
-          New Product
+          Nuevo Producto
         </Link>
       </section>
 

@@ -1,10 +1,9 @@
 "use client";
-import { FC } from "react";
-import { useFormContext, Controller } from "react-hook-form";
-import { Input } from "./input";
-import { Badge } from "./badge";
+import { ChangeEvent, FC, KeyboardEvent, useState } from "react";
+import { Controller, useFormContext } from "react-hook-form";
 import { Icons } from "../layouts/icons";
-import { useState, ChangeEvent, KeyboardEvent } from "react";
+import { Badge } from "./badge";
+import { Input } from "./input";
 
 interface ColorsFieldProps {
   name: string;
@@ -69,7 +68,7 @@ const ColorsInput: FC<ColorsInputProps> = ({ colors, setColors, onBlur }) => {
 
   return (
     <div className="space-y-2">
-      <div className="relative flex flex-wrap items-center border border-input rounded-md p-2 gap-x-3 gap-y-4 min-h-[2.5rem]">
+      <div className="relative flex flex-wrap items-center border border-input bg-background p-2 gap-x-3 gap-y-4 rounded-md">
         {colors.map((color, index) => (
           <div key={index} className="flex items-center gap-2">
             <div

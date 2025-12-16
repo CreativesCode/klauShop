@@ -57,7 +57,7 @@ function ImageDialog({
               </Suspense>
             ) : (
               <div className="h-32 w-32 border-2 border-dashed border-muted-foreground/25 rounded-md flex items-center justify-center text-sm text-muted-foreground">
-                Select / Add Image
+                Seleccionar / Agregar Imagen
               </div>
             )}
           </div>

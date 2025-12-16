@@ -15,6 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import {
   Select,
   SelectContent,
@@ -24,7 +25,6 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import TagsField from "@/components/ui/tagsField";
-import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { useToast } from "@/components/ui/use-toast";
 import { BadgeSelectField } from "@/features/cms";
 import { ImageDialog } from "@/features/medias";
@@ -146,21 +146,20 @@ function ProductFrom({
         router.refresh();
 
         toast({
-          title: `Product is ${product ? "updated" : "created"}.`,
+          title: `Producto ${product ? "actualizado" : "creado"}.`,
           description: `${productData.name}`,
         });
       } catch (err) {
         console.error("Error creating/updating product:", err);
         toast({
           title: "Error",
-          description: "An error occurred while saving the product.",
+          description: "Ocurrió un error al guardar el producto.",
           variant: "destructive",
         });
       }
     });
   });
 
-  console.log("!!data", data);
   return (
     <Form {...form}>
       <form
@@ -170,11 +169,11 @@ function ProductFrom({
       >
         <div className="flex flex-col gap-y-5 max-w-[500px]">
           <FormItem>
-            <FormLabel className="text-sm">Name*</FormLabel>
+            <FormLabel className="text-sm">Nombre*</FormLabel>
             <FormControl>
               <Input
                 aria-invalid={!!form.formState.errors.name}
-                placeholder="Type Product Name."
+                placeholder="Ingrese el nombre del producto."
                 {...register("name")}
               />
             </FormControl>
@@ -199,7 +198,7 @@ function ProductFrom({
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm">Description*</FormLabel>
+                <FormLabel className="text-sm">Descripción*</FormLabel>
                 <FormControl>
                   <RichTextEditor
                     value={field.value || ""}
@@ -230,7 +229,7 @@ function ProductFrom({
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
-                  <FormLabel>Featured</FormLabel>
+                  <FormLabel>Destacado</FormLabel>
                   <FormDescription>
                     Marca este producto como destacado
                   </FormDescription>
@@ -269,14 +268,14 @@ function ProductFrom({
                 name={"collectionId"}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{"Collections"}</FormLabel>
+                    <FormLabel>{"Colecciones"}</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value || undefined}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a collection" />
+                          <SelectValue placeholder="Seleccione una colección" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -293,7 +292,7 @@ function ProductFrom({
                       </SelectContent>
                     </Select>
                     <FormDescription>
-                      {"Select a Collection for the products."}
+                      {"Seleccione una colección para el producto."}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -334,7 +333,7 @@ function ProductFrom({
           />
 
           <FormItem>
-            <FormLabel className="text-sm">Tags</FormLabel>
+            <FormLabel className="text-sm">Etiquetas</FormLabel>
             <FormControl>
               <TagsField name={"tags"} defaultValue={product?.tags || []} />
             </FormControl>
@@ -342,7 +341,7 @@ function ProductFrom({
           </FormItem>
 
           <FormItem>
-            <FormLabel className="text-sm">Colors</FormLabel>
+            <FormLabel className="text-sm">Colores</FormLabel>
             <FormControl>
               <ColorsField
                 name={"colors"}
@@ -357,7 +356,7 @@ function ProductFrom({
           </FormItem>
 
           <FormItem>
-            <FormLabel className="text-sm">Sizes</FormLabel>
+            <FormLabel className="text-sm">Tallas</FormLabel>
             <FormControl>
               <TagsField name={"sizes"} defaultValue={product?.sizes || []} />
             </FormControl>
@@ -368,7 +367,7 @@ function ProductFrom({
           </FormItem>
 
           <FormItem>
-            <FormLabel className="text-sm">Materials</FormLabel>
+            <FormLabel className="text-sm">Materiales</FormLabel>
             <FormControl>
               <TagsField
                 name={"materials"}
@@ -383,12 +382,12 @@ function ProductFrom({
           </FormItem>
 
           <FormItem>
-            <FormLabel className="text-sm">Price*</FormLabel>
+            <FormLabel className="text-sm">Precio*</FormLabel>
             <FormControl>
               <Input
                 defaultValue={product?.price}
                 aria-invalid={!!form.formState.errors.price}
-                placeholder="Price"
+                placeholder="Ingrese el precio del producto."
                 {...register("price")}
               />
             </FormControl>
@@ -400,20 +399,16 @@ function ProductFrom({
             name="discount"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm">Discount (%)</FormLabel>
+                <FormLabel className="text-sm">Descuento (%)</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
                     step="0.01"
                     min="0"
                     max="100"
-                    placeholder="0.00"
+                    placeholder="Ingrese el descuento del producto."
                     {...field}
                     value={field.value || ""}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      field.onChange(value === "" ? "0.00" : value);
-                    }}
                   />
                 </FormControl>
                 <FormDescription>
@@ -437,7 +432,7 @@ function ProductFrom({
               />
             </FormControl>
             <FormDescription>
-              Number of items available in inventory
+              Cantidad de items disponibles en el inventario
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -447,7 +442,7 @@ function ProductFrom({
             name="featuredImageId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Featured Image*</FormLabel>
+                <FormLabel>Imagen Destacada*</FormLabel>
                 <Suspense>
                   <ImageDialog
                     defaultValue={product?.featuredImageId}
@@ -457,8 +452,8 @@ function ProductFrom({
                 </Suspense>
 
                 <FormDescription>
-                  Drag n Drop the image to above section or click the button to
-                  select from Image gallery.
+                  Arrastre y suelte la imagen en la sección superior o haga clic
+                  en el botón para seleccionar desde la galería de imágenes.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -466,7 +461,7 @@ function ProductFrom({
           />
 
           <FormItem>
-            <FormLabel className="text-sm">Additional Images</FormLabel>
+            <FormLabel className="text-sm">Imágenes Adicionales</FormLabel>
             <div className="flex flex-col gap-y-3">
               {fields.map((field, index) => (
                 <div key={field.id} className="flex items-center gap-x-2">
@@ -508,28 +503,28 @@ function ProductFrom({
                 className="w-full"
               >
                 <Icons.add className="h-4 w-4 mr-2" />
-                Add Another Image
+                Agregar otra imagen
               </Button>
             </div>
             <FormDescription>
-              Add additional images for the product. The first image will be
-              shown on hover in product cards.
+              Agrega imágenes adicionales para el producto. La primera imagen se
+              mostrará en la tarjeta del producto al pasar el cursor.
             </FormDescription>
           </FormItem>
         </div>
 
         <div className="py-8 flex gap-x-5 items-center">
           <Button disabled={isPending} variant={"outline"} form="project-form">
-            {product ? "Update" : "Create"}
+            {product ? "Actualizar" : "Crear"}
             {isPending && (
               <Spinner
-                className="mr-2 h-4 w-4 animate-spin"
+                className="mr-2 h-4 w-4 animate-spin ml-2"
                 aria-hidden="true"
               />
             )}
           </Button>
           <Link href="/admin/products" className={buttonVariants()}>
-            Cancel
+            Cancelar
           </Link>
         </div>
       </form>

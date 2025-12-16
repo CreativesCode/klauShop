@@ -1,4 +1,3 @@
-import { CalendarDateRangePicker, Overview, RecentSales } from "@/features/cms";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,6 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CalendarDateRangePicker, Overview, RecentSales } from "@/features/cms";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -19,13 +19,12 @@ export default function DashboardPage() {
   return (
     <>
       <div className="flex-col md:flex">
-        <div className="border-b"></div>
-        <div className="flex-1 space-y-4 p-8 pt-6">
-          <div className="flex items-center justify-between space-y-2">
+        <div className="flex-1 space-y-4">
+          <div className="flex flex-col md:flex-row items-center justify-between space-y-2">
             <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
             <div className="flex items-center space-x-2">
               <CalendarDateRangePicker />
-              <Button>Download</Button>
+              <Button>Descargar</Button>
             </div>
           </div>
           <Tabs defaultValue="overview" className="space-y-4">

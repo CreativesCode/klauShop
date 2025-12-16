@@ -7,10 +7,13 @@ import {
   SheetFooter,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { dashboardConfig } from "@/config/dashboard";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/providers/AuthProvider";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import Branding from "./Branding";
 import type { Collection } from "./SideMenuCollections";
 import SideMenuCollections from "./SideMenuCollections";
@@ -22,9 +25,12 @@ interface SideMenuProps {
 
 export function SideMenu({ collections }: SideMenuProps) {
   const pathname = usePathname();
+  const { user } = useAuth();
+  const isAdmin = user?.app_metadata?.isAdmin ?? false;
+  const [open, setOpen] = useState(false);
 
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" className="p-0 hover:bg-primary-100/50">
           <Icons.menu className="text-primary w-6 h-6" />
@@ -33,7 +39,7 @@ export function SideMenu({ collections }: SideMenuProps) {
 
       <SheetContent
         side="left"
-        className="w-full md:max-w-xl pr-4 md:pr-8 overflow-y-auto"
+        className="!w-full max-w-[100vw] md:!max-w-md pr-4 md:pr-8 overflow-y-auto"
         closeButtonClassName="w-5 h-5 md:w-6 md:h-6"
       >
         <div className="flex flex-col h-full">
@@ -50,6 +56,7 @@ export function SideMenu({ collections }: SideMenuProps) {
             {/* Link a Shop */}
             <Link
               href="/shop"
+              onClick={() => setOpen(false)}
               className={cn(
                 "flex items-center gap-3 px-4 py-3 rounded-lg text-base md:text-lg font-medium transition-colors",
                 pathname === "/shop"
@@ -68,8 +75,45 @@ export function SideMenu({ collections }: SideMenuProps) {
                   Colecciones
                 </h3>
               </div>
-              <SideMenuCollections collections={collections} />
+              <SideMenuCollections
+                collections={collections}
+                onLinkClick={() => setOpen(false)}
+              />
             </div>
+
+            {/* Sección de Administración - Solo para admins */}
+            {isAdmin && (
+              <div className="mt-6 pt-6 border-t border-primary-200">
+                <div className="px-4 mb-2">
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                    Administración
+                  </h3>
+                </div>
+                <div className="space-y-1">
+                  {dashboardConfig.sidebarNav.map((item) => {
+                    const Icon = Icons[item.icon ?? "chevronLeft"];
+                    const isActive = pathname === item.href;
+
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setOpen(false)}
+                        className={cn(
+                          "flex items-center gap-3 px-4 py-3 rounded-lg text-base md:text-lg font-medium transition-colors",
+                          isActive
+                            ? "bg-primary-100 text-primary font-semibold"
+                            : "hover:bg-primary-50 text-foreground",
+                        )}
+                      >
+                        <Icon className="w-5 h-5" />
+                        <span>{item.title}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Footer con información de contacto */}

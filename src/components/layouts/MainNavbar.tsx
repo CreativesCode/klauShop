@@ -19,7 +19,7 @@ async function MainNavbar({ adminLayout = false }: MainNavbarProps) {
       <div
         className={cn(
           adminLayout
-            ? "mx-auto px-[3rem] max-w-[2500px] py-3"
+            ? "mx-auto container"
             : "max-w-screen-2xl mx-auto container",
         )}
       >
@@ -44,12 +44,14 @@ async function MainNavbar({ adminLayout = false }: MainNavbarProps) {
               <UserNav />
             </Suspense>
 
-            <Link href={"/wish-list"}>
-              <Icons.heart
-                className="w-5 h-5 text-primary"
-                aria-label="wishlist"
-              />
-            </Link>
+            {!adminLayout && (
+              <Link href={"/wish-list"}>
+                <Icons.heart
+                  className="w-5 h-5 text-primary"
+                  aria-label="wishlist"
+                />
+              </Link>
+            )}
 
             <Suspense fallback={<CartLink productCount={0} />}>
               {!adminLayout && <CartNav />}

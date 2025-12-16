@@ -51,7 +51,7 @@ const TagsInput: FC<TagsInputProps> = ({
   };
 
   return (
-    <div className="relative flex flex-wrap items-center border border-black p-2 gap-x-3 gap-y-4">
+    <div className="relative flex flex-wrap items-center border border-input bg-background p-2 gap-x-3 gap-y-4 rounded-md">
       {normalizedTags.map((tag, index) => (
         <Badge key={index} className="rounded-full">
           {tag}

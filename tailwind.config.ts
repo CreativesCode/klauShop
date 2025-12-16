@@ -13,13 +13,13 @@ const config = {
     container: {
       center: true,
       padding: {
-        DEFAULT: "2rem",
+        DEFAULT: "1rem",
         sm: "2rem",
-        lg: "3rem",
-        xl: "3rem",
-        "2xl": "3rem",
-        "3xl": "3rem",
-        "4xl": "3rem",
+        lg: "2rem",
+        xl: "2rem",
+        "2xl": "2rem",
+        "3xl": "2rem",
+        "4xl": "2rem",
       },
       screens: {
         "2xl": "1700px",

@@ -70,10 +70,12 @@ function CollectionTreeItem({
   collection,
   pathname,
   level = 0,
+  onLinkClick,
 }: {
   collection: Collection;
   pathname: string;
   level?: number;
+  onLinkClick?: () => void;
 }) {
   const isActive = pathname === `/collections/${collection.slug}`;
   const hasChildren = collection.children && collection.children.length > 0;
@@ -82,6 +84,7 @@ function CollectionTreeItem({
     return (
       <Link
         href={`/collections/${collection.slug}`}
+        onClick={onLinkClick}
         className={cn(
           "flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base transition-colors",
           isActive
@@ -115,6 +118,7 @@ function CollectionTreeItem({
           {/* Link to parent collection */}
           <Link
             href={`/collections/${collection.slug}`}
+            onClick={onLinkClick}
             className={cn(
               "flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors",
               isActive
@@ -135,6 +139,7 @@ function CollectionTreeItem({
               collection={child}
               pathname={pathname}
               level={level + 1}
+              onLinkClick={onLinkClick}
             />
           ))}
         </div>
@@ -145,10 +150,12 @@ function CollectionTreeItem({
 
 interface SideMenuCollectionsProps {
   collections: Collection[];
+  onLinkClick?: () => void;
 }
 
 export default function SideMenuCollections({
   collections,
+  onLinkClick,
 }: SideMenuCollectionsProps) {
   const pathname = usePathname();
 
@@ -170,6 +177,7 @@ export default function SideMenuCollections({
             key={collection.id}
             collection={collection}
             pathname={pathname}
+            onLinkClick={onLinkClick}
           />
         ))}
       </div>

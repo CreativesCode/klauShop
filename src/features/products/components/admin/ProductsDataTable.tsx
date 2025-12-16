@@ -1,6 +1,4 @@
 "use client";
-
-import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -15,7 +13,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import * as React from "react";
 
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import {
   Table,
   TableBody,
@@ -24,18 +24,48 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DataTablePagination } from "@/components/ui/data-table-pagination";
-import { DataTableToolbar } from "@/components/ui/data-table-toolbar";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
+// Hook para detectar si es vista móvil
+function useIsMobile() {
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    // Verificar que estamos en el cliente
+    if (typeof window === "undefined") return;
+
+    // Usar el breakpoint md de Tailwind (768px)
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+
+    // Establecer el valor inicial
+    setIsMobile(mediaQuery.matches);
+
+    // Función para actualizar el estado cuando cambie el tamaño
+    const handleChange = (event: MediaQueryListEvent) => {
+      setIsMobile(event.matches);
+    };
+
+    // Escuchar cambios
+    mediaQuery.addEventListener("change", handleChange);
+
+    // Limpiar listener al desmontar
+    return () => {
+      mediaQuery.removeEventListener("change", handleChange);
+    };
+  }, []);
+
+  return isMobile;
+}
+
 function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const isMobile = useIsMobile();
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -43,6 +73,22 @@ function DataTable<TData, TValue>({
     [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
+
+  // Actualizar visibilidad de columnas basado en el tamaño de pantalla
+  React.useEffect(() => {
+    if (isMobile) {
+      // En móvil, ocultar columnas menos importantes
+      setColumnVisibility({
+        slug: false,
+        Collection: false,
+        featured: false,
+        showInSlider: false,
+      });
+    } else {
+      // En desktop, mostrar todas las columnas
+      setColumnVisibility({});
+    }
+  }, [isMobile]);
 
   const table = useReactTable({
     data,

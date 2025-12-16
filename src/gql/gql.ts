@@ -91,7 +91,7 @@ const documents = {
     types.WishlistProductsQueryDocument,
   "\n  query ProductFormQuery {\n    collectionsCollection(orderBy: [{ label: AscNullsLast }]) {\n      __typename\n      edges {\n        node {\n          id\n          label\n        }\n      }\n    }\n  }\n":
     types.ProductFormQueryDocument,
-  "\n  fragment ProductColumnFragment on products {\n    id\n    name\n    description\n    rating\n    slug\n    badge\n    price\n    stock\n    badge\n    featured\n    featuredImage: medias {\n      id\n      key\n      alt\n    }\n    collections {\n      id\n      label\n      slug\n    }\n  }\n":
+  "\n  fragment ProductColumnFragment on products {\n    id\n    name\n    description\n    rating\n    slug\n    badge\n    price\n    stock\n    badge\n    featured\n    show_in_slider\n    featuredImage: medias {\n      id\n      key\n      alt\n    }\n    collections {\n      id\n      label\n      slug\n    }\n  }\n":
     types.ProductColumnFragmentFragmentDoc,
   "\n  query Search(\n    $search: String\n    $lower: BigFloat\n    $upper: BigFloat\n    $collections: [String!]\n    $first: Int!\n    $after: Cursor\n    $orderBy: [productsOrderBy!]\n  ) {\n    productsCollection(\n      filter: {\n        and: [\n          { name: { ilike: $search } }\n          { price: { gt: $lower, lt: $upper } }\n          { collection_id: { in: $collections } }\n        ]\n      }\n      first: $first\n      after: $after\n      orderBy: $orderBy\n    ) {\n      edges {\n        node {\n          id\n\n          ...ProductCardFragment\n        }\n      }\n      pageInfo {\n        hasNextPage\n        endCursor\n      }\n    }\n  }\n":
     types.SearchDocument,
@@ -353,8 +353,8 @@ export function gql(
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(
-  source: "\n  fragment ProductColumnFragment on products {\n    id\n    name\n    description\n    rating\n    slug\n    badge\n    price\n    stock\n    badge\n    featured\n    featuredImage: medias {\n      id\n      key\n      alt\n    }\n    collections {\n      id\n      label\n      slug\n    }\n  }\n",
-): (typeof documents)["\n  fragment ProductColumnFragment on products {\n    id\n    name\n    description\n    rating\n    slug\n    badge\n    price\n    stock\n    badge\n    featured\n    featuredImage: medias {\n      id\n      key\n      alt\n    }\n    collections {\n      id\n      label\n      slug\n    }\n  }\n"];
+  source: "\n  fragment ProductColumnFragment on products {\n    id\n    name\n    description\n    rating\n    slug\n    badge\n    price\n    stock\n    badge\n    featured\n    show_in_slider\n    featuredImage: medias {\n      id\n      key\n      alt\n    }\n    collections {\n      id\n      label\n      slug\n    }\n  }\n",
+): (typeof documents)["\n  fragment ProductColumnFragment on products {\n    id\n    name\n    description\n    rating\n    slug\n    badge\n    price\n    stock\n    badge\n    featured\n    show_in_slider\n    featuredImage: medias {\n      id\n      key\n      alt\n    }\n    collections {\n      id\n      label\n      slug\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

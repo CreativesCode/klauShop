@@ -1,6 +1,6 @@
 "use client";
 import { FC } from "react";
-import { useFormContext, Controller } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import TagsInput from "./tagsInput";
 
 interface TagsFieldProps {

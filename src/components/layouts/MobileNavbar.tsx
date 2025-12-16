@@ -10,7 +10,7 @@ type Props = { adminLayout: boolean };
 
 async function MobileNavbar({ adminLayout }: Props) {
   return (
-    <div className="md:hidden flex gap-x-8 justify-between items-center h-[64px]">
+    <div className="md:hidden flex gap-x-8 justify-between items-center">
       <div className="flex gap-x-3 items-center">
         <SideMenuServer />
         <MobileSearchInput />
