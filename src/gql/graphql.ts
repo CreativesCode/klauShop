@@ -2258,6 +2258,7 @@ export type AdminProductsPageQueryQuery = {
         slug: string;
         badge?: string | null;
         price: any;
+        discount?: any | null;
         stock?: number | null;
         featured?: boolean | null;
         show_in_slider?: boolean | null;
@@ -3511,6 +3512,7 @@ export type ProductColumnFragmentFragment = {
   slug: string;
   badge?: string | null;
   price: any;
+  discount?: any | null;
   stock?: number | null;
   featured?: boolean | null;
   show_in_slider?: boolean | null;
@@ -4536,6 +4538,7 @@ export const ProductColumnFragmentFragmentDoc = {
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "badge" } },
           { kind: "Field", name: { kind: "Name", value: "price" } },
+          { kind: "Field", name: { kind: "Name", value: "discount" } },
           { kind: "Field", name: { kind: "Name", value: "stock" } },
           { kind: "Field", name: { kind: "Name", value: "badge" } },
           { kind: "Field", name: { kind: "Name", value: "featured" } },
@@ -5028,6 +5031,7 @@ export const AdminProductsPageQueryDocument = {
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "badge" } },
           { kind: "Field", name: { kind: "Name", value: "price" } },
+          { kind: "Field", name: { kind: "Name", value: "discount" } },
           { kind: "Field", name: { kind: "Name", value: "stock" } },
           { kind: "Field", name: { kind: "Name", value: "badge" } },
           { kind: "Field", name: { kind: "Name", value: "featured" } },

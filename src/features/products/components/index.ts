@@ -19,5 +19,8 @@ export { default as WishlistProducts } from "./WishlistProducts";
 export { default as WishlistProductsSkeleton } from "./WishlistProductsSkeleton";
 export * from "./admin/ProductForm";
 export { default as ProductForm } from "./admin/ProductForm";
-export { default as ProductsColumns } from "./admin/ProductsColumns";
+export {
+  ProductColumnFragment,
+  default as ProductsColumns,
+} from "./admin/ProductsColumns";
 export { default as ProductsDataTable } from "./admin/ProductsDataTable";

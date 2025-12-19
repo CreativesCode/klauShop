@@ -9,8 +9,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DocumentType, gql } from "@/gql";
+import { formatPrice } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
-import { CheckCircle2, MoreHorizontal, XCircle } from "lucide-react";
+import { CheckCircle2, MoreHorizontal, Tag, XCircle } from "lucide-react";
 import Link from "next/link";
 import { DeleteProductDialog } from "./DeleteProductDialog";
 
@@ -23,6 +24,7 @@ export const ProductColumnFragment = gql(/* GraphQL */ `
     slug
     badge
     price
+    discount
     stock
     badge
     featured
@@ -49,6 +51,9 @@ const ProductsColumns: ColumnDef<{
     cell: ({ row }) => {
       const product = row.original.node;
 
+      const hasDiscount =
+        product.discount && parseFloat(product.discount.toString()) > 0;
+
       return (
         <div className="flex items-center gap-2">
           <Link
@@ -57,6 +62,12 @@ const ProductsColumns: ColumnDef<{
           >
             {product.name}
           </Link>
+          {hasDiscount && (
+            <Badge className="bg-orange-500 text-white hover:bg-orange-600 flex items-center gap-1">
+              <Tag className="h-3 w-3" />
+              {parseFloat(product.discount.toString()).toFixed(0)}%
+            </Badge>
+          )}
           {(product.stock ?? 0) <= 0 ? (
             <Badge className="bg-red-600 text-white hover:bg-red-600">
               Sin stock
@@ -133,9 +144,32 @@ const ProductsColumns: ColumnDef<{
     header: () => <div className="">Precio</div>,
     cell: ({ row }) => {
       const product = row.original.node;
+      const priceValue = parseFloat(product.price?.toString() || "0");
+      const discountValue = product.discount
+        ? parseFloat(product.discount.toString())
+        : 0;
+      const hasDiscount = discountValue > 0;
+      const finalPrice = hasDiscount
+        ? priceValue - (priceValue * discountValue) / 100
+        : priceValue;
 
       return (
-        <div className="font-medium text-xs sm:text-base">{`${product.price} CUP`}</div>
+        <div className="flex flex-col gap-1">
+          {hasDiscount ? (
+            <>
+              <div className="font-medium text-xs sm:text-base text-gray-500 line-through">
+                {formatPrice(priceValue)}
+              </div>
+              <div className="font-bold text-xs sm:text-base text-green-600 dark:text-green-400">
+                {formatPrice(finalPrice)}
+              </div>
+            </>
+          ) : (
+            <div className="font-medium text-xs sm:text-base">
+              {formatPrice(priceValue)}
+            </div>
+          )}
+        </div>
       );
     },
   },

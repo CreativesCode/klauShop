@@ -33,13 +33,14 @@ import {
   SelectProducts,
   products,
 } from "@/lib/supabase/schema";
+import { formatPrice } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@urql/next";
 import { createInsertSchema } from "drizzle-zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Suspense, useTransition } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { gql } from "urql";
 import { z } from "zod";
 import { DeleteProductDialog } from "./DeleteProductDialog";
@@ -102,6 +103,27 @@ function ProductFrom({
     control: control as any,
     name: "additionalImages",
   });
+
+  // Observar cambios en precio y descuento para calcular el precio final
+  const price = useWatch({ control, name: "price" });
+  const discount = useWatch({ control, name: "discount" });
+
+  // Calcular el precio final con descuento
+  const calculateFinalPrice = () => {
+    const priceValue = parseFloat(price?.toString() || "0");
+    const discountValue = parseFloat(discount?.toString() || "0");
+
+    if (priceValue <= 0) return 0;
+
+    if (discountValue > 0) {
+      return priceValue - (priceValue * discountValue) / 100;
+    }
+
+    return priceValue;
+  };
+
+  const finalPrice = calculateFinalPrice();
+  const hasDiscount = parseFloat(discount?.toString() || "0") > 0;
 
   const onSubmit = handleSubmit(async (data) => {
     startTransition(async () => {
@@ -416,6 +438,22 @@ function ProductFrom({
                   Porcentaje de descuento (0-100). Por defecto: 0 (sin
                   descuento)
                 </FormDescription>
+                {hasDiscount && (
+                  <div className="mt-2 p-3 rounded-md bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800">
+                    <div className="text-sm text-green-800 dark:text-green-200">
+                      <span className="font-medium">
+                        Precio final con descuento:
+                      </span>
+                      <span className="ml-2 text-lg font-bold">
+                        {formatPrice(finalPrice)}
+                      </span>
+                    </div>
+                    <div className="text-xs text-green-600 dark:text-green-300 mt-1">
+                      Descuento aplicado:{" "}
+                      {parseFloat(discount?.toString() || "0").toFixed(2)}%
+                    </div>
+                  </div>
+                )}
                 <FormMessage />
               </FormItem>
             )}
