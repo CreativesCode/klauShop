@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     // Crear cliente con service role para bypassar RLS
     const supabaseAdmin = createClient({ cookieStore, isAdmin: true });
 
-    const bucket = "klaushop";
+    const bucket = process.env.NEXT_PUBLIC_S3_BUCKET || "";
     const ext = file.name.split(".").pop()?.toLowerCase() || "png";
     const filePath = `public/avatars/${user.id}.${ext}`;
 

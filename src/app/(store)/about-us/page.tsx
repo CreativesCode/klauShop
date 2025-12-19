@@ -16,7 +16,7 @@ import Link from "next/link";
 
 export const metadata = getPageMetadata(
   "Sobre Nosotros",
-  "Conoce la historia de Klau's Shop, nuestra misión y valores. Tu tienda de confianza para moda y accesorios.",
+  `Conoce la historia de ${siteConfig.name}, nuestra misión y valores. Tu tienda de confianza para moda y accesorios.`,
 );
 
 const values = [
@@ -83,7 +83,7 @@ export default function AboutUsPage() {
       <Shell className="max-w-screen-2xl mx-auto">
         <Header
           heading="Sobre Nosotros"
-          description="Conoce más sobre Klau's Shop, nuestra historia, misión y valores. Estamos aquí para hacer que la moda sea accesible para todos."
+          description={`Conoce más sobre ${siteConfig.name}, nuestra historia, misión y valores. Estamos aquí para hacer que la moda sea accesible para todos.`}
           descriptionClassName="text-center max-w-4xl mx-auto"
         />
 
@@ -103,7 +103,7 @@ export default function AboutUsPage() {
                 </div>
 
                 <h2 className="mt-4 text-3xl font-semibold tracking-tight text-primary-950 md:text-4xl">
-                  Bienvenido a Klau&apos;s Shop
+                  Bienvenido a {siteConfig.name}
                 </h2>
 
                 <p className="mt-4 text-base leading-relaxed text-primary-800 md:text-lg">
@@ -192,7 +192,7 @@ export default function AboutUsPage() {
           </h2>
           <div className="rounded-2xl border border-primary-100/80 bg-white p-6 shadow-sm md:p-10">
             <p className="text-base md:text-lg text-primary-800 mb-8 text-center max-w-3xl mx-auto leading-relaxed">
-              En Klau&apos;s Shop, nuestra misión es hacer que la moda sea
+              En {siteConfig.name}, nuestra misión es hacer que la moda sea
               accesible para todos, ofreciendo productos de calidad a precios
               justos y proporcionando un servicio excepcional que supere las
               expectativas de nuestros clientes.
@@ -251,7 +251,7 @@ export default function AboutUsPage() {
         {/* Why Choose Us Section */}
         <section className="mb-16">
           <h2 className="text-2xl md:text-3xl font-semibold text-center mb-12 text-primary">
-            ¿Por qué elegir Klau&apos;s Shop?
+            ¿Por qué elegir {siteConfig.name}?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {whyChooseUs.map((item, index) => (

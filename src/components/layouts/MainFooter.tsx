@@ -133,7 +133,7 @@ async function MainFooter({}: Props) {
               <Branding width={180} height={80} />
               <div className="text-sm font-light max-w-2xl lg:max-w-none">
                 <p>
-                  Klau&apos;s Shop es tu tienda online de ropa y accesorios,
+                  {siteConfig.name} es tu tienda online de ropa y accesorios,
                   pensada para que comprar sea fácil, rápido y seguro.
                   Seleccionamos productos con excelente relación calidad/precio
                   y ofrecemos atención directa para ayudarte a elegir la mejor

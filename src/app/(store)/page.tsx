@@ -198,7 +198,7 @@ function HeroSection() {
       <div className="relative w-full h-[400px] md:h-[800px]">
         <Image
           alt="Furniture"
-          src="https://bhwyagfoyylgrdgyngrm.supabase.co/storage/v1/object/public/klaushop/public/bg-hero.png"
+          src="https://bhwyagfoyylgrdgyngrm.supabase.co/storage/v1/object/public/klaushop/public/bg-hero.jpg"
           priority={true}
           width={1920}
           height={800}
