@@ -1,6 +1,8 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,8 +10,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Shield, User as UserIcon } from "lucide-react";
 import Link from "next/link";
 
 import { useToast } from "@/components/ui/use-toast";
@@ -19,32 +22,28 @@ import { DeleteUserDialog } from "./admin/DeleteUserDialog";
 
 const UsersColumns: ColumnDef<User>[] = [
   {
-    accessorKey: "id",
-    header: () => <div className="text-left capitalize">ID</div>,
+    accessorKey: "name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Nombre" />
+    ),
     cell: ({ row }) => {
       const user = row.original;
-
+      const name = user.user_metadata?.name || "-";
       return (
         <Link
           href={`/admin/users/${user.id}`}
-          className="text-center font-medium capitalize"
+          className="font-medium hover:underline"
         >
-          {user.id}
+          {name}
         </Link>
       );
     },
   },
   {
-    accessorKey: "name",
-    header: () => <div className="text-left capitalize">Nombre</div>,
-    cell: ({ row }) => {
-      const user = row.original;
-      return <p>{user.user_metadata.name || "-"}</p>;
-    },
-  },
-  {
     accessorKey: "email",
-    header: () => <div className="text-left capitalize">Email</div>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Email" />
+    ),
     cell: ({ row }) => {
       const user = row.original;
       return <p className="text-truncate sm:text-nowrap">{user.email}</p>;
@@ -52,10 +51,40 @@ const UsersColumns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "role",
-    header: () => <div className="text-left capitalize">Rol</div>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Rol" />
+    ),
     cell: ({ row }) => {
       const user = row.original;
-      return <p>{user.role}</p>;
+      const isAdmin = user.app_metadata?.isAdmin === true;
+      const displayRole = isAdmin ? "Admin" : "Usuario";
+
+      return (
+        <Badge
+          variant="outline"
+          className={cn(
+            "rounded-md px-2 py-1 font-medium flex items-center gap-1.5 w-fit",
+            isAdmin
+              ? "text-blue-600 border-blue-600 bg-blue-50"
+              : "text-gray-600 border-gray-300",
+          )}
+        >
+          {isAdmin ? (
+            <Shield className="h-3 w-3" />
+          ) : (
+            <UserIcon className="h-3 w-3" />
+          )}
+          {displayRole}
+        </Badge>
+      );
+    },
+    filterFn: (row, id, value) => {
+      const user = row.original;
+      const isAdmin = user.app_metadata?.isAdmin === true;
+      if (value === "all") return true;
+      if (value === "admin") return isAdmin;
+      if (value === "user") return !isAdmin;
+      return true;
     },
   },
 
