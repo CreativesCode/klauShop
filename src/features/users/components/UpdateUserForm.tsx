@@ -129,27 +129,32 @@ function UpdateUserForm({ user }: AdminUserFormProps) {
           />
         </div>
 
-        <div className="py-8 flex gap-x-5 items-center">
-          <Button disabled={isPending} variant={"outline"} form="project-form">
-            {user ? "Update" : "Create"}
-            {isPending && (
-              <Spinner
-                className="mr-2 h-4 w-4 animate-spin"
-                aria-hidden="true"
-              />
-            )}
-          </Button>
-          <Link href="/admin/users" className={buttonVariants()}>
-            Cancel
-          </Link>
-          {user && (
-            <div className="ml-auto">
+        <div className="py-8 flex gap-x-5 items-center justify-between">
+          <div className="flex gap-x-5 items-center">
+            <Link
+              href="/admin/users"
+              className={buttonVariants({ variant: "outline" })}
+            >
+              Cancel
+            </Link>
+          </div>
+          <div className="flex gap-x-5 items-center">
+            {user && (
               <DeleteUserDialog
                 userId={user.id}
                 userName={user.user_metadata?.name || user.email || "Usuario"}
               />
-            </div>
-          )}
+            )}
+            <Button disabled={isPending} form="project-form" type="submit">
+              {user ? "Update" : "Create"}
+              {isPending && (
+                <Spinner
+                  className="mr-2 h-4 w-4 animate-spin ml-2"
+                  aria-hidden="true"
+                />
+              )}
+            </Button>
+          </div>
         </div>
       </form>
     </Form>

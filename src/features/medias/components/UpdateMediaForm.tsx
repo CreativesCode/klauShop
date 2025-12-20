@@ -137,19 +137,22 @@ function UpdateMediaForm({ media }: UpdateMediaFormProps) {
           </AlertDialogContent>
         </AlertDialog>
 
-        <div className="py-8 flex gap-x-5 items-center">
-          <Button disabled={isPending} variant={"outline"} form="project-form">
+        <div className="py-8 flex gap-x-5 items-center justify-between">
+          <Link
+            href="/admin/medias"
+            className={buttonVariants({ variant: "outline" })}
+          >
+            Cancelar
+          </Link>
+          <Button disabled={isPending} form="project-form" type="submit">
             {media ? "Actualizar" : "Crear"}
             {isPending && (
               <Spinner
-                className="mr-2 h-4 w-4 animate-spin"
+                className="mr-2 h-4 w-4 animate-spin ml-2"
                 aria-hidden="true"
               />
             )}
           </Button>
-          <Link href="/admin/medias" className={buttonVariants()}>
-            Cancelar
-          </Link>
         </div>
       </form>
     </Form>

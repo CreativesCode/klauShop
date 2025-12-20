@@ -76,7 +76,7 @@ export function DeleteProductDialog({
             Eliminar Producto
           </DropdownMenuItem>
         ) : (
-          <Button variant="destructive">Eliminar Producto</Button>
+          <Button variant="destructive">Eliminar</Button>
         )}
       </AlertDialogTrigger>
       <AlertDialogContent>

@@ -126,19 +126,22 @@ function AdminUserForm({ user }: AdminUserFormProps) {
           />
         </div>
 
-        <div className="py-8 flex gap-x-5 items-center">
-          <Button disabled={isPending} variant={"outline"} form="project-form">
+        <div className="py-8 flex gap-x-5 items-center justify-between">
+          <Link
+            href="/admin/categories"
+            className={buttonVariants({ variant: "outline" })}
+          >
+            Cancel
+          </Link>
+          <Button disabled={isPending} form="project-form" type="submit">
             {user ? "Update" : "Create"}
             {isPending && (
               <Spinner
-                className="mr-2 h-4 w-4 animate-spin"
+                className="mr-2 h-4 w-4 animate-spin ml-2"
                 aria-hidden="true"
               />
             )}
           </Button>
-          <Link href="/admin/categories" className={buttonVariants()}>
-            Cancel
-          </Link>
         </div>
       </form>
     </Form>

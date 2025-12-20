@@ -324,27 +324,32 @@ function CollectionForm({ collection }: CollectionFormProps) {
           />
         </div>
 
-        <div className="py-8 flex gap-x-5 items-center">
-          <Button disabled={isPending} variant={"outline"} form="project-form">
-            {collection ? "Actualizar" : "Crear"}
-            {isPending && (
-              <Spinner
-                className="mr-2 h-4 w-4 animate-spin"
-                aria-hidden="true"
-              />
-            )}
-          </Button>
-          <Link href="/admin/collections" className={buttonVariants()}>
-            Cancelar
-          </Link>
-          {collection && (
-            <div className="ml-auto">
+        <div className="py-8 flex gap-x-5 items-center justify-between">
+          <div className="flex gap-x-5 items-center">
+            <Link
+              href="/admin/collections"
+              className={buttonVariants({ variant: "outline" })}
+            >
+              Cancelar
+            </Link>
+          </div>
+          <div className="flex gap-x-5 items-center">
+            {collection && (
               <DeleteCollectionDialog
                 collectionId={collection.id}
                 collectionName={collection.label}
               />
-            </div>
-          )}
+            )}
+            <Button disabled={isPending} form="project-form" type="submit">
+              {collection ? "Actualizar" : "Crear"}
+              {isPending && (
+                <Spinner
+                  className="mr-2 h-4 w-4 animate-spin ml-2"
+                  aria-hidden="true"
+                />
+              )}
+            </Button>
+          </div>
         </div>
       </form>
     </Form>

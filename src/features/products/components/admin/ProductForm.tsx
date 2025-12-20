@@ -552,27 +552,32 @@ function ProductFrom({
           </FormItem>
         </div>
 
-        <div className="py-8 flex gap-x-5 items-center">
-          <Button disabled={isPending} variant={"outline"} form="project-form">
-            {product ? "Actualizar" : "Crear"}
-            {isPending && (
-              <Spinner
-                className="mr-2 h-4 w-4 animate-spin ml-2"
-                aria-hidden="true"
-              />
-            )}
-          </Button>
-          <Link href="/admin/products" className={buttonVariants()}>
-            Cancelar
-          </Link>
-          {product && (
-            <div className="ml-auto">
+        <div className="py-8 flex gap-x-5 items-center justify-between">
+          <div className="flex gap-x-5 items-center">
+            <Link
+              href="/admin/products"
+              className={buttonVariants({ variant: "outline" })}
+            >
+              Cancelar
+            </Link>
+          </div>
+          <div className="flex gap-x-5 items-center">
+            {product && (
               <DeleteProductDialog
                 productId={product.id}
                 productName={product.name}
               />
-            </div>
-          )}
+            )}
+            <Button disabled={isPending} form="project-form" type="submit">
+              {product ? "Actualizar" : "Crear"}
+              {isPending && (
+                <Spinner
+                  className="mr-2 h-4 w-4 animate-spin ml-2"
+                  aria-hidden="true"
+                />
+              )}
+            </Button>
+          </div>
         </div>
       </form>
     </Form>

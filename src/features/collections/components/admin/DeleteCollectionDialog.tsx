@@ -76,7 +76,7 @@ export function DeleteCollectionDialog({
             Eliminar Colección
           </DropdownMenuItem>
         ) : (
-          <Button variant="destructive">Eliminar Colección</Button>
+          <Button variant="destructive">Eliminar</Button>
         )}
       </AlertDialogTrigger>
       <AlertDialogContent>
