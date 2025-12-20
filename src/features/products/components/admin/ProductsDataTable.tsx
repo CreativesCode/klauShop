@@ -17,6 +17,7 @@ import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -25,6 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Search } from "lucide-react";
 
 type StockFilter = "all" | "out" | "low" | "in";
 
@@ -83,11 +85,12 @@ function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
+    []
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [stockFilter, setStockFilter] =
     React.useState<StockFilter>(initialStockFilter);
+  const [globalFilter, setGlobalFilter] = React.useState("");
 
   // Mantener sincronizado si el server cambia el filtro por URL
   React.useEffect(() => {
@@ -102,7 +105,7 @@ function DataTable<TData, TValue>({
       const n = Number(value);
       return Number.isFinite(n) ? n : null;
     },
-    [getRowStock],
+    [getRowStock]
   );
 
   const stockCounts = React.useMemo(() => {
@@ -144,6 +147,28 @@ function DataTable<TData, TValue>({
     }
   }, [isMobile]);
 
+  // Función de filtro global personalizada
+  const globalFilterFn = React.useCallback(
+    (row: any, columnId: string, filterValue: string) => {
+      const search = filterValue.toLowerCase();
+      const product = row.original.node;
+
+      // Buscar en múltiples campos
+      const name = product.name?.toLowerCase() || "";
+      const slug = product.slug?.toLowerCase() || "";
+      const collection = product.collections?.label?.toLowerCase() || "";
+      const description = product.description?.toLowerCase() || "";
+
+      return (
+        name.includes(search) ||
+        slug.includes(search) ||
+        collection.includes(search) ||
+        description.includes(search)
+      );
+    },
+    []
+  );
+
   const table = useReactTable({
     data: filteredData,
     columns,
@@ -152,12 +177,15 @@ function DataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
       columnFilters,
+      globalFilter,
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -168,39 +196,50 @@ function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
-        <Button
-          type="button"
-          variant={stockFilter === "all" ? "default" : "outline"}
-          size="sm"
-          onClick={() => setStockFilter("all")}
-        >
-          Todos ({stockCounts.all})
-        </Button>
-        <Button
-          type="button"
-          variant={stockFilter === "out" ? "default" : "outline"}
-          size="sm"
-          onClick={() => setStockFilter("out")}
-        >
-          Sin stock ({stockCounts.out})
-        </Button>
-        <Button
-          type="button"
-          variant={stockFilter === "low" ? "default" : "outline"}
-          size="sm"
-          onClick={() => setStockFilter("low")}
-        >
-          Stock bajo ({stockCounts.low})
-        </Button>
-        <Button
-          type="button"
-          variant={stockFilter === "in" ? "default" : "outline"}
-          size="sm"
-          onClick={() => setStockFilter("in")}
-        >
-          En stock ({stockCounts.in})
-        </Button>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Buscar productos..."
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant={stockFilter === "all" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setStockFilter("all")}
+          >
+            Todos ({stockCounts.all})
+          </Button>
+          <Button
+            type="button"
+            variant={stockFilter === "out" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setStockFilter("out")}
+          >
+            Sin stock ({stockCounts.out})
+          </Button>
+          <Button
+            type="button"
+            variant={stockFilter === "low" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setStockFilter("low")}
+          >
+            Stock bajo ({stockCounts.low})
+          </Button>
+          <Button
+            type="button"
+            variant={stockFilter === "in" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setStockFilter("in")}
+          >
+            En stock ({stockCounts.in})
+          </Button>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -214,7 +253,7 @@ function DataTable<TData, TValue>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext(),
+                            header.getContext()
                           )}
                     </TableHead>
                   );
@@ -233,7 +272,7 @@ function DataTable<TData, TValue>({
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext(),
+                        cell.getContext()
                       )}
                     </TableCell>
                   ))}

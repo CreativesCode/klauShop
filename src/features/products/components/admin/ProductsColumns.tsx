@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,8 +47,11 @@ const ProductsColumns: ColumnDef<{
   node: DocumentType<typeof ProductColumnFragment>;
 }>[] = [
   {
+    accessorFn: (row) => row.node.name,
     accessorKey: "name",
-    header: () => <div className="text-left capitalize">Nombre</div>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Nombre" />
+    ),
     cell: ({ row }) => {
       const product = row.original.node;
 
@@ -56,10 +60,7 @@ const ProductsColumns: ColumnDef<{
 
       return (
         <div className="flex items-center gap-2">
-          <Link
-            href={`/admin/products/${product.id}`}
-            className="text-center font-medium capitalize hover:underline"
-          >
+          <Link href={`/admin/products/${product.id}`} className="font-medium">
             {product.name}
           </Link>
           {hasDiscount && (
@@ -82,8 +83,11 @@ const ProductsColumns: ColumnDef<{
     },
   },
   {
+    accessorFn: (row) => row.node.slug,
     accessorKey: "slug",
-    header: () => <div className="">Slug</div>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Slug" />
+    ),
     cell: ({ row }) => {
       const product = row.original.node;
 
@@ -91,8 +95,11 @@ const ProductsColumns: ColumnDef<{
     },
   },
   {
+    accessorFn: (row) => row.node.collections?.label || "",
     accessorKey: "Collection",
-    header: () => <div className="">Colección</div>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Colección" />
+    ),
     cell: ({ row }) => {
       const product = row.original.node;
 
@@ -104,8 +111,13 @@ const ProductsColumns: ColumnDef<{
     },
   },
   {
+    accessorFn: (row) => row.node.featured,
     accessorKey: "featured",
-    header: () => <div className="text-center">Dest</div>,
+    header: ({ column }) => (
+      <div className="text-center">
+        <DataTableColumnHeader column={column} title="Dest" />
+      </div>
+    ),
     cell: ({ row }) => {
       const product = row.original.node;
       const isFeatured = product.featured;
@@ -122,8 +134,13 @@ const ProductsColumns: ColumnDef<{
     },
   },
   {
+    accessorFn: (row) => row.node.show_in_slider,
     accessorKey: "showInSlider",
-    header: () => <div className="text-center">Slid</div>,
+    header: ({ column }) => (
+      <div className="text-center">
+        <DataTableColumnHeader column={column} title="Slid" />
+      </div>
+    ),
     cell: ({ row }) => {
       const product = row.original.node;
       const showInSlider = product.show_in_slider;
@@ -140,8 +157,19 @@ const ProductsColumns: ColumnDef<{
     },
   },
   {
+    accessorFn: (row) => {
+      const priceValue = parseFloat(row.node.price?.toString() || "0");
+      const discountValue = row.node.discount
+        ? parseFloat(row.node.discount.toString())
+        : 0;
+      return discountValue > 0
+        ? priceValue - (priceValue * discountValue) / 100
+        : priceValue;
+    },
     accessorKey: "price",
-    header: () => <div className="">Precio</div>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Precio" />
+    ),
     cell: ({ row }) => {
       const product = row.original.node;
       const priceValue = parseFloat(product.price?.toString() || "0");
@@ -174,8 +202,11 @@ const ProductsColumns: ColumnDef<{
     },
   },
   {
+    accessorFn: (row) => row.node.stock ?? 0,
     accessorKey: "stock",
-    header: () => <div className="">Stock</div>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Stock" />
+    ),
     cell: ({ row }) => {
       const product = row.original.node;
       const stockValue = product.stock ?? 0;
