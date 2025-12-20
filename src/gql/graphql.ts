@@ -2262,6 +2262,9 @@ export type AdminProductsPageQueryQuery = {
         stock?: number | null;
         featured?: boolean | null;
         show_in_slider?: boolean | null;
+        colors?: any | null;
+        sizes?: any | null;
+        materials?: any | null;
         featuredImage?: {
           __typename?: "medias";
           id: string;
@@ -3517,6 +3520,9 @@ export type ProductColumnFragmentFragment = {
   stock?: number | null;
   featured?: boolean | null;
   show_in_slider?: boolean | null;
+  colors?: any | null;
+  sizes?: any | null;
+  materials?: any | null;
   featuredImage?: {
     __typename?: "medias";
     id: string;
@@ -4544,6 +4550,9 @@ export const ProductColumnFragmentFragmentDoc = {
           { kind: "Field", name: { kind: "Name", value: "badge" } },
           { kind: "Field", name: { kind: "Name", value: "featured" } },
           { kind: "Field", name: { kind: "Name", value: "show_in_slider" } },
+          { kind: "Field", name: { kind: "Name", value: "colors" } },
+          { kind: "Field", name: { kind: "Name", value: "sizes" } },
+          { kind: "Field", name: { kind: "Name", value: "materials" } },
           {
             kind: "Field",
             alias: { kind: "Name", value: "featuredImage" },
@@ -5042,6 +5051,9 @@ export const AdminProductsPageQueryDocument = {
           { kind: "Field", name: { kind: "Name", value: "badge" } },
           { kind: "Field", name: { kind: "Name", value: "featured" } },
           { kind: "Field", name: { kind: "Name", value: "show_in_slider" } },
+          { kind: "Field", name: { kind: "Name", value: "colors" } },
+          { kind: "Field", name: { kind: "Name", value: "sizes" } },
+          { kind: "Field", name: { kind: "Name", value: "materials" } },
           {
             kind: "Field",
             alias: { kind: "Name", value: "featuredImage" },

@@ -31,6 +31,9 @@ export const ProductColumnFragment = gql(/* GraphQL */ `
     badge
     featured
     show_in_slider
+    colors
+    sizes
+    materials
     featuredImage: medias {
       id
       key

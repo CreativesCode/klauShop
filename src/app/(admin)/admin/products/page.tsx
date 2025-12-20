@@ -1,7 +1,11 @@
 import AdminShell from "@/components/admin/AdminShell";
 import { buttonVariants } from "@/components/ui/button";
 import { DataTableSkeleton } from "@/features/cms";
-import { ProductsColumns, ProductsDataTable } from "@/features/products";
+import {
+  ExportProductsButton,
+  ProductsColumns,
+  ProductsDataTable,
+} from "@/features/products";
 import { gql } from "@/gql";
 import { getServiceClient } from "@/lib/urql-service";
 import { cn } from "@/lib/utils";
@@ -62,7 +66,8 @@ async function ProductsPage({ searchParams }: AdminProjectsPageProps) {
       heading="Productos"
       description={"Editar productos desde el dashboard. "}
     >
-      <section className="flex justify-end items-center pb-5 w-full">
+      <section className="flex justify-end items-center gap-3 pb-5 w-full">
+        <ExportProductsButton products={data.productsCollection?.edges || []} />
         <Link href="/admin/products/new" className={cn(buttonVariants())}>
           Nuevo Producto
         </Link>

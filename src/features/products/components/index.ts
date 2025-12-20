@@ -25,3 +25,4 @@ export {
   default as ProductsColumns,
 } from "./admin/ProductsColumns";
 export { default as ProductsDataTable } from "./admin/ProductsDataTable";
+export { ExportProductsButton } from "./admin/ExportProductsButton";
