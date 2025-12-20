@@ -524,36 +524,48 @@ function ProductFrom({
             <FormLabel className="text-sm">Imágenes Adicionales</FormLabel>
             <div className="flex flex-col gap-y-3">
               {fields.map((field, index) => (
-                <div key={field.id} className="flex items-center gap-x-2">
-                  <FormField
-                    control={control}
-                    name={`additionalImages.${index}`}
-                    render={({ field }) => (
-                      <FormItem className="flex-1">
-                        <FormControl>
-                          <Suspense>
-                            <ImageDialog
-                              defaultValue={field.value || undefined}
-                              onChange={field.onChange}
-                              value={field.value || undefined}
-                            />
-                          </Suspense>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {fields.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => remove(index)}
-                      className="flex-shrink-0"
-                    >
-                      <Icons.close className="h-4 w-4" />
-                    </Button>
-                  )}
+                <div key={field.id} className="flex items-start gap-x-3">
+                  <div className="flex-1">
+                    <FormField
+                      control={control}
+                      name={`additionalImages.${index}`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Suspense>
+                              <ImageDialog
+                                defaultValue={field.value || undefined}
+                                onChange={field.onChange}
+                                value={field.value || undefined}
+                              />
+                            </Suspense>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      if (fields.length === 1) {
+                        // Si es el último campo, solo limpiar el valor en lugar de eliminar
+                        setValue(`additionalImages.${index}`, "", {
+                          shouldValidate: false,
+                        });
+                      } else {
+                        // Si hay más campos, eliminar este
+                        remove(index);
+                      }
+                    }}
+                    className="flex-shrink-0 mt-0"
+                    title="Eliminar imagen"
+                    aria-label="Eliminar imagen"
+                  >
+                    <Icons.close className="h-4 w-4" />
+                  </Button>
                 </div>
               ))}
               <Button

@@ -91,6 +91,9 @@ export function ProductCard({
 }: ProductCardProps) {
   const { name, slug, featuredImage, badge, price, discount, images } = product;
 
+  // Obtener la categoría principal (primera colección)
+  const mainCategory = product.collections ?? null;
+
   // Obtener la segunda imagen si existe
   const secondImage = hoverImage ?? images?.edges?.[0]?.node?.media;
   const hasMultipleImages = !!secondImage;
@@ -179,6 +182,14 @@ export function ProductCard({
 
       <CardHeader className="p-1 px-2 pb-2 md:pb-4 md:px-4 flex flex-col">
         <div>
+          {mainCategory && (
+            <Link
+              href={`/collections/${mainCategory.slug}`}
+              className="text-xs text-gray-600"
+            >
+              {mainCategory.label}
+            </Link>
+          )}
           <CardTitle>
             <Link
               href={`/shop/${slug}`}

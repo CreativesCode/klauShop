@@ -17,6 +17,7 @@ import { AddToWishListButton } from "@/features/wishlists";
 import { gql } from "@/gql";
 import { getServiceClient } from "@/lib/urql-service";
 import { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
@@ -104,6 +105,14 @@ async function ProductDetailPage({ params }: Props) {
         <div className="col-span-12 md:col-span-5">
           <section className="flex justify-between items-start max-w-lg">
             <div>
+              {productNode.collections && (
+                <Link
+                  href={`/collections/${productNode.collections.slug}`}
+                  className="text-xs text-gray-600"
+                >
+                  {productNode.collections.label}
+                </Link>
+              )}
               <h1 className="text-4xl font-semibold tracking-wide mb-2">
                 {name}
               </h1>
