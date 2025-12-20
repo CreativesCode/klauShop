@@ -9,6 +9,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
+// Force dynamic rendering to avoid cache issues
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 type AdminProjectsPageProps = {
   searchParams: {
     [key: string]: string | string[] | undefined;
@@ -31,7 +35,10 @@ async function ProductsPage({ searchParams }: AdminProjectsPageProps) {
 
   const AdminProductsPageQuery = gql(/* GraphQL */ `
     query AdminProductsPageQuery {
-      productsCollection(orderBy: [{ created_at: DescNullsLast }]) {
+      productsCollection(
+        first: 1000
+        orderBy: [{ created_at: DescNullsLast }]
+      ) {
         edges {
           node {
             id
@@ -42,7 +49,11 @@ async function ProductsPage({ searchParams }: AdminProjectsPageProps) {
     }
   `);
 
-  const { data } = await getServiceClient().query(AdminProductsPageQuery, {});
+  const { data } = await getServiceClient().query(
+    AdminProductsPageQuery,
+    {},
+    { requestPolicy: "network-only" },
+  );
 
   if (!data) return notFound();
 

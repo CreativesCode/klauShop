@@ -42,6 +42,18 @@
 - **ShadcnUI:** A modern UI library for React, enabling the creation of beautiful, responsive designs.
 - **TailwindCSS:** A utility-first CSS framework for rapidly building custom designs.
 
+## GraphQL Configuration
+
+By default, Supabase's `pg_graphql` extension limits collections to **30 entries per page**. To increase this limit, apply the following configuration:
+
+```bash
+npm run db:apply-graphql-limit
+```
+
+This applies the `max_rows: 1000` directive to the schema and tables. After running, you may need to refresh the GraphQL schema in the Supabase dashboard (Settings → API → Refresh Schema).
+
+Reference: [pg_graphql Configuration - Max Rows](https://supabase.github.io/pg_graphql/configuration/#max-rows)
+
 ## Getting Started
 
 To get a local copy up and running, follow these simple steps:

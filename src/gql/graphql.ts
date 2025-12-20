@@ -4958,6 +4958,11 @@ export const AdminProductsPageQueryDocument = {
             arguments: [
               {
                 kind: "Argument",
+                name: { kind: "Name", value: "first" },
+                value: { kind: "IntValue", value: "1000" },
+              },
+              {
+                kind: "Argument",
                 name: { kind: "Name", value: "orderBy" },
                 value: {
                   kind: "ListValue",

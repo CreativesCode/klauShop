@@ -19,7 +19,7 @@ const documents = {
     types.AdminCollectionsPageQueryDocument,
   "\n  query AdminOrdersPageQuery {\n    ordersCollection(orderBy: [{ created_at: DescNullsLast }]) {\n      edges {\n        node {\n          __typename\n          id\n          ...OrderColumnsFragment\n        }\n      }\n    }\n  }\n":
     types.AdminOrdersPageQueryDocument,
-  "\n    query AdminProductsPageQuery {\n      productsCollection(orderBy: [{ created_at: DescNullsLast }]) {\n        edges {\n          node {\n            id\n            ...ProductColumnFragment\n          }\n        }\n      }\n    }\n  ":
+  "\n    query AdminProductsPageQuery {\n      productsCollection(\n        first: 1000\n        orderBy: [{ created_at: DescNullsLast }]\n      ) {\n        edges {\n          node {\n            id\n            ...ProductColumnFragment\n          }\n        }\n      }\n    }\n  ":
     types.AdminProductsPageQueryDocument,
   "\n  query CollectionRouteQuery($collectionSlug: String) {\n    collectionsCollection(\n      filter: { slug: { eq: $collectionSlug } }\n      orderBy: [{ order: DescNullsLast }]\n      first: 1\n    ) {\n      edges {\n        node {\n          id\n          title\n          label\n          description\n          ...CollectionBannerFragment\n          productsCollection(orderBy: [{ created_at: DescNullsLast }]) {\n            pageInfo {\n              hasNextPage\n            }\n            edges {\n              node {\n                id\n                ...ProductCardFragment\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n":
     types.CollectionRouteQueryDocument,
@@ -137,8 +137,8 @@ export function gql(
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(
-  source: "\n    query AdminProductsPageQuery {\n      productsCollection(orderBy: [{ created_at: DescNullsLast }]) {\n        edges {\n          node {\n            id\n            ...ProductColumnFragment\n          }\n        }\n      }\n    }\n  ",
-): (typeof documents)["\n    query AdminProductsPageQuery {\n      productsCollection(orderBy: [{ created_at: DescNullsLast }]) {\n        edges {\n          node {\n            id\n            ...ProductColumnFragment\n          }\n        }\n      }\n    }\n  "];
+  source: "\n    query AdminProductsPageQuery {\n      productsCollection(\n        first: 1000\n        orderBy: [{ created_at: DescNullsLast }]\n      ) {\n        edges {\n          node {\n            id\n            ...ProductColumnFragment\n          }\n        }\n      }\n    }\n  ",
+): (typeof documents)["\n    query AdminProductsPageQuery {\n      productsCollection(\n        first: 1000\n        orderBy: [{ created_at: DescNullsLast }]\n      ) {\n        edges {\n          node {\n            id\n            ...ProductColumnFragment\n          }\n        }\n      }\n    }\n  "];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
