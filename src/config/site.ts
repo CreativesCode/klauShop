@@ -65,6 +65,16 @@ export function getPageMetadata(
   return {
     title: getPageTitle(title),
     description: description || siteConfig.description,
+    openGraph: {
+      images: [
+        {
+          url: "https://bhwyagfoyylgrdgyngrm.supabase.co/storage/v1/object/public/klaushop/public/openGraph.jpg",
+          width: 1200,
+          height: 630,
+          alt: siteConfig.name,
+        },
+      ],
+    },
   };
 }
 

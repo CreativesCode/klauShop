@@ -98,7 +98,14 @@ export async function generateMetadata({
               alt: collection.featuredImage?.alt || collection.label,
             },
           ]
-        : [],
+        : [
+            {
+              url: "https://bhwyagfoyylgrdgyngrm.supabase.co/storage/v1/object/public/klaushop/public/openGraph.jpg",
+              width: 1200,
+              height: 630,
+              alt: siteConfig.name,
+            },
+          ],
       type: "website",
       locale: "es_ES",
     },
@@ -106,7 +113,11 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: `${collection.label} - ${siteConfig.name}`,
       description: metaDescription,
-      images: imageUrl ? [imageUrl] : [],
+      images: imageUrl
+        ? [imageUrl]
+        : [
+            "https://bhwyagfoyylgrdgyngrm.supabase.co/storage/v1/object/public/klaushop/public/openGraph.jpg",
+          ],
     },
     alternates: {
       canonical: collectionUrl,

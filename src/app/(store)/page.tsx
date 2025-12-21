@@ -1,7 +1,7 @@
 import { Shell } from "@/components/layouts/Shell";
 import { Icons } from "@/components/layouts/icons";
 import { buttonVariants } from "@/components/ui/button";
-import { siteConfig } from "@/config/site";
+import { getPageMetadata, siteConfig } from "@/config/site";
 import { CollectionCardFragment } from "@/features/collections";
 import {
   ProductCard,
@@ -16,6 +16,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
+
+export const metadata = getPageMetadata(
+  "Inicio",
+  "Tu tienda favorita de ropa y accesorios. Moda para el día a día con envíos a domicilio en Santa Clara, Placetas, Encrucijada y Calabazar de Sagua.",
+);
 
 // This route must run on every request so we can handle Supabase email redirects
 // like `/?code=...` and forward them to `/auth/callback`.

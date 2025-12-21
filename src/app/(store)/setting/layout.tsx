@@ -1,12 +1,11 @@
 import { SettingSidebarNav } from "@/components/layouts/SettingSidebar";
 import { Separator } from "@/components/ui/separator";
-import { Metadata } from "next";
+import { getPageMetadata } from "@/config/site";
 
-export const metadata: Metadata = {
-  title: "Configuraciones",
-  description:
-    "Gestiona tus configuraciones y preferencias de correo electrónico.",
-};
+export const metadata = getPageMetadata(
+  "Configuraciones",
+  "Gestiona tus configuraciones y preferencias de usuario.",
+);
 
 const sidebarNavItems = [
   {
