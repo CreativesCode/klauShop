@@ -17,11 +17,17 @@ Funciona para invitados (user_id null) y usuarios logueados.
 - Migraciones manuales en `drizzle/00xx_*.sql` (el journal de drizzle-kit esta desfasado; no confiar en `db:generate`).
 
 ## Gestion (admin) — endpoints en `src/app/api/admin/orders/[orderId]/`
-- `change-status`: valida `VALID_STATUS_TRANSITIONS` (`src/features/orders/utils/orderStatus.tsx`).
-  Rechaza `paid` y bloquea processing/shipped/delivered si `payment_status != paid`.
-- `mark-paid`: `consumeReservationsAndDeductStock` (reservas → `consumed`, resta `products.stock`) + `paid/paid`.
-- `cancel`: `releaseReservations` (reservas → `released`). No permite cancelar ordenes `paid` por esta via.
+Fuente unica: `VALID_STATUS_TRANSITIONS` + `ORDER_STATUS_ACTIONS` (copy de botones) en `src/features/orders/utils/orderStatus.tsx`.
+- pending_confirmation → pending_payment ("Confirmar orden") | paid (atajo) | cancelled
+- pending_payment → paid | cancelled;  paid → processing | cancelled;  processing → shipped | cancelled
+- shipped → delivered (NO cancelable);  delivered/cancelled finales
+- `change-status`: resto de transiciones; rechaza `paid` y `cancelled`.
+- `mark-paid`: consume reservas y resta stock (tolera legacy order_status=paid/payment unpaid).
+- `cancel`: libera reservas activas y repone stock de las consumidas. payment_status queda `paid` si lo estaba
+  (reembolso fuera de la app); el dashboard excluye canceladas de ingresos.
 - `update-shipping`: edita costo de envio. `create`: orden manual desde admin.
+- Etiquetas: `getOrderStatusLabel`, `getPaymentStatusInfo`, `getPaymentMethodLabel` — nunca mostrar el enum crudo.
+- Admin usa `html{font-size:14px}` desde `src/app/(admin)/layout.tsx` (UI mas densa); la tienda sigue en 16px.
 
 ## Modelo de stock
 - `products.stock` = stock fisico (a nivel producto, no por variante).

@@ -5,7 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { OrderLinePrice, OrderProgress } from "@/features/orders";
 import { getOrderStatusInfo } from "@/features/orders/utils/orderStatus";
-import { getPaymentStatusInfo } from "@/features/orders/utils/paymentStatus";
+import {
+  getPaymentMethodLabel,
+  getPaymentStatusInfo,
+} from "@/features/orders/utils/paymentStatus";
 import { formatOrderNumber } from "@/features/orders/utils/whatsapp";
 import db from "@/lib/supabase/db";
 import {
@@ -317,7 +320,7 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
               </div>
               {order.payment_method && (
                 <p className="text-sm text-muted-foreground mt-2">
-                  Método: {order.payment_method}
+                  Método: {getPaymentMethodLabel(order.payment_method)}
                 </p>
               )}
             </CardContent>

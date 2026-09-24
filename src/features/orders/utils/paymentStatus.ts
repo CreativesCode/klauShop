@@ -21,6 +21,18 @@ const PAYMENT_STATUS_INFO: Record<PaymentStatus, PaymentStatusInfo> = {
   },
 };
 
+const PAYMENT_METHOD_LABELS: Record<string, string> = {
+  whatsapp: "WhatsApp",
+  card: "Tarjeta",
+};
+
+export function getPaymentMethodLabel(
+  method: string | null | undefined,
+): string {
+  if (!method) return "N/A";
+  return PAYMENT_METHOD_LABELS[method] ?? method;
+}
+
 export function getPaymentStatusInfo(
   status: PaymentStatus | string | null | undefined,
 ): PaymentStatusInfo {

@@ -1,4 +1,7 @@
-import { isValidStatusTransition } from "@/features/orders/utils/orderStatus";
+import {
+  getOrderStatusLabel,
+  isValidStatusTransition,
+} from "@/features/orders/utils/orderStatus";
 import db from "@/lib/supabase/db";
 import { orders, OrderStatus } from "@/lib/supabase/schema";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
@@ -42,7 +45,19 @@ export async function POST(
         {
           error: "Estado inválido",
           message:
-            "Para marcar una orden como pagada usa la acción 'Marcar como Pagada' (endpoint mark-paid).",
+            "Para marcar una orden como pagada usa la acción 'Marcar como pagada' (endpoint mark-paid).",
+        },
+        { status: 400 },
+      );
+    }
+
+    // "cancelled" must go through the cancel endpoint, which releases reservations / restocks.
+    if (newStatus === "cancelled") {
+      return NextResponse.json(
+        {
+          error: "Estado inválido",
+          message:
+            "Para cancelar una orden usa la acción 'Cancelar orden' (endpoint cancel).",
         },
         { status: 400 },
       );
@@ -79,7 +94,7 @@ export async function POST(
       // 2. Verificar que la transición de estado es válida
       if (!isValidStatusTransition(currentStatus, newStatus)) {
         throw new Error(
-          `No se puede cambiar de ${currentStatus} a ${newStatus}`,
+          `No se puede cambiar de "${getOrderStatusLabel(currentStatus)}" a "${getOrderStatusLabel(newStatus)}"`,
         );
       }
 
@@ -98,7 +113,7 @@ export async function POST(
     return NextResponse.json({
       success: true,
       order: result,
-      message: `Estado actualizado a ${newStatus}`,
+      message: `Estado actualizado a ${getOrderStatusLabel(newStatus)}`,
     });
   } catch (error: any) {
     console.error("Error changing order status:", error);

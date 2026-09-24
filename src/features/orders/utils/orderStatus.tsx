@@ -89,17 +89,62 @@ export function getOrderStatusInfo(
 /**
  * Transiciones de estado válidas
  * Define qué estados pueden cambiar a qué otros estados
+ *
+ * Single source of truth for the admin UI and every order endpoint.
+ * "paid" goes through mark-paid (consumes reservations, deducts stock) and
+ * "cancelled" through cancel (releases reservations / restocks paid orders).
  */
 export const VALID_STATUS_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
-  pending_confirmation: ["pending_payment", "cancelled"],
-  // El paso a "paid" debe hacerse vía la acción "mark-paid" (descuenta stock y sincroniza payment_status)
-  pending_payment: ["cancelled"],
+  pending_confirmation: ["pending_payment", "paid", "cancelled"],
+  pending_payment: ["paid", "cancelled"],
   paid: ["processing", "cancelled"],
   processing: ["shipped", "cancelled"],
-  shipped: ["delivered", "cancelled"],
+  shipped: ["delivered"],
   delivered: [], // Estado final, no puede cambiar
   cancelled: [], // Estado final, no puede cambiar
 };
+
+export type OrderStatusAction = {
+  label: string;
+  description: string;
+};
+
+/**
+ * Admin action that moves an order INTO each status (button copy).
+ */
+export const ORDER_STATUS_ACTIONS: Record<
+  Exclude<OrderStatus, "pending_confirmation">,
+  OrderStatusAction
+> = {
+  pending_payment: {
+    label: "Confirmar orden",
+    description: "Aceptar el pedido; queda pendiente de pago",
+  },
+  paid: {
+    label: "Marcar como pagada",
+    description: "Pago recibido; descuenta el stock",
+  },
+  processing: {
+    label: "Empezar a preparar",
+    description: "El pedido pasa a preparación",
+  },
+  shipped: {
+    label: "Marcar como enviada",
+    description: "El pedido va en camino al cliente",
+  },
+  delivered: {
+    label: "Marcar como entregada",
+    description: "El cliente recibió el pedido",
+  },
+  cancelled: {
+    label: "Cancelar orden",
+    description: "Libera el stock reservado",
+  },
+};
+
+export function getOrderStatusLabel(status: OrderStatus | string): string {
+  return getOrderStatusInfo(status)?.label ?? status;
+}
 
 /**
  * Verifica si una transición de estado es válida

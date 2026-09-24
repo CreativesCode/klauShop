@@ -1,6 +1,14 @@
 import { consumeReservationsAndDeductStock } from "@/features/orders/utils/inventory";
+import {
+  getOrderStatusLabel,
+  isValidStatusTransition,
+} from "@/features/orders/utils/orderStatus";
 import db from "@/lib/supabase/db";
-import { inventoryReservations, orders } from "@/lib/supabase/schema";
+import {
+  OrderStatus,
+  inventoryReservations,
+  orders,
+} from "@/lib/supabase/schema";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { and, eq } from "drizzle-orm";
 import { cookies } from "next/headers";
@@ -40,12 +48,20 @@ export async function POST(
         throw new Error("Orden no encontrada");
       }
 
-      if (order.order_status === "cancelled") {
-        throw new Error("No se puede marcar como pagada una orden cancelada");
-      }
-
       if (order.payment_status === "paid") {
         throw new Error("La orden ya está marcada como pagada");
+      }
+
+      const currentStatus = order.order_status as OrderStatus;
+
+      // Legacy desynced orders (order_status=paid, payment_status=unpaid) can still be fixed here
+      if (
+        currentStatus !== "paid" &&
+        !isValidStatusTransition(currentStatus, "paid")
+      ) {
+        throw new Error(
+          `No se puede marcar como pagada una orden en estado "${getOrderStatusLabel(currentStatus)}"`,
+        );
       }
 
       // 2. Consumir reservas y descontar stock (si aún existen reservas activas)

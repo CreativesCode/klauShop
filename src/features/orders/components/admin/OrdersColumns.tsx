@@ -16,6 +16,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { getOrderStatusInfo } from "../../utils/orderStatus";
+import { getPaymentStatusInfo } from "../../utils/paymentStatus";
 import { formatOrderNumber } from "../../utils/whatsapp";
 import { DeleteOrderDialog } from "./DeleteOrderDialog";
 
@@ -127,7 +128,7 @@ const OrdersColumns: ColumnDef<{
                 : "text-green-500 border-green-500",
             )}
           >
-            {order.payment_status}
+            {getPaymentStatusInfo(order.payment_status).label}
           </Badge>
         </div>
       );

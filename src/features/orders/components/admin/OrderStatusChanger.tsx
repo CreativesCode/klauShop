@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
+  ORDER_STATUS_ACTIONS,
   getOrderStatusInfo,
   getValidNextStatuses,
 } from "../../utils/orderStatus";
@@ -61,27 +62,13 @@ export default function OrderStatusChanger({
     return colorMap[bgColor] || "hover:bg-opacity-80";
   };
 
-  // Agregar "paid" a los estados posibles si puede marcarse como pagada
-  const canMarkAsPaid =
-    paymentStatus !== "paid" &&
-    currentStatus !== "cancelled" &&
-    (currentStatus === "pending_confirmation" ||
-      currentStatus === "pending_payment");
-
-  // Agregar "cancelled" si puede cancelarse
-  const canCancel =
-    currentStatus !== "cancelled" &&
-    currentStatus !== "delivered" &&
-    currentStatus !== "shipped";
+  const isPaid = paymentStatus === "paid";
 
   // Construir lista de estados disponibles
-  const availableStatuses: OrderStatus[] = [...validNextStatuses];
-  if (canMarkAsPaid && !availableStatuses.includes("paid")) {
-    availableStatuses.push("paid");
-  }
-  if (canCancel && !availableStatuses.includes("cancelled")) {
-    availableStatuses.push("cancelled");
-  }
+  const availableStatuses = validNextStatuses.filter(
+    (status): status is Exclude<OrderStatus, "pending_confirmation"> =>
+      status !== "pending_confirmation" && !(status === "paid" && isPaid),
+  );
 
   const currentStatusInfo = getOrderStatusInfo(currentStatus) || {
     label: "Desconocido",
@@ -128,7 +115,9 @@ export default function OrderStatusChanger({
         response = await fetch(`/api/admin/orders/${orderId}/cancel`, {
           method: "POST",
         });
-        successMessage = "Orden cancelada. Las reservas han sido liberadas.";
+        successMessage = isPaid
+          ? "Orden cancelada. El stock ha sido devuelto al inventario."
+          : "Orden cancelada. El stock reservado ha sido liberado.";
       } else {
         // Usar endpoint de change-status (solo cambia estado)
         response = await fetch(`/api/admin/orders/${orderId}/change-status`, {
@@ -203,11 +192,12 @@ export default function OrderStatusChanger({
           {/* Botones de estados posibles */}
           {availableStatuses.length > 0 ? (
             <div className="space-y-3">
-              <Label>Cambiar a Estado</Label>
+              <Label>Acciones</Label>
               <div className="grid grid-cols-1 gap-2">
                 {availableStatuses.map((status) => {
                   const statusInfo = getOrderStatusInfo(status);
                   if (!statusInfo) return null;
+                  const action = ORDER_STATUS_ACTIONS[status];
                   const Icon = statusInfo.icon;
                   return (
                     <Button
@@ -225,10 +215,12 @@ export default function OrderStatusChanger({
                       <Icon size={18} className={statusInfo.color} />
                       <div className="flex flex-col items-start flex-1">
                         <span className={cn("font-medium", statusInfo.color)}>
-                          {statusInfo.label}
+                          {action.label}
                         </span>
-                        <span className="text-xs text-muted-foreground">
-                          {statusInfo.description}
+                        <span className="text-xs text-muted-foreground whitespace-normal text-left">
+                          {status === "cancelled" && isPaid
+                            ? "Devuelve el stock; el reembolso se hace fuera de la app"
+                            : action.description}
                         </span>
                       </div>
                     </Button>
@@ -248,12 +240,16 @@ export default function OrderStatusChanger({
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Cambiar estado de la orden?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {selectedStatus && selectedStatus !== "pending_confirmation"
+                ? `¿${ORDER_STATUS_ACTIONS[selectedStatus].label}?`
+                : "¿Cambiar estado de la orden?"}
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {selectedStatus && (
                 <>
-                  Estás a punto de cambiar el estado de{" "}
-                  <strong>{currentStatusInfo.label}</strong> a{" "}
+                  La orden pasará de <strong>{currentStatusInfo.label}</strong>{" "}
+                  a{" "}
                   <strong>
                     {getOrderStatusInfo(selectedStatus)?.label ||
                       selectedStatus}
@@ -263,22 +259,23 @@ export default function OrderStatusChanger({
                   <br />
                   {actionType === "mark-paid" && (
                     <>
-                      Esta acción marcará la orden como pagada y descontará el
-                      stock de los productos. Esta acción no se puede deshacer.
+                      Se descontará el stock de los productos. Esta acción no se
+                      puede deshacer.
                     </>
                   )}
-                  {actionType === "cancel" && (
-                    <>
-                      Esta acción liberará las reservas de stock. Si la orden ya
-                      fue pagada, no podrás cancelarla.
-                    </>
-                  )}
-                  {actionType === "change" && (
-                    <>
-                      Esta acción se registrará y puede afectar el inventario o
-                      notificaciones al cliente.
-                    </>
-                  )}
+                  {actionType === "cancel" &&
+                    (isPaid ? (
+                      <>
+                        La orden ya está pagada: el stock se devolverá al
+                        inventario. El reembolso al cliente se gestiona fuera de
+                        la app. Esta acción no se puede deshacer.
+                      </>
+                    ) : (
+                      <>
+                        Se liberará el stock reservado. Esta acción no se puede
+                        deshacer.
+                      </>
+                    ))}
                 </>
               )}
             </AlertDialogDescription>
@@ -289,7 +286,7 @@ export default function OrderStatusChanger({
               onClick={confirmStatusChange}
               disabled={isChanging}
             >
-              {isChanging ? "Actualizando..." : "Confirmar Cambio"}
+              {isChanging ? "Actualizando..." : "Confirmar"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -1,6 +1,6 @@
 import db from "@/lib/supabase/db";
 import { inventoryReservations, products } from "@/lib/supabase/schema";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 
 /**
  * Calcula el stock disponible para un producto considerando las reservas activas
@@ -77,26 +77,6 @@ export async function getAvailableStock(
 }
 
 /**
- * Verifica si hay suficiente stock disponible para una cantidad solicitada
- * @param productId - ID del producto
- * @param requestedQty - Cantidad solicitada
- * @param variantOptions - Opciones de la variante
- * @returns true si hay suficiente stock, false si no
- */
-export async function hasAvailableStock(
-  productId: string,
-  requestedQty: number,
-  variantOptions?: {
-    color?: string | null;
-    size?: string | null;
-    material?: string | null;
-  },
-): Promise<boolean> {
-  const available = await getAvailableStock(productId, variantOptions);
-  return available >= requestedQty;
-}
-
-/**
  * Reserva stock para un producto en una orden (dentro de una transacción)
  * IMPORTANTE: Esta función debe llamarse dentro de una transacción con lock
  * @param tx - Transacción de Drizzle
@@ -135,10 +115,38 @@ export async function createReservation(
 
 /**
  * Libera las reservas de una orden (cambia estado a 'released')
+ * Active reservations are simply released; consumed ones (order already paid)
+ * also give their quantity back to products.stock.
+ * IMPORTANTE: Esta función debe llamarse dentro de una transacción
+ * @param tx - Transacción de Drizzle
  * @param orderId - ID de la orden
  */
-export async function releaseReservations(orderId: string): Promise<void> {
-  await db
+export async function releaseReservations(
+  tx: any,
+  orderId: string,
+): Promise<void> {
+  const reservations = await tx
+    .select()
+    .from(inventoryReservations)
+    .where(
+      and(
+        eq(inventoryReservations.orderId, orderId),
+        inArray(inventoryReservations.status, ["active", "consumed"]),
+      ),
+    );
+
+  for (const reservation of reservations) {
+    if (reservation.status === "consumed") {
+      await tx
+        .update(products)
+        .set({
+          stock: sql`${products.stock} + ${reservation.quantity}`,
+        })
+        .where(eq(products.id, reservation.productId));
+    }
+  }
+
+  await tx
     .update(inventoryReservations)
     .set({
       status: "released",
@@ -147,7 +155,7 @@ export async function releaseReservations(orderId: string): Promise<void> {
     .where(
       and(
         eq(inventoryReservations.orderId, orderId),
-        eq(inventoryReservations.status, "active"),
+        inArray(inventoryReservations.status, ["active", "consumed"]),
       ),
     );
 }

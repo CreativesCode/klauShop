@@ -14,6 +14,8 @@ async function AdminLayout({ children }: Props) {
 
   return (
     <main>
+      {/* Denser admin UI: every Tailwind rem size scales down (store keeps 16px) */}
+      <style>{`html { font-size: 14px; }`}</style>
       <Navbar adminLayout={true} />
       {children}
       <MainFooter />

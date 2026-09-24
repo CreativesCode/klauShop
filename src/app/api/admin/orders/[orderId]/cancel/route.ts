@@ -1,6 +1,10 @@
 import { releaseReservations } from "@/features/orders/utils/inventory";
+import {
+  getOrderStatusLabel,
+  isValidStatusTransition,
+} from "@/features/orders/utils/orderStatus";
 import db from "@/lib/supabase/db";
-import { orders } from "@/lib/supabase/schema";
+import { OrderStatus, orders } from "@/lib/supabase/schema";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
@@ -40,18 +44,16 @@ export async function POST(
         throw new Error("Orden no encontrada");
       }
 
-      if (order.order_status === "cancelled") {
-        throw new Error("La orden ya está cancelada");
-      }
+      const currentStatus = order.order_status as OrderStatus;
 
-      if (order.order_status === "paid") {
+      if (!isValidStatusTransition(currentStatus, "cancelled")) {
         throw new Error(
-          "No se puede cancelar una orden pagada. El stock ya fue descontado.",
+          `No se puede cancelar una orden en estado "${getOrderStatusLabel(currentStatus)}"`,
         );
       }
 
-      // 2. Liberar reservas
-      await releaseReservations(orderId);
+      // 2. Liberar reservas (si ya estaba pagada, devuelve el stock)
+      await releaseReservations(tx, orderId);
 
       // 3. Actualizar estado de la orden
       const [updatedOrder] = await tx
@@ -68,7 +70,7 @@ export async function POST(
     return NextResponse.json({
       success: true,
       order: result,
-      message: "Orden cancelada y reservas liberadas",
+      message: "Orden cancelada y stock liberado",
     });
   } catch (error: any) {
     console.error("Error cancelling order:", error);

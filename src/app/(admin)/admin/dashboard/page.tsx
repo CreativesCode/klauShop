@@ -20,7 +20,18 @@ import {
   startOfMonth,
   subDays,
 } from "date-fns";
-import { and, desc, eq, gte, inArray, isNull, lt, or, sql } from "drizzle-orm";
+import {
+  and,
+  desc,
+  eq,
+  gte,
+  inArray,
+  isNull,
+  lt,
+  ne,
+  or,
+  sql,
+} from "drizzle-orm";
 import { Metadata } from "next";
 import Link from "next/link";
 
@@ -129,6 +140,7 @@ export default async function DashboardPage({
       .where(
         and(
           eq(orders.payment_status, "paid"),
+          ne(orders.order_status, "cancelled"),
           gte(orders.createdAt, safeFrom),
           lt(orders.createdAt, safeToExclusive),
         ),
@@ -141,6 +153,7 @@ export default async function DashboardPage({
       .where(
         and(
           eq(orders.payment_status, "paid"),
+          ne(orders.order_status, "cancelled"),
           gte(orders.createdAt, prevFrom),
           lt(orders.createdAt, prevToExclusive),
         ),
@@ -153,6 +166,7 @@ export default async function DashboardPage({
       .where(
         and(
           eq(orders.payment_status, "paid"),
+          ne(orders.order_status, "cancelled"),
           gte(orders.createdAt, safeFrom),
           lt(orders.createdAt, safeToExclusive),
         ),
@@ -165,6 +179,7 @@ export default async function DashboardPage({
       .where(
         and(
           eq(orders.payment_status, "paid"),
+          ne(orders.order_status, "cancelled"),
           gte(orders.createdAt, prevFrom),
           lt(orders.createdAt, prevToExclusive),
         ),
@@ -177,6 +192,7 @@ export default async function DashboardPage({
       .where(
         and(
           eq(orders.payment_status, "paid"),
+          ne(orders.order_status, "cancelled"),
           gte(orders.createdAt, safeFrom),
           lt(orders.createdAt, safeToExclusive),
         ),
@@ -189,6 +205,7 @@ export default async function DashboardPage({
       .where(
         and(
           eq(orders.payment_status, "paid"),
+          ne(orders.order_status, "cancelled"),
           gte(orders.createdAt, prevFrom),
           lt(orders.createdAt, prevToExclusive),
         ),
@@ -266,6 +283,7 @@ export default async function DashboardPage({
       .where(
         and(
           eq(orders.payment_status, "paid"),
+          ne(orders.order_status, "cancelled"),
           gte(orders.createdAt, safeFrom),
           lt(orders.createdAt, safeToExclusive),
         ),
@@ -283,6 +301,7 @@ export default async function DashboardPage({
           .where(
             and(
               eq(orders.payment_status, "paid"),
+              ne(orders.order_status, "cancelled"),
               gte(orders.createdAt, safeFrom),
               lt(orders.createdAt, safeToExclusive),
             ),
@@ -308,6 +327,7 @@ export default async function DashboardPage({
             .where(
               and(
                 eq(orders.payment_status, "paid"),
+                ne(orders.order_status, "cancelled"),
                 gte(orders.createdAt, chartFrom),
                 lt(orders.createdAt, safeToExclusive),
               ),

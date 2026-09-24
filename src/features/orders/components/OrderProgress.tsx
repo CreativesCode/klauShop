@@ -4,26 +4,26 @@ import { OrderStatus } from "@/lib/supabase/schema";
 import { cn } from "@/lib/utils";
 import {
   CheckCircle2,
-  Clock,
   Package,
   PackageCheck,
   Truck,
+  XCircle,
 } from "lucide-react";
 import React from "react";
 // Mapeo de estados a progreso y etapas
 const STATUS_STEPS = {
   pending_confirmation: { step: 0, progress: 0 },
-  pending_payment: { step: 0, progress: 12 },
-  paid: { step: 1, progress: 25 },
-  processing: { step: 1, progress: 50 },
-  shipped: { step: 2, progress: 75 },
+  pending_payment: { step: 1, progress: 33 },
+  paid: { step: 1, progress: 45 },
+  processing: { step: 1, progress: 55 },
+  shipped: { step: 2, progress: 67 },
   delivered: { step: 3, progress: 100 },
   cancelled: { step: 0, progress: 0 },
 };
 
 const STEPS = [
+  { label: "Recibida", icon: Package },
   { label: "Confirmada", icon: CheckCircle2 },
-  { label: "Procesando", icon: Package },
   { label: "Enviada", icon: Truck },
   { label: "Entregada", icon: PackageCheck },
 ];
@@ -48,7 +48,7 @@ function OrderProgress({ status = "pending_confirmation" }: Props) {
     return (
       <section className="py-8 text-center">
         <div className="flex items-center justify-center gap-2 text-red-600">
-          <Clock className="h-6 w-6" />
+          <XCircle className="h-6 w-6" />
           <p className="text-lg font-medium">Orden Cancelada</p>
         </div>
       </section>

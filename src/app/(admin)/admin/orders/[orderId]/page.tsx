@@ -9,6 +9,10 @@ import { DeleteOrderDialog } from "@/features/orders/components/admin/DeleteOrde
 import OrderStatusChanger from "@/features/orders/components/admin/OrderStatusChanger";
 import ShippingCostEditor from "@/features/orders/components/admin/ShippingCostEditor";
 import { getOrderStatusInfo } from "@/features/orders/utils/orderStatus";
+import {
+  getPaymentMethodLabel,
+  getPaymentStatusInfo,
+} from "@/features/orders/utils/paymentStatus";
 import { formatOrderNumber } from "@/features/orders/utils/whatsapp";
 import db from "@/lib/supabase/db";
 import {
@@ -99,6 +103,7 @@ export default async function AdminOrderDetailPage({
     borderColor: "border-gray-300",
   };
   const StatusIcon = statusInfo.icon;
+  const paymentInfo = getPaymentStatusInfo(order.payment_status);
   const subtotal = items.reduce((acc, item) => {
     return acc + Number(item.price || 0) * Number(item.quantity || 0);
   }, 0);
@@ -163,19 +168,19 @@ export default async function AdminOrderDetailPage({
                     Estado de Pago
                   </p>
                   <Badge
-                    variant={
-                      order.payment_status === "paid" ? "default" : "secondary"
-                    }
+                    variant={paymentInfo.badgeVariant}
                     className="mt-1 rounded-md px-2 py-1"
                   >
-                    {order.payment_status}
+                    {paymentInfo.label}
                   </Badge>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">
                     Método de Pago
                   </p>
-                  <p className="font-medium">{order.payment_method || "N/A"}</p>
+                  <p className="font-medium">
+                    {getPaymentMethodLabel(order.payment_method)}
+                  </p>
                 </div>
               </div>
             </CardContent>

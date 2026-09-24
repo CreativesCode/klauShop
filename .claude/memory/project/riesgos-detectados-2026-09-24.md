@@ -8,10 +8,9 @@ Detectados leyendo el codigo al instalar Titan Factory. NO corregidos todavia â€
    `/api/admin/orders/create` y `AdminOrderCreateForm`. `order_lines.price` guarda el precio YA descontado.
    Desde migracion 0013 `order_lines` guarda tambien `list_price` y `discount` (%); se muestran con `OrderLinePrice`.
    Ordenes anteriores: backfill `list_price = price`, `discount = 0` (se cobraron a precio de lista).
-2. **Cancelar via `change-status` no libera reservas.** `VALID_STATUS_TRANSITIONS` permite `* â†’ cancelled`, pero
-   `change-status` solo cambia el estado; las reservas quedan `active` (stock bloqueado para siempre) y en ordenes ya
-   pagadas no se repone `products.stock`. El endpoint `cancel` si libera, pero no cubre ordenes pagadas.
-3. **Chequeo de stock fuera de la transaccion.** `getAvailableStock` y `releaseReservations` usan `db` global, no `tx`;
+2. ~~**Cancelar via `change-status` no libera reservas.**~~ **RESUELTO 2026-09-24:** `change-status` rechaza `paid` y `cancelled`;
+   `cancel` valida con `VALID_STATUS_TRANSITIONS`, libera reservas activas y repone stock de las consumidas (ordenes pagadas).
+3. **Chequeo de stock fuera de la transaccion.** `getAvailableStock` usa `db` global (`releaseReservations` ya recibe `tx`), no `tx`;
    el lock `FOR UPDATE` sobre products no cubre la lectura de reservas.
 4. **Stock por producto vs reservas por variante.** Disponible = stock total - reservas de ESA variante; reservas de
    otras variantes no restan. Posible sobreventa cuando un producto tiene varias tallas/colores.
