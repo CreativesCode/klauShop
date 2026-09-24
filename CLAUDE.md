@@ -43,7 +43,7 @@ Aplican a TODO el trabajo: features, fixes, refactors.
 | Media | **Supabase Storage via API S3-compatible** (`src/lib/s3.ts`, bucket `klaushop`) |
 | Checkout | **WhatsApp** (activo). Stripe existe pero esta **desactivado** en la UI |
 | Tests | Jest + Testing Library (cobertura minima). Cypress instalado sin uso |
-| Deploy | Vercel (GitHub `rcalvarez37201/klauShop`, rama `main`) |
+| Deploy | Vercel (GitHub `CreativesCode/klauShop`, rama `main`) |
 
 **Prohibido sin pedirlo el usuario:** migrar a Next 16/React 19, cambiar Drizzle por otro ORM, sustituir GraphQL por
 queries directas, introducir Polar/Prisma. Detalle y motivo en memoria (`project/decision-no-golden-path.md`).

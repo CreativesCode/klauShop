@@ -12,7 +12,7 @@
 - [riesgos-detectados-2026-09-24.md](project/riesgos-detectados-2026-09-24.md) — Bugs/riesgos pendientes: reservas, stock, middleware (descuentos resuelto)
 
 ## feedback/ — Correcciones y preferencias
-(vacio)
+- [secretos-en-assets-titan-factory.md](feedback/secretos-en-assets-titan-factory.md) — Imagenes pueden llevar API keys en metadatos; escanear binarios antes de push
 
 ## reference/ — Donde encontrar cosas
 - [flujo-pedidos-inventario.md](reference/flujo-pedidos-inventario.md) — Ciclo de la orden, endpoints admin, reservas y stock, Stripe dormido
