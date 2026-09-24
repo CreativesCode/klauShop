@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { OrderLinePrice } from "@/features/orders";
 import { DeleteOrderDialog } from "@/features/orders/components/admin/DeleteOrderDialog";
 import OrderStatusChanger from "@/features/orders/components/admin/OrderStatusChanger";
 import ShippingCostEditor from "@/features/orders/components/admin/ShippingCostEditor";
@@ -61,6 +62,8 @@ export default async function AdminOrderDetailPage({
       id: orderLines.id,
       quantity: orderLines.quantity,
       price: orderLines.price,
+      listPrice: orderLines.listPrice,
+      discount: orderLines.discount,
       product: {
         id: products.id,
         name: products.name,
@@ -249,9 +252,12 @@ export default async function AdminOrderDetailPage({
                         )}
                       </div>
                       <div className="text-right">
-                        <p className="font-medium">
-                          {formatPrice(Number(item.price))}
-                        </p>
+                        <OrderLinePrice
+                          price={item.price}
+                          listPrice={item.listPrice}
+                          discount={item.discount}
+                          className="font-medium justify-end"
+                        />
                         <p className="text-sm text-muted-foreground">c/u</p>
                       </div>
                     </div>

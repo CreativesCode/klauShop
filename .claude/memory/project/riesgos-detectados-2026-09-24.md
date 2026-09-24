@@ -3,9 +3,11 @@
 Detectados leyendo el codigo al instalar Titan Factory. NO corregidos todavia — esperan decision del usuario.
 
 ## Alta prioridad (afectan dinero o stock)
-1. **Descuento no aplicado en el servidor.** El carrito muestra precio con `discount` (`UserCartSection.tsx`),
-   pero `/api/checkout/whatsapp` y `/api/admin/orders/create` calculan subtotal y `order_lines.price` con `products.price`
-   sin descuento. El total de la orden y el mensaje de WhatsApp pueden no coincidir con lo que vio el cliente.
+1. ~~**Descuento no aplicado en el servidor.**~~ **RESUELTO 2026-09-24:** helper `getDiscountedUnitPrice`
+   (`src/features/orders/utils/pricing.ts`, redondeo a centavos por unidad) usado en `/api/checkout/whatsapp`,
+   `/api/admin/orders/create` y `AdminOrderCreateForm`. `order_lines.price` guarda el precio YA descontado.
+   Desde migracion 0013 `order_lines` guarda tambien `list_price` y `discount` (%); se muestran con `OrderLinePrice`.
+   Ordenes anteriores: backfill `list_price = price`, `discount = 0` (se cobraron a precio de lista).
 2. **Cancelar via `change-status` no libera reservas.** `VALID_STATUS_TRANSITIONS` permite `* → cancelled`, pero
    `change-status` solo cambia el estado; las reservas quedan `active` (stock bloqueado para siempre) y en ordenes ya
    pagadas no se repone `products.stock`. El endpoint `cancel` si libera, pero no cubre ordenes pagadas.

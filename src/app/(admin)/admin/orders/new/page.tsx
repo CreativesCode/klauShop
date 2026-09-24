@@ -12,6 +12,7 @@ export default async function AdminNewOrderPage() {
       id: products.id,
       name: products.name,
       price: products.price,
+      discount: products.discount,
       stock: products.stock,
       colors: products.colors,
       sizes: products.sizes,

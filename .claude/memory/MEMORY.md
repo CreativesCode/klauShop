@@ -9,7 +9,7 @@
 ## project/ — Proyectos y decisiones activas
 - [negocio-klaushop.md](project/negocio-klaushop.md) — Que vende, mercado (Cuba/CUP), checkout WhatsApp, origen fork de Hiyori
 - [decision-no-golden-path.md](project/decision-no-golden-path.md) — 2026-09-24: TF solo como capa de agente; no migrar el stack
-- [riesgos-detectados-2026-09-24.md](project/riesgos-detectados-2026-09-24.md) — Bugs/riesgos pendientes: descuentos, reservas, stock, middleware
+- [riesgos-detectados-2026-09-24.md](project/riesgos-detectados-2026-09-24.md) — Bugs/riesgos pendientes: reservas, stock, middleware (descuentos resuelto)
 
 ## feedback/ — Correcciones y preferencias
 (vacio)

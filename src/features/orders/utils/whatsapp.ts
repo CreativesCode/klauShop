@@ -5,6 +5,8 @@ type OrderItem = {
   name: string;
   quantity: number;
   price: number;
+  listPrice?: number;
+  discount?: number;
   color?: string | null;
   size?: string | null;
   material?: string | null;
@@ -36,7 +38,11 @@ export function generateWhatsAppMessage(data: WhatsAppMessageData): string {
       .filter(Boolean)
       .join(", ");
     const variantText = variant ? ` (${variant})` : "";
-    message += `• ${item.name}${variantText} x${item.quantity} — ${item.price.toFixed(2)} CUP\n`;
+    const discountText =
+      item.discount && item.discount > 0 && item.listPrice
+        ? ` (antes ~${item.listPrice.toFixed(2)}~, -${item.discount}%)`
+        : "";
+    message += `• ${item.name}${variantText} x${item.quantity} — ${item.price.toFixed(2)} CUP${discountText}\n`;
   });
 
   // Subtotal

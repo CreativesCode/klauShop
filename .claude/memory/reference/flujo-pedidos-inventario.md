@@ -10,6 +10,12 @@
 4. Borra el carrito del usuario logueado (no critico si falla).
 Funciona para invitados (user_id null) y usuarios logueados.
 
+## Precios en order_lines
+- `price` = precio unitario FINAL cobrado (con descuento, via `getDiscountedUnitPrice` en `src/features/orders/utils/pricing.ts`).
+- `list_price` = precio de lista al comprar (nullable: la ruta Stripe dormida no lo rellena); `discount` = % aplicado.
+- UI: componente `OrderLinePrice` (admin detalle, cliente detalle, OrdersList) y el mensaje de WhatsApp muestran los tres.
+- Migraciones manuales en `drizzle/00xx_*.sql` (el journal de drizzle-kit esta desfasado; no confiar en `db:generate`).
+
 ## Gestion (admin) — endpoints en `src/app/api/admin/orders/[orderId]/`
 - `change-status`: valida `VALID_STATUS_TRANSITIONS` (`src/features/orders/utils/orderStatus.tsx`).
   Rechaza `paid` y bloquea processing/shipped/delivered si `payment_status != paid`.

@@ -25,6 +25,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import { getDiscountedUnitPrice } from "@/features/orders/utils/pricing";
 import { customerInfoSchema } from "@/features/orders/validations";
 import type { SelectProducts } from "@/lib/supabase/schema";
 import { formatPrice } from "@/lib/utils";
@@ -36,7 +37,14 @@ import { z } from "zod";
 
 type AdminOrderCreateProduct = Pick<
   SelectProducts,
-  "id" | "name" | "price" | "stock" | "colors" | "sizes" | "materials"
+  | "id"
+  | "name"
+  | "price"
+  | "discount"
+  | "stock"
+  | "colors"
+  | "sizes"
+  | "materials"
 >;
 
 const adminCreateOrderSchema = z.object({
@@ -116,7 +124,7 @@ export default function AdminOrderCreateForm({
   const subtotal = useMemo(() => {
     return (cartItems || []).reduce((acc, item) => {
       const p = productById.get(item.productId);
-      const price = p ? parseFloat(p.price || "0") : 0;
+      const price = p ? getDiscountedUnitPrice(p.price, p.discount) : 0;
       return acc + item.quantity * price;
     }, 0);
   }, [cartItems, productById]);
@@ -214,7 +222,14 @@ export default function AdminOrderCreateForm({
                       <div className="min-w-0">
                         <div className="font-medium truncate">{p.name}</div>
                         <div className="text-sm text-muted-foreground flex gap-2">
-                          <span>{formatPrice(Number(p.price || 0))}</span>
+                          <span>
+                            {formatPrice(
+                              getDiscountedUnitPrice(p.price, p.discount),
+                            )}
+                          </span>
+                          {Number(p.discount || 0) > 0 && (
+                            <span>-{Number(p.discount)}%</span>
+                          )}
                           {typeof p.stock === "number" && (
                             <span>Stock: {p.stock}</span>
                           )}
@@ -271,7 +286,14 @@ export default function AdminOrderCreateForm({
                                 {p?.name || "Producto"}
                               </div>
                               <div className="text-sm text-muted-foreground">
-                                {p ? formatPrice(Number(p.price || 0)) : "—"}
+                                {p
+                                  ? formatPrice(
+                                      getDiscountedUnitPrice(
+                                        p.price,
+                                        p.discount,
+                                      ),
+                                    )
+                                  : "—"}
                               </div>
                             </div>
 

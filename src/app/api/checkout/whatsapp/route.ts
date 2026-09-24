@@ -2,6 +2,7 @@ import {
   createReservation,
   getAvailableStock,
 } from "@/features/orders/utils/inventory";
+import { getDiscountedUnitPrice } from "@/features/orders/utils/pricing";
 import {
   formatOrderNumber,
   generateWhatsAppOrderData,
@@ -119,7 +120,11 @@ export async function POST(request: Request) {
       // 3. Calcular subtotal
       const subtotal = cartItems.reduce((acc, item) => {
         const product = productsData.find((p) => p.id === item.productId);
-        return acc + item.quantity * parseFloat(product?.price || "0");
+        return (
+          acc +
+          item.quantity *
+            getDiscountedUnitPrice(product?.price, product?.discount)
+        );
       }, 0);
 
       const totalAmount = subtotal + (shippingCost || 0);
@@ -149,7 +154,12 @@ export async function POST(request: Request) {
           orderId: order.id,
           productId: item.productId,
           quantity: item.quantity,
-          price: product?.price || "0",
+          price: getDiscountedUnitPrice(
+            product?.price,
+            product?.discount,
+          ).toFixed(2),
+          listPrice: product?.price || "0",
+          discount: product?.discount || "0.00",
         };
       });
 
@@ -179,7 +189,9 @@ export async function POST(request: Request) {
       return {
         name: product?.name || "Producto",
         quantity: item.quantity,
-        price: parseFloat(product?.price || "0"),
+        price: getDiscountedUnitPrice(product?.price, product?.discount),
+        listPrice: Number(product?.price || 0),
+        discount: Number(product?.discount || 0),
         color: item.color || null,
         size: item.size || null,
         material: item.material || null,

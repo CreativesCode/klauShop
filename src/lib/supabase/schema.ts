@@ -309,7 +309,13 @@ export const orderLines = pgTable(
       .notNull()
       .references(() => orders.id, { onDelete: "restrict" }),
     quantity: integer("quantity").notNull(),
+    // Final unit price charged (list price minus discount)
     price: decimal("price", { precision: 8, scale: 2 }).notNull(),
+    // Unit price before discount and discount % at the time of purchase
+    listPrice: decimal("list_price", { precision: 8, scale: 2 }),
+    discount: decimal("discount", { precision: 5, scale: 2 })
+      .default("0.00")
+      .notNull(),
     createdAt: timestamp("created_at", {
       withTimezone: true,
     })

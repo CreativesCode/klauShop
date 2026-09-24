@@ -12,6 +12,7 @@ import { Badge } from "../../../components/ui/badge";
 import { Button, buttonVariants } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader } from "../../../components/ui/card";
 import { getOrderStatusInfo } from "../utils/orderStatus";
+import OrderLinePrice from "./OrderLinePrice";
 import { formatOrderNumber } from "../utils/whatsapp";
 
 type OrdersListProps = {
@@ -38,6 +39,8 @@ export const OrdersListFragment = gql(/* GraphQL */ `
             id
             quantity
             price
+            list_price
+            discount
             products {
               id
               featured
@@ -198,9 +201,12 @@ function OrdersList({ orders, pageInfo }: OrdersListProps) {
                               </p>
                               <p>
                                 Precio:{" "}
-                                <span className="font-medium text-foreground">
-                                  {formatPrice(node.price)}
-                                </span>
+                                <OrderLinePrice
+                                  price={node.price}
+                                  listPrice={node.list_price}
+                                  discount={node.discount}
+                                  className="font-medium text-foreground"
+                                />
                               </p>
                               <p>
                                 Total:{" "}

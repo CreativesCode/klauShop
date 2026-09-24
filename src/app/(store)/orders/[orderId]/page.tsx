@@ -3,7 +3,7 @@ import { Icons } from "@/components/layouts/icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { OrderProgress } from "@/features/orders";
+import { OrderLinePrice, OrderProgress } from "@/features/orders";
 import { getOrderStatusInfo } from "@/features/orders/utils/orderStatus";
 import { getPaymentStatusInfo } from "@/features/orders/utils/paymentStatus";
 import { formatOrderNumber } from "@/features/orders/utils/whatsapp";
@@ -61,6 +61,8 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
       id: orderLines.id,
       quantity: orderLines.quantity,
       price: orderLines.price,
+      listPrice: orderLines.listPrice,
+      discount: orderLines.discount,
       product: {
         id: products.id,
         name: products.name,
@@ -183,8 +185,13 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
                       >
                         {item.product?.name}
                       </Link>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Cantidad: {item.quantity} × {formatPrice(item.price)}
+                      <p className="text-sm text-muted-foreground mt-1 flex flex-wrap items-center gap-1">
+                        Cantidad: {item.quantity} ×{" "}
+                        <OrderLinePrice
+                          price={item.price}
+                          listPrice={item.listPrice}
+                          discount={item.discount}
+                        />
                       </p>
                     </div>
                     {reservation && (
