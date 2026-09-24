@@ -23,12 +23,20 @@ export const profiles = pgTable("profiles", {
   name: text("name"),
   is_admin: boolean("is_admin"),
   email: text("email").unique(),
+  // WhatsApp phone; admins with a phone receive new-order notifications
+  phone: text("phone"),
   createdAt: timestamp("created_at", {
     withTimezone: true,
     mode: "string",
   })
     .defaultNow()
     .notNull(),
+});
+
+// OpenWA credentials read by the WhatsApp triggers (drizzle/0014). RLS on, no policies.
+export const privateConfig = pgTable("private_config", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
 });
 
 export type SelectUserProfiles = InferSelectModel<typeof profiles>;

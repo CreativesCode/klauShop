@@ -1,3 +1,4 @@
+import { getProfilePhone } from "@/features/users";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -16,5 +17,8 @@ export default async function AccountPage() {
     redirect("/sign-in");
   }
 
-  return <AccountClient />;
+  const isAdmin = Boolean(user.app_metadata?.isAdmin);
+  const adminPhone = isAdmin ? await getProfilePhone(user.id) : "";
+
+  return <AccountClient isAdmin={isAdmin} adminPhone={adminPhone} />;
 }

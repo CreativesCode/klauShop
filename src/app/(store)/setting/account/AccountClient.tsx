@@ -12,12 +12,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
+import { updateAdminPhone } from "@/features/users";
 import supabaseClient from "@/lib/supabase/client";
 import { useAuth } from "@/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 
-export function AccountClient() {
+type AccountClientProps = {
+  isAdmin?: boolean;
+  adminPhone?: string;
+};
+
+export function AccountClient({
+  isAdmin = false,
+  adminPhone = "",
+}: AccountClientProps) {
   const router = useRouter();
   const { toast } = useToast();
   const { user } = useAuth();
@@ -25,6 +34,8 @@ export function AccountClient() {
   const [isChangingEmail, setIsChangingEmail] = React.useState(false);
   const [isChangingPassword, setIsChangingPassword] = React.useState(false);
   const [isSigningOut, setIsSigningOut] = React.useState(false);
+  const [isSavingPhone, setIsSavingPhone] = React.useState(false);
+  const [phone, setPhone] = React.useState(adminPhone);
 
   const [email, setEmail] = React.useState(user?.email ?? "");
   const [newPassword, setNewPassword] = React.useState("");
@@ -138,6 +149,30 @@ export function AccountClient() {
     }
   };
 
+  const onSavePhone = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setIsSavingPhone(true);
+      await updateAdminPhone({ phone });
+      toast({
+        title: "Teléfono guardado",
+        description: phone.trim()
+          ? "Recibirás los pedidos nuevos por WhatsApp."
+          : "Ya no recibirás avisos de pedidos por WhatsApp.",
+      });
+      router.refresh();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "No se pudo guardar.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSavingPhone(false);
+    }
+  };
+
   const onSignOut = async () => {
     try {
       setIsSigningOut(true);
@@ -220,6 +255,36 @@ export function AccountClient() {
           </form>
         </CardContent>
       </Card>
+
+      {isAdmin && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Avisos de pedidos por WhatsApp</CardTitle>
+            <CardDescription>
+              Recibe un mensaje automático cada vez que entra un pedido nuevo.
+              Déjalo vacío para no recibir avisos.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4" onSubmit={onSavePhone}>
+              <div className="space-y-2">
+                <Label htmlFor="adminPhone">Teléfono de WhatsApp</Label>
+                <Input
+                  id="adminPhone"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+53 5xxxxxxx"
+                  autoComplete="tel"
+                />
+              </div>
+              <Button disabled={isSavingPhone} type="submit">
+                Guardar teléfono
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>

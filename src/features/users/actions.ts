@@ -1,6 +1,9 @@
 "use server";
 
-import { AdminUserFormData } from "@/features/users/validations";
+import {
+  AdminUserFormData,
+  adminPhoneSchema,
+} from "@/features/users/validations";
 import db from "@/lib/supabase/db";
 import {
   default as createClient,
@@ -35,6 +38,34 @@ export const getCurrentUserSession = async () => {
 
 export const isAdmin = (currentUser: User | null) =>
   currentUser?.app_metadata.isAdmin;
+
+export const getProfilePhone = async (userId: string) => {
+  const profile = await db.query.profiles.findFirst({
+    where: eq(profiles.id, userId),
+    columns: { phone: true },
+  });
+  return profile?.phone ?? "";
+};
+
+// Admin-only: the phone that receives new-order WhatsApp notifications
+export const updateAdminPhone = async (input: unknown) => {
+  const currentUser = await getCurrentUser();
+  if (!currentUser || !isAdmin(currentUser)) {
+    throw new Error("No autorizado.");
+  }
+
+  const parsed = adminPhoneSchema.safeParse(input);
+  if (parsed.success === false) {
+    throw new Error(parsed.error.errors[0]?.message ?? "Datos inválidos.");
+  }
+
+  await db
+    .update(profiles)
+    .set({ phone: parsed.data.phone || null })
+    .where(eq(profiles.id, currentUser.id));
+
+  return { success: true };
+};
 
 export const getUser = async ({ userId }: { userId: string }) => {
   const cookieStore = cookies();

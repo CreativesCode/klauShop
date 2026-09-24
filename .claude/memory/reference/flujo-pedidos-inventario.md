@@ -39,3 +39,7 @@ Fuente unica: `VALID_STATUS_TRANSITIONS` + `ORDER_STATUS_ACTIONS` (copy de boton
 en `UserCartSection.tsx`. No reactivar sin decision del usuario.
 
 Riesgos conocidos de este flujo: ver [riesgos-detectados-2026-09-24](../project/riesgos-detectados-2026-09-24.md).
+
+## Efectos secundarios en BD
+- Triggers en `orders` envian WhatsApp al crear la orden y en cada cambio de `order_status` (ver whatsapp-openwa.md).
+  Cualquier UPDATE de estado (incluso SQL manual) notifica al cliente, salvo volver a `pending_confirmation`.
