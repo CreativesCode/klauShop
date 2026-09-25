@@ -1,20 +1,17 @@
 import {
+  assertCartStock,
   createReservation,
-  getAvailableStock,
 } from "@/features/orders/utils/inventory";
 import { getDiscountedUnitPrice } from "@/features/orders/utils/pricing";
 import {
   formatOrderNumber,
   generateWhatsAppOrderData,
+  toCustomerData,
 } from "@/features/orders/utils/whatsapp";
 import { createWhatsAppOrderSchema } from "@/features/orders/validations";
+import { resolveShippingZone } from "@/features/shipping/utils/resolveShippingZone";
 import db from "@/lib/supabase/db";
-import {
-  CustomerData,
-  orderLines,
-  orders,
-  products,
-} from "@/lib/supabase/schema";
+import { orderLines, orders, products } from "@/lib/supabase/schema";
 import { getURL } from "@/lib/utils";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { inArray } from "drizzle-orm";
@@ -38,7 +35,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { cartItems, customerData, shippingCost } = parsed.data;
+    const { cartItems, customerData } = parsed.data;
 
     // Obtener usuario si está autenticado
     const supabase = createRouteHandlerClient({ cookies });
@@ -76,46 +73,14 @@ export async function POST(request: Request) {
         throw new Error(`Productos no encontrados: ${missingIds.join(", ")}`);
       }
 
-      // 2. Verificar disponibilidad de stock para cada item
-      const stockChecks = await Promise.all(
-        cartItems.map(async (item) => {
-          const available = await getAvailableStock(item.productId, {
-            color: item.color || null,
-            size: item.size || null,
-            material: item.material || null,
-          });
+      // 2. Verificar stock (por producto, sumando variantes) dentro de la tx
+      await assertCartStock(tx, cartItems, productsData);
 
-          console.log(`📊 Stock check para ${item.productId}:`, {
-            requested: item.quantity,
-            available,
-            hasStock: available >= item.quantity,
-            variant: {
-              color: item.color,
-              size: item.size,
-              material: item.material,
-            },
-          });
-
-          return {
-            productId: item.productId,
-            requested: item.quantity,
-            available,
-            hasStock: available >= item.quantity,
-          };
-        }),
-      );
-
-      // Verificar si algún producto no tiene suficiente stock
-      const outOfStock = stockChecks.filter((check) => !check.hasStock);
-
-      if (outOfStock.length > 0) {
-        const product = productsData.find(
-          (p) => p.id === outOfStock[0].productId,
-        );
-        throw new Error(
-          `OUT_OF_STOCK: ${product?.name || "Producto"} - Disponible: ${outOfStock[0].available}, Solicitado: ${outOfStock[0].requested}`,
-        );
-      }
+      // Shipping cost always comes from shipping_zones, never from the client
+      const shipping = await resolveShippingZone(tx, {
+        zoneId: customerData.shippingZoneId,
+        zoneName: customerData.zone,
+      });
 
       // 3. Calcular subtotal
       const subtotal = cartItems.reduce((acc, item) => {
@@ -127,7 +92,7 @@ export async function POST(request: Request) {
         );
       }, 0);
 
-      const totalAmount = subtotal + (shippingCost || 0);
+      const totalAmount = subtotal + (shipping.shippingCost ?? 0);
 
       // 4. Crear la orden
       const [order] = await tx
@@ -139,10 +104,11 @@ export async function POST(request: Request) {
           order_status: "pending_confirmation",
           payment_status: "unpaid",
           payment_method: "whatsapp",
-          customer_data: customerData as CustomerData,
+          customer_data: toCustomerData(customerData, shipping.zoneName),
           phone: customerData.phone,
-          zone: customerData.zone,
-          shipping_cost: shippingCost?.toString() || null,
+          zone: shipping.zoneName,
+          shipping_zone_id: shipping.shippingZoneId,
+          shipping_cost: shipping.shippingCost?.toString() ?? null,
           name: customerData.name,
         })
         .returning();
@@ -176,7 +142,7 @@ export async function POST(request: Request) {
         ),
       );
 
-      return { order, productsData };
+      return { order, productsData, shipping };
     });
 
     // 7. Generar mensaje de WhatsApp
@@ -207,8 +173,8 @@ export async function POST(request: Request) {
       orderNumber,
       items,
       subtotal,
-      shippingCost,
-      customerData: customerData as CustomerData,
+      shippingCost: result.shipping.shippingCost,
+      customerData: toCustomerData(customerData, result.shipping.zoneName),
       adminUrl: orderRedirectUrl,
     });
 

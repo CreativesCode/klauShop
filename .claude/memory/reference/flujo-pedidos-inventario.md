@@ -3,7 +3,8 @@
 ## Creacion (cliente)
 `POST /api/checkout/whatsapp` (`src/app/api/checkout/whatsapp/route.ts`):
 1. Valida con `createWhatsAppOrderSchema` (`src/features/orders/validations`).
-2. En `db.transaction`: `SELECT ... FOR UPDATE` de productos → `getAvailableStock` por item/variante →
+2. En `db.transaction`: `SELECT ... FOR UPDATE` de productos → `assertCartStock(tx, ...)` (suma lineas por producto) →
+   `resolveShippingZone(tx, ...)` (costo SIEMPRE de `shipping_zones`, nunca del cliente) →
    inserta `orders` (`pending_confirmation`, `unpaid`, `payment_method: "whatsapp"`, `currency: "cup"`) →
    `order_lines` → `createReservation` por item (status `active`).
 3. Genera mensaje + URL de WhatsApp (`src/features/orders/utils/whatsapp.ts`) con link `/order/:id`.
@@ -29,9 +30,17 @@ Fuente unica: `VALID_STATUS_TRANSITIONS` + `ORDER_STATUS_ACTIONS` (copy de boton
 - Etiquetas: `getOrderStatusLabel`, `getPaymentStatusInfo`, `getPaymentMethodLabel` — nunca mostrar el enum crudo.
 - Admin usa `html{font-size:14px}` desde `src/app/(admin)/layout.tsx` (UI mas densa); la tienda sigue en 16px.
 
-## Modelo de stock
+## Modelo de stock (desde 2026-09-24)
 - `products.stock` = stock fisico (a nivel producto, no por variante).
-- Disponible = `stock - SUM(reservas active)`; las reservas guardan color/size/material.
+- Disponible = `stock - SUM(reservas active)` de TODAS las variantes del producto (`getAvailableStock(productId, executor)`).
+  Las reservas guardan color/size/material solo como informacion. Dentro de un checkout pasar `tx` como executor.
+
+## Envios / zonas (desde 2026-09-24, migracion 0017)
+- `orders.shipping_zone_id` y `address.shipping_zone_id` (FK nullable, ON DELETE SET NULL); `zone` queda como nombre-foto.
+- NULL = zona "Otro" → `shipping_cost` NULL = "Por definir"; el admin lo fija con `update-shipping`.
+- Resolucion unica: `matchShippingZone` (id gana, fallback por nombre normalizado) en `src/features/shipping/utils/`;
+  servidor: `resolveShippingZone` (solo zonas activas). UI: `ShippingZoneSelect` + `useShippingZones` de `@/features/shipping`.
+- Orden desde admin: costo fijo de la zona (no editable al crear). Totales en vistas: `getOrderTotals` (`orders/utils/pricing.ts`).
 - Variantes reales (skus/options) estan comentadas en el esquema: los colores/tallas/materiales son arrays JSON en `products`.
 
 ## Stripe (dormido)

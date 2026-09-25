@@ -276,6 +276,11 @@ export const orders = pgTable(
     customer_data: json("customer_data").$type<CustomerData>(),
     phone: text("phone"),
     zone: text("zone"),
+    // NULL = unregistered zone ("Otro"); `zone` keeps the name as a snapshot
+    shipping_zone_id: text("shipping_zone_id").references(
+      () => shippingZones.id,
+      { onDelete: "set null" },
+    ),
     shipping_cost: decimal("shipping_cost", { precision: 8, scale: 2 }),
     createdAt: timestamp("created_at", {
       withTimezone: true,
@@ -459,6 +464,10 @@ export const address = pgTable("address", {
   recipientName: text("recipient_name").notNull(), // Nombre de quien recibe
   phone: text("phone").notNull(),
   zone: text("zone").notNull(), // Zona de entrega (Santa Clara, Placetas, etc.)
+  // NULL = unregistered zone ("Otro"); `zone` keeps the name as a snapshot
+  shippingZoneId: text("shipping_zone_id").references(() => shippingZones.id, {
+    onDelete: "set null",
+  }),
   fullAddress: text("full_address"), // Dirección completa (opcional)
   notes: text("notes"), // Notas adicionales
   isDefault: boolean("is_default").default(false).notNull(),

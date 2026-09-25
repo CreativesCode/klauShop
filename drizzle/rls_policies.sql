@@ -347,55 +347,33 @@ CREATE POLICY "Admins can update all addresses"
 -- ============================================
 -- POLÍTICAS PARA TABLA: shipping_zones
 -- ============================================
+-- Writes only from the server (Drizzle, postgres role). See 0017.
 ALTER TABLE public.shipping_zones ENABLE ROW LEVEL SECURITY;
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE public.shipping_zones FROM anon, authenticated;
 
 -- Todos pueden leer zonas de envío (público para checkout)
 CREATE POLICY "Anyone can read shipping zones"
   ON public.shipping_zones FOR SELECT
   USING (true);
 
--- Solo admins pueden insertar zonas de envío
-CREATE POLICY "Only admins can insert shipping zones"
-  ON public.shipping_zones FOR INSERT
-  WITH CHECK (public.is_admin(auth.uid()));
-
--- Solo admins pueden actualizar zonas de envío
-CREATE POLICY "Only admins can update shipping zones"
-  ON public.shipping_zones FOR UPDATE
-  USING (public.is_admin(auth.uid()));
-
--- Solo admins pueden eliminar zonas de envío
-CREATE POLICY "Only admins can delete shipping zones"
-  ON public.shipping_zones FOR DELETE
-  USING (public.is_admin(auth.uid()));
-
 -- ============================================
 -- POLÍTICAS PARA TABLA: inventory_reservations
 -- ============================================
--- Nota: Esta tabla tiene RLS deshabilitado en la migración 0009
--- Si necesitas habilitarlo, descomenta las siguientes políticas:
+-- Writes only from the server (Drizzle, postgres role). See 0017.
+ALTER TABLE public.inventory_reservations ENABLE ROW LEVEL SECURITY;
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE public.inventory_reservations FROM anon, authenticated;
 
--- ALTER TABLE public.inventory_reservations ENABLE ROW LEVEL SECURITY;
-
--- Solo admins pueden leer reservas de inventario
--- CREATE POLICY "Only admins can read inventory reservations"
---   ON public.inventory_reservations FOR SELECT
---   USING (public.is_admin(auth.uid()));
-
--- Solo admins pueden insertar reservas de inventario
--- CREATE POLICY "Only admins can insert inventory reservations"
---   ON public.inventory_reservations FOR INSERT
---   WITH CHECK (public.is_admin(auth.uid()));
-
--- Solo admins pueden actualizar reservas de inventario
--- CREATE POLICY "Only admins can update inventory reservations"
---   ON public.inventory_reservations FOR UPDATE
---   USING (public.is_admin(auth.uid()));
-
--- Solo admins pueden eliminar reservas de inventario
--- CREATE POLICY "Only admins can delete inventory reservations"
---   ON public.inventory_reservations FOR DELETE
---   USING (public.is_admin(auth.uid()));
+-- Users read reservations of their own orders (OrdersList shows variants)
+CREATE POLICY "Users can read reservations of their orders"
+  ON public.inventory_reservations FOR SELECT
+  TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.orders o
+       WHERE o.id = inventory_reservations.order_id
+         AND o.user_id = auth.uid()
+    )
+  );
 
 -- ============================================
 -- COMENTARIOS FINALES

@@ -21,6 +21,8 @@ export const addressSchema = z.object({
     .string()
     .min(2, "La zona debe tener al menos 2 caracteres")
     .max(200, "La zona es demasiado larga"),
+  // Registered zone; null/absent = "Otro"
+  shippingZoneId: z.string().nullable().optional(),
   fullAddress: z
     .string()
     .max(500, "La dirección es demasiado larga")

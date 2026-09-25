@@ -13,12 +13,17 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { AddressSelector } from "@/features/addresses/components";
 import { AddressInput } from "@/features/addresses/validations";
+import {
+  getZoneCost,
+  matchShippingZone,
+  useShippingZones,
+} from "@/features/shipping";
 import { SelectAddress } from "@/lib/supabase/schema";
 import { formatPrice } from "@/lib/utils";
 import { useAuth } from "@/providers/AuthProvider";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { CustomerInfoInput } from "../validations";
 import CustomerInfoForm from "./CustomerInfoForm";
 
@@ -37,13 +42,6 @@ type WhatsAppCheckoutButtonProps = {
 };
 
 const GUEST_ADDRESS_KEY = "guest_last_address";
-const normalize = (s: string) => s.trim().toLowerCase();
-
-type ShippingZone = {
-  id: string;
-  name: string;
-  cost: string;
-};
 
 export function WhatsAppCheckoutButton({
   cartItems,
@@ -53,12 +51,10 @@ export function WhatsAppCheckoutButton({
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingAddresses, setLoadingAddresses] = useState(false);
-  const [loadingShippingZones, setLoadingShippingZones] = useState(false);
   const [addresses, setAddresses] = useState<SelectAddress[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<SelectAddress | null>(
     null,
   );
-  const [shippingZones, setShippingZones] = useState<ShippingZone[]>([]);
   const [addressMode, setAddressMode] = useState<"existing" | "new">(
     "existing",
   );
@@ -76,42 +72,8 @@ export function WhatsAppCheckoutButton({
     }
   }, [user, isOpen]);
 
-  // Cargar zonas de envío (para poder calcular shippingCost)
-  useEffect(() => {
-    if (!isOpen) return;
-
-    let cancelled = false;
-    (async () => {
-      setLoadingShippingZones(true);
-      try {
-        const res = await fetch("/api/shipping-zones");
-        const data = await res.json();
-        const zones = (data?.zones ?? []) as ShippingZone[];
-        if (!cancelled) setShippingZones(zones);
-      } catch (e) {
-        console.error("Error loading shipping zones:", e);
-      } finally {
-        if (!cancelled) setLoadingShippingZones(false);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [isOpen]);
-
-  const resolveShippingCost = useMemo(() => {
-    const byName = new Map(
-      shippingZones.map((z) => [normalize(z.name), z] as const),
-    );
-
-    return (zoneName: string): number | undefined => {
-      const z = byName.get(normalize(zoneName));
-      if (!z) return undefined;
-      const n = Number(z.cost);
-      return Number.isFinite(n) ? n : undefined;
-    };
-  }, [shippingZones]);
+  // Zones only for the cost preview; the server resolves the real cost
+  const { zones: shippingZones } = useShippingZones(isOpen);
 
   // Cargar último address de guest desde localStorage
   useEffect(() => {
@@ -191,12 +153,12 @@ export function WhatsAppCheckoutButton({
             name: created.recipientName,
             phone: created.phone,
             zone: created.zone,
+            shippingZoneId: created.shippingZoneId,
             address: created.fullAddress || "",
             notes: created.notes || "",
           };
 
-          const shippingCost = resolveShippingCost(customerData.zone);
-          await handleSubmit(customerData, shippingCost);
+          await handleSubmit(customerData);
         } else {
           // Si el backend no devolvió la dirección (por cualquier cambio futuro), recargamos
           await loadAddresses();
@@ -220,8 +182,7 @@ export function WhatsAppCheckoutButton({
   const handleGuestSubmit = (customerData: CustomerInfoInput) => {
     // Guardar en localStorage para la próxima vez
     localStorage.setItem(GUEST_ADDRESS_KEY, JSON.stringify(customerData));
-    const shippingCost = resolveShippingCost(customerData.zone);
-    handleSubmit(customerData, shippingCost);
+    handleSubmit(customerData);
   };
 
   const handleContinueWithSelected = () => {
@@ -238,18 +199,15 @@ export function WhatsAppCheckoutButton({
       name: selectedAddress.recipientName,
       phone: selectedAddress.phone,
       zone: selectedAddress.zone,
+      shippingZoneId: selectedAddress.shippingZoneId,
       address: selectedAddress.fullAddress || "",
       notes: selectedAddress.notes || "",
     };
 
-    const shippingCost = resolveShippingCost(customerData.zone);
-    handleSubmit(customerData, shippingCost);
+    handleSubmit(customerData);
   };
 
-  const handleSubmit = async (
-    customerData: CustomerInfoInput,
-    shippingCost?: number,
-  ) => {
+  const handleSubmit = async (customerData: CustomerInfoInput) => {
     setIsLoading(true);
 
     try {
@@ -261,7 +219,6 @@ export function WhatsAppCheckoutButton({
         body: JSON.stringify({
           cartItems,
           customerData,
-          shippingCost,
         }),
       });
 
@@ -363,8 +320,13 @@ export function WhatsAppCheckoutButton({
             {addressMode === "existing" && selectedAddress && (
               <>
                 {(() => {
-                  const cost = resolveShippingCost(selectedAddress.zone);
-                  if (cost === undefined) {
+                  const cost = getZoneCost(
+                    matchShippingZone(shippingZones, {
+                      zoneId: selectedAddress.shippingZoneId,
+                      zoneName: selectedAddress.zone,
+                    }),
+                  );
+                  if (cost === null) {
                     return (
                       <Alert>
                         <AlertTitle>Envío por definir</AlertTitle>

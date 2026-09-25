@@ -1,23 +1,25 @@
 import db from "@/lib/supabase/db";
 import { inventoryReservations, products } from "@/lib/supabase/schema";
 import { and, eq, inArray, sql } from "drizzle-orm";
+import type { CreateWhatsAppOrderInput } from "../validations";
+
+type QueryExecutor = Pick<typeof db, "select">;
+type CartQuantity = Pick<
+  CreateWhatsAppOrderInput["cartItems"][number],
+  "productId" | "quantity"
+>;
 
 /**
- * Calcula el stock disponible para un producto considerando las reservas activas
- * @param productId - ID del producto
- * @param variantOptions - Opciones de la variante (color, size, material)
- * @returns Stock disponible o null si no hay stock
+ * Available stock of a product = products.stock - ALL its active reservations.
+ * Stock is tracked per product (colors/sizes are just options), so reservations
+ * of every variant count against the same stock.
+ * Pass the transaction as `executor` when checking inside a checkout.
  */
 export async function getAvailableStock(
   productId: string,
-  variantOptions?: {
-    color?: string | null;
-    size?: string | null;
-    material?: string | null;
-  },
+  executor: QueryExecutor = db,
 ): Promise<number> {
-  // Obtener el stock total del producto
-  const product = await db
+  const product = await executor
     .select({ stock: products.stock })
     .from(products)
     .where(eq(products.id, productId))
@@ -27,53 +29,56 @@ export async function getAvailableStock(
     return 0;
   }
 
-  const totalStock = product[0].stock;
-
-  // Construir condiciones para las variantes
-  const conditions = [
-    eq(inventoryReservations.productId, productId),
-    eq(inventoryReservations.status, "active"),
-  ];
-
-  // Agregar condiciones de variante si están especificadas
-  if (variantOptions?.color !== undefined) {
-    conditions.push(
-      variantOptions.color === null
-        ? sql`${inventoryReservations.color} IS NULL`
-        : eq(inventoryReservations.color, variantOptions.color),
-    );
-  }
-
-  if (variantOptions?.size !== undefined) {
-    conditions.push(
-      variantOptions.size === null
-        ? sql`${inventoryReservations.size} IS NULL`
-        : eq(inventoryReservations.size, variantOptions.size),
-    );
-  }
-
-  if (variantOptions?.material !== undefined) {
-    conditions.push(
-      variantOptions.material === null
-        ? sql`${inventoryReservations.material} IS NULL`
-        : eq(inventoryReservations.material, variantOptions.material),
-    );
-  }
-
-  // Calcular cantidad reservada activa
-  const reservedQtyResult = await db
+  const reservedQtyResult = await executor
     .select({
       total: sql<number>`COALESCE(SUM(${inventoryReservations.quantity}), 0)`,
     })
     .from(inventoryReservations)
-    .where(and(...conditions));
+    .where(
+      and(
+        eq(inventoryReservations.productId, productId),
+        eq(inventoryReservations.status, "active"),
+      ),
+    );
 
   const reservedQty = Number(reservedQtyResult[0]?.total || 0);
 
-  // Stock disponible = stock total - reservas activas
-  const availableStock = totalStock - reservedQty;
+  return Math.max(0, product[0].stock - reservedQty);
+}
 
-  return Math.max(0, availableStock);
+/** Total requested quantity per product (a cart may hold several variants of one product). */
+export function sumQuantitiesByProduct(
+  items: CartQuantity[],
+): Map<string, number> {
+  const totals = new Map<string, number>();
+  for (const item of items) {
+    totals.set(
+      item.productId,
+      (totals.get(item.productId) ?? 0) + item.quantity,
+    );
+  }
+  return totals;
+}
+
+/**
+ * Throws `OUT_OF_STOCK: ...` if any product lacks stock for the whole cart.
+ * Must run inside the transaction that locked the products (FOR UPDATE).
+ */
+export async function assertCartStock(
+  tx: QueryExecutor,
+  items: CartQuantity[],
+  productsData: { id: string; name: string }[],
+): Promise<void> {
+  for (const [productId, requested] of sumQuantitiesByProduct(items)) {
+    const available = await getAvailableStock(productId, tx);
+    if (available < requested) {
+      const name =
+        productsData.find((p) => p.id === productId)?.name || "Producto";
+      throw new Error(
+        `OUT_OF_STOCK: ${name} - Disponible: ${available}, Solicitado: ${requested}`,
+      );
+    }
+  }
 }
 
 /**

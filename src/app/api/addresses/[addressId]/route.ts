@@ -1,4 +1,5 @@
 import { addressSchema } from "@/features/addresses/validations";
+import { resolveShippingZone } from "@/features/shipping/utils/resolveShippingZone";
 import db from "@/lib/supabase/db";
 import { address } from "@/lib/supabase/schema";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
@@ -61,10 +62,25 @@ export async function PATCH(
         .where(eq(address.userProfileId, user.id));
     }
 
+    const { zone, shippingZoneId, ...otherFields } = addressData;
+
+    // Zone changed: link it again to shipping_zones (null = "Otro")
+    const shipping =
+      zone !== undefined
+        ? await resolveShippingZone(db, {
+            zoneId: shippingZoneId,
+            zoneName: zone,
+          })
+        : null;
+
     const [updatedAddress] = await db
       .update(address)
       .set({
-        ...addressData,
+        ...otherFields,
+        ...(shipping && {
+          zone: shipping.zoneName,
+          shippingZoneId: shipping.shippingZoneId,
+        }),
         ...(isDefault !== undefined && { isDefault }),
         updatedAt: new Date().toISOString(),
       })

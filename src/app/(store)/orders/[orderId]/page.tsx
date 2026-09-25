@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { OrderLinePrice, OrderProgress } from "@/features/orders";
 import { getOrderStatusInfo } from "@/features/orders/utils/orderStatus";
+import { getOrderTotals } from "@/features/orders/utils/pricing";
 import {
   getPaymentMethodLabel,
   getPaymentStatusInfo,
@@ -102,13 +103,7 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
   const statusInfo = getOrderStatusInfo(orderStatus);
   const StatusIcon = statusInfo?.icon;
   const paymentInfo = getPaymentStatusInfo(order.payment_status);
-  const shippingCost =
-    order.shipping_cost === null || order.shipping_cost === undefined
-      ? null
-      : Number(order.shipping_cost);
-  const amountNumber = Number(order.amount || 0);
-  const subtotal =
-    shippingCost === null ? amountNumber : amountNumber - shippingCost;
+  const { subtotal, shippingCost, total: amountNumber } = getOrderTotals(order);
 
   return (
     <Shell className="max-w-screen-2xl mx-auto">

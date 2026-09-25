@@ -15,3 +15,24 @@ export function getDiscountedUnitPrice(
       : priceValue;
   return Math.round(unitPrice * 100) / 100;
 }
+
+/**
+ * Totals of a stored order, shared by every order view.
+ * `amount` already includes shipping; a null shipping cost means
+ * "por definir" (unregistered zone), so the amount is just the subtotal.
+ */
+export function getOrderTotals(order: {
+  amount?: string | number | null;
+  shipping_cost?: string | number | null;
+}): { subtotal: number; shippingCost: number | null; total: number } {
+  const total = Number(order.amount || 0);
+  const shippingCost =
+    order.shipping_cost === null || order.shipping_cost === undefined
+      ? null
+      : Number(order.shipping_cost);
+  return {
+    subtotal: shippingCost === null ? total : total - shippingCost,
+    shippingCost,
+    total,
+  };
+}

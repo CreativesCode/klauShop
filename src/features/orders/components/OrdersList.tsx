@@ -12,6 +12,7 @@ import { Badge } from "../../../components/ui/badge";
 import { Button, buttonVariants } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader } from "../../../components/ui/card";
 import { getOrderStatusInfo } from "../utils/orderStatus";
+import { getOrderTotals } from "../utils/pricing";
 import OrderLinePrice from "./OrderLinePrice";
 import { formatOrderNumber } from "../utils/whatsapp";
 
@@ -102,12 +103,7 @@ function OrdersList({ orders, pageInfo }: OrdersListProps) {
             order.order_status as OrderStatus,
           );
           const StatusIcon = statusInfo?.icon;
-          const shippingCost =
-            order.shipping_cost === null || order.shipping_cost === undefined
-              ? null
-              : Number(order.shipping_cost);
-          const total = Number(order.amount || 0);
-          const subtotal = shippingCost === null ? total : total - shippingCost;
+          const { subtotal, shippingCost, total } = getOrderTotals(order);
 
           return (
             <Card key={order.id} className="w-full overflow-hidden">

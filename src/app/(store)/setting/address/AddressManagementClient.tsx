@@ -147,6 +147,7 @@ export function AddressManagementClient({
                     recipientName: editingAddress.recipientName,
                     phone: editingAddress.phone,
                     zone: editingAddress.zone,
+                    shippingZoneId: editingAddress.shippingZoneId,
                     fullAddress: editingAddress.fullAddress,
                     notes: editingAddress.notes,
                     isDefault: editingAddress.isDefault,

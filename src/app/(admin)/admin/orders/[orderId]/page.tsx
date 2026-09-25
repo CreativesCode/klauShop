@@ -9,6 +9,7 @@ import { DeleteOrderDialog } from "@/features/orders/components/admin/DeleteOrde
 import OrderStatusChanger from "@/features/orders/components/admin/OrderStatusChanger";
 import ShippingCostEditor from "@/features/orders/components/admin/ShippingCostEditor";
 import { getOrderStatusInfo } from "@/features/orders/utils/orderStatus";
+import { getOrderTotals } from "@/features/orders/utils/pricing";
 import {
   getPaymentMethodLabel,
   getPaymentStatusInfo,
@@ -104,13 +105,7 @@ export default async function AdminOrderDetailPage({
   };
   const StatusIcon = statusInfo.icon;
   const paymentInfo = getPaymentStatusInfo(order.payment_status);
-  const subtotal = items.reduce((acc, item) => {
-    return acc + Number(item.price || 0) * Number(item.quantity || 0);
-  }, 0);
-  const shippingCost =
-    order.shipping_cost === null || order.shipping_cost === undefined
-      ? null
-      : Number(order.shipping_cost);
+  const { subtotal, shippingCost, total } = getOrderTotals(order);
 
   return (
     <AdminShell
@@ -296,7 +291,7 @@ export default async function AdminOrderDetailPage({
                 <Separator />
                 <div className="flex justify-between font-semibold text-lg">
                   <span>Total</span>
-                  <span>{formatPrice(Number(order.amount))}</span>
+                  <span>{formatPrice(total)}</span>
                 </div>
               </div>
             </CardContent>

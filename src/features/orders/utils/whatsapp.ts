@@ -1,5 +1,6 @@
 import { siteConfig } from "@/config/site";
 import { CustomerData } from "@/lib/supabase/schema";
+import type { CustomerInfoInput } from "../validations";
 
 type OrderItem = {
   name: string;
@@ -16,10 +17,28 @@ type WhatsAppMessageData = {
   orderNumber: string;
   items: OrderItem[];
   subtotal: number;
-  shippingCost?: number;
+  // null = unregistered zone, cost to be defined by the admin
+  shippingCost: number | null;
   customerData: CustomerData;
   adminUrl: string;
 };
+
+/**
+ * Customer snapshot stored in orders.customer_data, with the zone name
+ * resolved on the server (canonical name when the zone is registered).
+ */
+export function toCustomerData(
+  input: CustomerInfoInput,
+  zoneName: string,
+): CustomerData {
+  return {
+    name: input.name,
+    phone: input.phone,
+    zone: zoneName,
+    address: input.address,
+    notes: input.notes,
+  };
+}
 
 /**
  * Genera el mensaje de WhatsApp para una nueva orden
@@ -49,9 +68,9 @@ export function generateWhatsAppMessage(data: WhatsAppMessageData): string {
   message += `\n*Subtotal:* ${subtotal.toFixed(2)} CUP`;
 
   // Shipping
-  if (shippingCost === undefined) {
+  if (shippingCost === null) {
     message += `\n*Envío:* Por definir (zona no registrada)`;
-    message += `\n*Total:* ${subtotal.toFixed(2)} CUP (sin envío)`;
+    message += `\n*Total:* ${subtotal.toFixed(2)} CUP + envío por definir`;
   } else {
     message += `\n*Envío:* ${shippingCost.toFixed(2)} CUP`;
     message += `\n*Total:* ${(subtotal + shippingCost).toFixed(2)} CUP`;

@@ -17,6 +17,8 @@ export const customerInfoSchema = z.object({
     .string()
     .min(2, "La zona debe tener al menos 2 caracteres")
     .max(200, "La zona es demasiado larga"),
+  // Registered zone; null/absent = "Otro" (cost defined later by the admin)
+  shippingZoneId: z.string().nullable().optional(),
   address: z.string().max(500, "La dirección es demasiado larga").optional(),
   notes: z.string().max(1000, "Las notas son demasiado largas").optional(),
 });
@@ -36,8 +38,8 @@ export const createWhatsAppOrderSchema = z.object({
       }),
     )
     .min(1, "El carrito debe tener al menos un producto"),
+  // Shipping cost is resolved on the server from shipping_zones
   customerData: customerInfoSchema,
-  shippingCost: z.number().nonnegative().optional(),
 });
 
 export type CreateWhatsAppOrderInput = z.infer<

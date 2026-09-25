@@ -27,6 +27,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { getDiscountedUnitPrice } from "@/features/orders/utils/pricing";
 import { customerInfoSchema } from "@/features/orders/validations";
+import {
+  ShippingZoneSelect,
+  getZoneCost,
+  matchShippingZone,
+  useShippingZones,
+} from "@/features/shipping";
 import type { SelectProducts } from "@/lib/supabase/schema";
 import { formatPrice } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -59,8 +65,8 @@ const adminCreateOrderSchema = z.object({
       }),
     )
     .min(1, "Debes agregar al menos un producto"),
+  // Shipping cost is the zone's fixed cost, resolved on the server
   customerData: customerInfoSchema,
-  shippingCost: z.coerce.number().min(0).optional(),
 });
 
 type AdminCreateOrderValues = z.infer<typeof adminCreateOrderSchema>;
@@ -101,11 +107,11 @@ export default function AdminOrderCreateForm({
     resolver: zodResolver(adminCreateOrderSchema),
     defaultValues: {
       cartItems: [],
-      shippingCost: 0,
       customerData: {
         name: "",
         phone: "",
         zone: "",
+        shippingZoneId: null,
         address: "",
         notes: "",
       },
@@ -119,7 +125,14 @@ export default function AdminOrderCreateForm({
   });
 
   const cartItems = watch("cartItems");
-  const shippingCost = watch("shippingCost") || 0;
+  const { zones: shippingZones } = useShippingZones();
+  // Preview only; null = "Otro" (por definir)
+  const shippingCost = getZoneCost(
+    matchShippingZone(shippingZones, {
+      zoneId: watch("customerData.shippingZoneId"),
+      zoneName: watch("customerData.zone"),
+    }),
+  );
 
   const subtotal = useMemo(() => {
     return (cartItems || []).reduce((acc, item) => {
@@ -129,7 +142,7 @@ export default function AdminOrderCreateForm({
     }, 0);
   }, [cartItems, productById]);
 
-  const total = subtotal + (shippingCost || 0);
+  const total = subtotal + (shippingCost ?? 0);
 
   const addProduct = (productId: string) => {
     const current = getValues("cartItems");
@@ -154,13 +167,7 @@ export default function AdminOrderCreateForm({
     setCreated(null);
 
     try {
-      const payload: AdminCreateOrderValues = {
-        ...values,
-        shippingCost:
-          values.shippingCost === undefined || Number.isNaN(values.shippingCost)
-            ? undefined
-            : values.shippingCost,
-      };
+      const payload: AdminCreateOrderValues = values;
 
       const res = await fetch("/api/admin/orders/create", {
         method: "POST",
@@ -493,9 +500,17 @@ export default function AdminOrderCreateForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Zona *</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Ej: Santa Clara..." {...field} />
-                      </FormControl>
+                      <ShippingZoneSelect
+                        value={{
+                          zoneId: watch("customerData.shippingZoneId") ?? null,
+                          zoneName: field.value,
+                        }}
+                        onChange={({ zoneId, zoneName }) => {
+                          form.setValue("customerData.shippingZoneId", zoneId);
+                          field.onChange(zoneName);
+                        }}
+                        disabled={isSubmitting}
+                      />
                       <FormMessage />
                     </FormItem>
                   )}
@@ -532,34 +547,6 @@ export default function AdminOrderCreateForm({
 
               <Separator />
 
-              <FormField
-                control={control}
-                name="shippingCost"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Costo de envío</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min={0}
-                        step="0.01"
-                        value={field.value ?? ""}
-                        onChange={(e) => {
-                          const raw = e.target.value;
-                          if (raw === "") {
-                            field.onChange(undefined);
-                            return;
-                          }
-                          const v = Number(raw);
-                          field.onChange(Number.isFinite(v) ? v : 0);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <div className="rounded-md border p-3 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
@@ -567,7 +554,11 @@ export default function AdminOrderCreateForm({
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Envío</span>
-                  <span>{formatPrice(Number(shippingCost || 0))}</span>
+                  <span>
+                    {shippingCost === null
+                      ? "Por definir"
+                      : formatPrice(shippingCost)}
+                  </span>
                 </div>
                 <Separator />
                 <div className="flex justify-between font-semibold">

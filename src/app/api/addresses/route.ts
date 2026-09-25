@@ -1,4 +1,5 @@
 import { addressSchema } from "@/features/addresses/validations";
+import { resolveShippingZone } from "@/features/shipping/utils/resolveShippingZone";
 import db from "@/lib/supabase/db";
 import { address } from "@/lib/supabase/schema";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
@@ -81,13 +82,19 @@ export async function POST(request: Request) {
 
     const shouldBeDefault = isDefault || existingAddresses.length === 0;
 
+    const shipping = await resolveShippingZone(db, {
+      zoneId: addressFields.shippingZoneId,
+      zoneName: addressFields.zone,
+    });
+
     const [newAddress] = await db
       .insert(address)
       .values({
         name: addressFields.name,
         recipientName: addressFields.recipientName,
         phone: addressFields.phone,
-        zone: addressFields.zone,
+        zone: shipping.zoneName,
+        shippingZoneId: shipping.shippingZoneId,
         fullAddress: addressFields.fullAddress || null,
         notes: addressFields.notes || null,
         userProfileId: user.id,
