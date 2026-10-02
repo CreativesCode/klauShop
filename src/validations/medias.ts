@@ -14,7 +14,7 @@ const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/gif"];
 //     .string()
 //     .refine(
 //       (type) => ACCEPTED_IMAGE_TYPES.includes(type),
-//       "Only images are allowed to be sent."
+//       "Solo se permiten imágenes."
 //     ),
 //   name: z.string(),
 //   lastModified: z.number(),
@@ -27,9 +27,9 @@ export const mediaSchema = z.record(
     .custom<FileWithPath>()
     //   .transform((file) => file.length > 0 && file.item(0)),
     .refine((file) => !file || (!!file && file.size <= 500 * 1024 * 1024), {
-      message: "The profile picture must be a maximum of 30MB.",
+      message: "La imagen supera el tamaño máximo permitido.",
     })
     .refine((file) => !file || (!!file && file.type?.startsWith("image")), {
-      message: "Only images are allowed to be sent.",
+      message: "Solo se permiten imágenes.",
     }),
 );

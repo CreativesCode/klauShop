@@ -1,16 +1,19 @@
 import { getMedia } from "@/_actions/medias";
 import Modal from "@/components/ui/Modal";
 import { UpdateMediaForm } from "@/features/medias";
+// Server-only (DB access), so it is not re-exported from the client-facing index.
+import { getMediaUsage } from "@/features/medias/server/getMediaUsage";
 import { keytoUrl } from "@/lib/utils";
 import Image from "next/image";
-import { notFound } from "next/navigation";
 
 type Props = { params: { mediaId: string } };
 
 async function EditMediaModals({ params: { mediaId } }: Props) {
   // TODO: Change from server Action to GrahpQL
   const media = await getMedia(mediaId);
-  if (!media) return notFound();
+  // The slot can be re-rendered after its media was deleted: render nothing instead of a 404.
+  if (!media) return null;
+  const usage = await getMediaUsage(media.id);
 
   return (
     <Modal header="Modificar Imagen" containerClassName="px-5">
@@ -25,7 +28,7 @@ async function EditMediaModals({ params: { mediaId } }: Props) {
           />
         </div>
         <div className="border-t md:border-t-0 md:border-l border-zinc-600 pt-5">
-          <UpdateMediaForm media={media} />
+          <UpdateMediaForm media={media} usage={usage} />
         </div>
       </div>
     </Modal>

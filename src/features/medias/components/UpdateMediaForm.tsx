@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createInsertSchema } from "drizzle-zod";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 
 import {
@@ -33,12 +33,14 @@ import { Spinner } from "@/components/ui/spinner";
 import { useToast } from "@/components/ui/use-toast";
 import { InsertMedia, SelectMedia, medias } from "@/lib/supabase/schema";
 import { useRouter } from "next/navigation";
+import type { MediaUsage } from "../server/getMediaUsage";
 
 type UpdateMediaFormProps = {
   media?: SelectMedia;
+  usage?: MediaUsage;
 };
 
-function UpdateMediaForm({ media }: UpdateMediaFormProps) {
+function UpdateMediaForm({ media, usage }: UpdateMediaFormProps) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const { toast } = useToast();
@@ -55,11 +57,52 @@ function UpdateMediaForm({ media }: UpdateMediaFormProps) {
     formState: { errors },
   } = form;
 
-  const deleteHandler = () => {
-    console.log("Delete");
-    router.push("/admin/medias");
-    router.refresh();
-    toast({ title: "Imagen Eliminada" });
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const featuredIn = [
+    ...(usage?.featuredInProducts ?? []),
+    ...(usage?.featuredInCollections ?? []),
+  ];
+  const galleries = usage?.inProductGalleries ?? [];
+
+  const deleteHandler = async (event: React.MouseEvent) => {
+    // Keep the dialog open until the request finishes.
+    event.preventDefault();
+    setIsDeleting(true);
+
+    try {
+      const response = await fetch(`/api/medias/${media.id}`, {
+        method: "DELETE",
+      });
+      const body = (await response.json().catch(() => null)) as {
+        message?: string;
+      } | null;
+
+      if (!response.ok) {
+        toast({
+          title: "No se pudo eliminar la imagen",
+          description:
+            body?.message ?? `Error del servidor (${response.status}).`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setConfirmOpen(false);
+      toast({ title: "Imagen eliminada" });
+      // Same as the modal's close button. push + refresh would re-render the still-active
+      // @mediaModal slot with the deleted id and hit notFound() (404).
+      router.back();
+    } catch {
+      toast({
+        title: "No se pudo eliminar la imagen",
+        description: "Sin conexión con el servidor. Revisa tu internet.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const onSubmit = handleSubmit(async (data: InsertMedia) => {
@@ -114,25 +157,61 @@ function UpdateMediaForm({ media }: UpdateMediaFormProps) {
           data={media.updatedAt.toString()}
         />
 
-        <AlertDialog>
-          <AlertDialogTrigger className="text-red-600 text-left">
+        <AlertDialog
+          open={confirmOpen}
+          onOpenChange={(open) => !isDeleting && setConfirmOpen(open)}
+        >
+          <AlertDialogTrigger type="button" className="text-red-600 text-left">
             Eliminar permanentemente
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
-                ¿Estás seguro de querer eliminar la imagen permanentemente?
+                {featuredIn.length > 0
+                  ? "Esta imagen no se puede eliminar todavía"
+                  : "¿Estás seguro de querer eliminar la imagen permanentemente?"}
               </AlertDialogTitle>
-              <AlertDialogDescription>
-                Esta acción no puede ser deshecha. Esta acción eliminará la
-                imagen permanentemente.
+              <AlertDialogDescription asChild>
+                <div className="space-y-2">
+                  {featuredIn.length > 0 ? (
+                    <p>
+                      Es la imagen principal de:{" "}
+                      <strong>{featuredIn.join(", ")}</strong>. Cámbiala allí
+                      primero y luego vuelve a intentarlo.
+                    </p>
+                  ) : (
+                    <>
+                      <p>
+                        Esta acción no puede ser deshecha. Esta acción eliminará
+                        la imagen permanentemente.
+                      </p>
+                      {galleries.length > 0 && (
+                        <p className="text-amber-700">
+                          También se quitará de la galería de:{" "}
+                          <strong>{galleries.join(", ")}</strong>.
+                        </p>
+                      )}
+                    </>
+                  )}
+                </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction onClick={deleteHandler}>
-                Eliminar
-              </AlertDialogAction>
+              <AlertDialogCancel disabled={isDeleting}>
+                {featuredIn.length > 0 ? "Entendido" : "Cancelar"}
+              </AlertDialogCancel>
+              {featuredIn.length === 0 && (
+                <AlertDialogAction
+                  onClick={deleteHandler}
+                  disabled={isDeleting}
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  {isDeleting ? "Eliminando..." : "Eliminar"}
+                  {isDeleting && (
+                    <Spinner className="ml-2 h-4 w-4" aria-hidden="true" />
+                  )}
+                </AlertDialogAction>
+              )}
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

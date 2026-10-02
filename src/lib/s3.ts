@@ -1,6 +1,7 @@
 "use server";
 import { env } from "@/env.mjs";
 import {
+  DeleteObjectCommand,
   PutObjectCommand,
   PutObjectCommandInput,
   S3Client,
@@ -23,4 +24,12 @@ export const uploadImage = async (params: PutObjectCommandInput) => {
   const putObject = new PutObjectCommand(params);
   const s3Response = await s3Client.send(putObject);
   return s3Response;
+};
+
+export const deleteImage = async (key: string) => {
+  const deleteObject = new DeleteObjectCommand({
+    Bucket: env.NEXT_PUBLIC_S3_BUCKET,
+    Key: key,
+  });
+  return s3Client.send(deleteObject);
 };

@@ -1,12 +1,15 @@
 "use client";
 import { Icons } from "@/components/layouts/icons";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 import { gql } from "@/gql";
-import { FileWithPreview } from "@/types";
 import { useQuery } from "@urql/next";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { FileWithPath, useDropzone } from "react-dropzone";
+import { usePathname } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import { FileRejection, useDropzone } from "react-dropzone";
+import { CropArea, prepareImageForUpload } from "../utils/prepareImage";
+import { UploadItem, uploadMedia } from "../utils/uploadMedia";
+import ImageCropDialog from "./ImageCropDialog";
 import ImagesGrid from "./ImageGrid";
 import ImageGridSkeleton from "./ImageGridSkeleton";
 
@@ -18,8 +21,11 @@ function UploadMediaContainer({
   onClickItemsHandler,
   defaultImageId,
 }: UploadMediaContainerProps) {
-  const router = useRouter();
-  const [uploadingImages, setUploadingImages] = useState<FileWithPreview[]>([]);
+  const { toast } = useToast();
+  const [uploads, setUploads] = useState<UploadItem[]>([]);
+  // Files waiting for the crop step, shown one at a time.
+  const [cropQueue, setCropQueue] = useState<File[]>([]);
+  const [cropTotal, setCropTotal] = useState(0);
   const [lastCursor, setLastCursor] = React.useState<string | undefined>(
     undefined,
   );
@@ -33,51 +39,132 @@ function UploadMediaContainer({
 
   const medias = data?.mediasCollection;
 
-  const openMediaDetails = (mediaId: string) => {
-    router.push(`/admin/medias/${mediaId}`);
-  };
+  // The media modal (edit/delete) is a route: refresh the grid when navigating back from it,
+  // since urql's document cache doesn't know a media was deleted.
+  const pathname = usePathname();
+  const previousPathname = useRef(pathname);
+  useEffect(() => {
+    if (previousPathname.current === pathname) return;
+    previousPathname.current = pathname;
+    refetch({ requestPolicy: "network-only" });
+  }, [pathname, refetch]);
 
-  const onDrop = async (acceptedFiles: FileWithPath[]) => {
-    const uploadFiles = acceptedFiles.map((file) =>
-      Object.assign(file, {
-        preview: URL.createObjectURL(file),
-      }),
+  const updateUpload = (id: string, patch: Partial<UploadItem>) =>
+    setUploads((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, ...patch } : item)),
     );
 
-    setUploadingImages([...uploadingImages, ...uploadFiles]);
+  const removeUpload = (id: string) =>
+    setUploads((prev) => {
+      const item = prev.find((u) => u.id === id);
+      if (item) URL.revokeObjectURL(item.preview);
+      return prev.filter((u) => u.id !== id);
+    });
 
-    const formData = new FormData();
-    for (let i = 0; i < uploadFiles.length; i++) {
-      formData.append(`files[${i}]`, uploadFiles[i]);
-    }
+  const runUpload = async (item: UploadItem) => {
+    updateUpload(item.id, {
+      status: "preparing",
+      progress: 0,
+      error: undefined,
+    });
 
     try {
-      const response = await fetch("/api/medias", {
-        method: "POST",
-        body: formData,
+      const prepared = await prepareImageForUpload(item.file, item.crop);
+
+      // Show the cropped/optimized result instead of the original file.
+      const preview = URL.createObjectURL(prepared);
+      setUploads((prev) =>
+        prev.map((u) => {
+          if (u.id !== item.id) return u;
+          URL.revokeObjectURL(u.preview);
+          return { ...u, preview, status: "uploading" };
+        }),
+      );
+
+      const mediaId = await uploadMedia(prepared, (progress) =>
+        updateUpload(item.id, {
+          progress,
+          status: progress >= 100 ? "saving" : "uploading",
+        }),
+      );
+
+      updateUpload(item.id, { status: "done", progress: 100, mediaId });
+      refetch({ requestPolicy: "network-only" });
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "No se pudo subir la imagen.";
+      updateUpload(item.id, { status: "error", error: message });
+      toast({
+        title: `No se pudo subir "${item.file.name}"`,
+        description: message,
+        variant: "destructive",
       });
-
-      const data = (await response.json()) as string[];
-
-      if (data) {
-        refetch({ requestPolicy: "network-only" });
-
-        setUploadingImages(
-          uploadingImages.filter((item) => data.includes(item.path)),
-        );
-      }
-    } catch (error) {
-      // console.error("Error uploading files:", error)
     }
   };
 
+  const startUpload = (file: File, crop: CropArea | null) => {
+    const item: UploadItem = {
+      id: crypto.randomUUID(),
+      file,
+      crop,
+      preview: URL.createObjectURL(file),
+      status: "preparing",
+      progress: 0,
+    };
+    setUploads((prev) => [item, ...prev]);
+    runUpload(item);
+  };
+
+  const enqueueForCrop = (files: File[]) => {
+    setCropTotal(
+      cropQueue.length === 0 ? files.length : cropTotal + files.length,
+    );
+    setCropQueue((prev) => [...prev, ...files]);
+  };
+
+  const nextInCropQueue = () => setCropQueue((prev) => prev.slice(1));
+
+  // Drop "done" tiles once the refetched grid already shows that media.
+  useEffect(() => {
+    if (!medias) return;
+    const ids = new Set(medias.edges.map(({ node }) => node.id));
+    setUploads((prev) => {
+      const visible = prev.filter((u) => u.mediaId && ids.has(u.mediaId));
+      if (visible.length === 0) return prev;
+      visible.forEach((u) => URL.revokeObjectURL(u.preview));
+      return prev.filter((u) => !visible.includes(u));
+    });
+  }, [medias]);
+
+  const uploadsRef = useRef(uploads);
+  uploadsRef.current = uploads;
   useEffect(() => {
     return () =>
-      uploadingImages.forEach((file) => URL.revokeObjectURL(file.preview));
+      uploadsRef.current.forEach((u) => URL.revokeObjectURL(u.preview));
   }, []);
+
+  const onDrop = (acceptedFiles: File[], rejections: FileRejection[]) => {
+    if (rejections.length > 0) {
+      toast({
+        title: "Archivo no permitido",
+        description: `Solo se pueden subir imágenes: ${rejections
+          .map((r) => r.file.name)
+          .join(", ")}`,
+        variant: "destructive",
+      });
+    }
+
+    // GIFs skip the crop step: the canvas would drop the animation.
+    acceptedFiles
+      .filter((file) => file.type === "image/gif")
+      .forEach((file) => startUpload(file, null));
+    const croppable = acceptedFiles.filter((file) => file.type !== "image/gif");
+    if (croppable.length > 0) enqueueForCrop(croppable);
+  };
 
   const { getRootProps, getInputProps, open, isDragActive } = useDropzone({
     onDrop,
+    accept: { "image/*": [] },
     multiple: true,
     noClick: true,
     noKeyboard: true,
@@ -87,7 +174,7 @@ function UploadMediaContainer({
     <div>
       {error && <p>Oh no... {error.message}</p>}
 
-      {fetching && <ImageGridSkeleton />}
+      {fetching && !medias && <ImageGridSkeleton />}
 
       {medias && (
         <>
@@ -98,7 +185,9 @@ function UploadMediaContainer({
                 AddMediaButtonComponent={
                   <AddMediaButtonComponent open={open} />
                 }
-                uploadingFiles={uploadingImages}
+                uploads={uploads}
+                onRetryUpload={runUpload}
+                onDismissUpload={removeUpload}
                 onClickHandler={onClickItemsHandler}
                 defaultImageId={defaultImageId}
               />
@@ -125,6 +214,21 @@ function UploadMediaContainer({
           </div>
         </>
       )}
+
+      <ImageCropDialog
+        file={cropQueue[0] ?? null}
+        position={cropTotal - cropQueue.length + 1}
+        total={cropTotal}
+        onUpload={(crop) => {
+          startUpload(cropQueue[0], crop);
+          nextInCropQueue();
+        }}
+        onUploadAllWithoutCrop={() => {
+          cropQueue.forEach((file) => startUpload(file, null));
+          setCropQueue([]);
+        }}
+        onDiscard={nextInCropQueue}
+      />
     </div>
   );
 }
@@ -132,7 +236,9 @@ function UploadMediaContainer({
 const AddMediaButtonComponent = ({ open }: { open: () => void }) => {
   return (
     <button
+      type="button"
       onClick={open}
+      aria-label="Subir imágenes"
       className=" h-[120px] w-[120px] border-2 border-dashed border-zinc-400 text-zinc-400 flex flex-col justify-center items-center"
     >
       <Icons.add size={32} />

@@ -20,3 +20,5 @@
 - [whatsapp-openwa.md](reference/whatsapp-openwa.md) — Avisos auto por WhatsApp (0014-0016 aplicadas): trigger orders -> pg_net -> OpenWA, private_config, telefono admin
 - [acceso-bd-sin-mcp.md](reference/acceso-bd-sin-mcp.md) — Consultar/aplicar SQL con node+postgres y DATABASE_URL (es produccion) cuando el MCP falla
 - [auth-y-datos.md](reference/auth-y-datos.md) — Admin via app_metadata.isAdmin, clientes Supabase, GraphQL (lecturas) vs Drizzle (escrituras)
+- [subida-imagenes.md](reference/subida-imagenes.md) — Limite 4.5MB de Vercel, recorte/compresion en cliente, estados por archivo, /api/medias solo admin
+- [modales-slots-paralelos.md](reference/modales-slots-paralelos.md) — Cerrar modales @slot con router.back(); push+refresh re-renderiza el slot viejo -> 404
