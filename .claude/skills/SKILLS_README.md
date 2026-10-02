@@ -10,26 +10,26 @@
 
 | Skill | Comando | Descripcion |
 |-------|---------|-------------|
-| `new-app` | `/new-app` | Entrevista de negocio → BUSINESS_LOGIC.md |
+| `tf-new-app` | `/tf-new-app` | Entrevista de negocio → BUSINESS_LOGIC.md |
 | `landing` | `/landing` | Landing cinematica: scroll-driven video + copy AIDA/PAS + glass-morphism |
-| `primer` | `/primer` | Inicializar contexto del proyecto |
-| `add-login` | `/add-login` | Auth completo Supabase (login, signup, password reset, profiles, RLS) |
-| `add-payments` | `/add-payments` | Pagos con Polar (MoR): checkout, webhooks, suscripciones, acceso |
-| `add-emails` | `/add-emails` | Emails transaccionales: Resend + React Email + batch + unsubscribe |
-| `add-mobile` | `/add-mobile` | PWA instalable + push notifications (iOS compatible) |
-| `add-manual` | `/add-manual` | Manual de usuario para clientes: editor, preview, descarga MD/PDF, dual audiencia (trabajador/admin) y dual idioma (es/en) |
-| `eject-tf` | `/eject-tf` | Remover Titan Factory del proyecto (DESTRUCTIVO) |
-| `update-tf` | `/update-tf` | Actualizar a ultima version |
-| `bucle-agentico` | `/bucle-agentico` | Bucle Agentico para sistemas complejos (por fases) |
+| `tf-primer` | `/tf-primer` | Inicializar contexto del proyecto |
+| `tf-add-login` | `/tf-add-login` | Auth completo Supabase (login, signup, password reset, profiles, RLS) |
+| `tf-add-payments` | `/tf-add-payments` | Pagos con Polar (MoR): checkout, webhooks, suscripciones, acceso |
+| `tf-add-emails` | `/tf-add-emails` | Emails transaccionales: Resend + React Email + batch + unsubscribe |
+| `tf-add-mobile` | `/tf-add-mobile` | PWA instalable + push notifications (iOS compatible) |
+| `tf-add-manual` | `/tf-add-manual` | Manual de usuario para clientes: editor, preview, descarga MD/PDF, dual audiencia (trabajador/admin) y dual idioma (es/en) |
+| `tf-eject-tf` | `/tf-eject-tf` | Remover Titan Factory del proyecto (DESTRUCTIVO) |
+| `tf-update-tf` | `/tf-update-tf` | Actualizar a ultima version |
+| `tf-bucle-agentico` | `/tf-bucle-agentico` | Bucle Agentico para sistemas complejos (por fases) |
 | `sprint` | `/sprint` | Bucle Agentico para tareas rapidas |
-| `prp` | `/prp [feature]` | Generar Product Requirements Proposal |
-| `ai` | `/ai [template]` | Implementar AI Templates (chat, RAG, vision, tools) |
+| `tf-prp` | `/tf-prp [feature]` | Generar Product Requirements Proposal |
+| `tf-ai` | `/tf-ai [template]` | Implementar AI Templates (chat, RAG, vision, tools) |
 | `qa` | `/qa [descripcion]` | QA automatizado con Playwright CLI |
-| `skill-creator` | `/skill-creator` | Crear nuevos skills |
-| `memory-manager` | `/memory-manager` | Memoria persistente por proyecto (reemplaza auto-memory) |
-| `image-generation` | `/image-generation` | Generar/editar imagenes con OpenRouter + Gemini |
-| `autoresearch` | `/autoresearch [skill]` | Auto-optimizar skills con loop autonomo (Karpathy) |
-| `easypanel-deploy` | `/easypanel-deploy` | Deploy en VPS con EasyPanel: Docker + Prisma SQLite + SSL |
+| `tf-skill-creator` | `/tf-skill-creator` | Crear nuevos skills |
+| `tf-memory-manager` | `/tf-memory-manager` | Memoria persistente por proyecto (reemplaza auto-memory) |
+| `tf-image-generation` | `/tf-image-generation` | Generar/editar imagenes con OpenRouter + Gemini |
+| `tf-autoresearch` | `/tf-autoresearch [skill]` | Auto-optimizar skills con loop autonomo (Karpathy) |
+| `tf-easypanel-deploy` | `/tf-easypanel-deploy` | Deploy en VPS con EasyPanel: Docker + Prisma SQLite + SSL |
 
 ### Invocables por Claude (automaticos)
 
@@ -37,9 +37,9 @@
 |-------|---------------------|
 | `backend` | Tareas de Server Actions, APIs, logica de negocio, validaciones |
 | `frontend` | UI/UX, componentes React, Tailwind, animaciones |
-| `supabase-admin` | Migraciones, RLS, queries SQL, auth config |
-| `codebase-analyst` | Analisis de patrones, convenciones, arquitectura |
-| `vercel-deployer` | Deploy, env vars, dominios, rollbacks |
+| `tf-supabase-admin` | Migraciones, RLS, queries SQL, auth config |
+| `tf-codebase-analyst` | Analisis de patrones, convenciones, arquitectura |
+| `tf-vercel-deployer` | Deploy, env vars, dominios, rollbacks |
 | `documentacion` | Actualizar docs despues de cambios en codigo |
 | `calidad` | Testing, quality gates, validacion |
 
@@ -49,13 +49,13 @@
 
 | Skill | Se activa cuando... |
 |-------|---------------------|
-| `n8n-mcp-tools-expert` | SIEMPRE PRIMERO antes de usar cualquier tool n8n-mcp |
-| `n8n-workflow-patterns` | Disenar workflows (webhook, API, DB, AI, scheduled) |
-| `n8n-node-configuration` | Configurar nodos, campos requeridos por operacion |
-| `n8n-expression-syntax` | Escribir expresiones `{{}}`, mapear data entre nodos |
-| `n8n-validation-expert` | Interpretar errores de validacion, falsos positivos |
-| `n8n-code-javascript` | Code nodes en JavaScript (95% de los casos) |
-| `n8n-code-python` | Code nodes en Python (solo si el usuario lo pide) |
+| `tf-n8n-mcp-tools-expert` | SIEMPRE PRIMERO antes de usar cualquier tool n8n-mcp |
+| `tf-n8n-workflow-patterns` | Disenar workflows (webhook, API, DB, AI, scheduled) |
+| `tf-n8n-node-configuration` | Configurar nodos, campos requeridos por operacion |
+| `tf-n8n-expression-syntax` | Escribir expresiones `{{}}`, mapear data entre nodos |
+| `tf-n8n-validation-expert` | Interpretar errores de validacion, falsos positivos |
+| `tf-n8n-code-javascript` | Code nodes en JavaScript (95% de los casos) |
+| `tf-n8n-code-python` | Code nodes en Python (solo si el usuario lo pide) |
 
 ---
 
@@ -103,19 +103,19 @@ agent: Explore                      # Tipo de agente (opcional)
 
 ---
 
-## Memoria Persistente (.claude/memory/)
+## Memoria Persistente (.titan/memory/)
 
 Titan Factory incluye un sistema de memoria persistente POR PROYECTO que reemplaza la auto-memory de Claude Code.
 
 **Por que?** La auto-memory de Claude Code guarda notas en `~/.claude/projects/` (local a tu maquina). Eso significa que no viaja con el repo, no es versionado, no es compartido con tu equipo, y Claude decide que guardar sin tu control.
 
 **Como funciona:**
-- `.claude/memory/MEMORY.md` es el indice (max 200 lineas, se carga automaticamente)
+- `.titan/memory/MEMORY.md` es el indice (max 200 lineas, se carga automaticamente)
 - Carpetas por tipo: `user/`, `feedback/`, `project/`, `reference/`
 - Git-versioned: cada cambio es un commit que puedes revertir
-- El skill `memory-manager` gestiona cuando consultar y cuando guardar
+- El skill `tf-memory-manager` gestiona cuando consultar y cuando guardar
 
-**Activacion:** La primera vez que se usa el skill `memory-manager`, automaticamente deshabilita la auto-memory de Claude Code en `.claude/settings.json` y crea la estructura de carpetas.
+**Activacion:** La primera vez que se usa el skill `tf-memory-manager`, automaticamente deshabilita la auto-memory de Claude Code en `.claude/settings.json` y crea la estructura de carpetas.
 
 ---
 
@@ -125,8 +125,8 @@ Los skills referencian estos directorios (NO se mueven):
 
 | Recurso | Path | Usado por |
 |---------|------|-----------|
-| PRP Template | `.claude/PRPs/prp-base.md` | Skill `prp` |
-| AI Templates | `.claude/skills/ai/references/` | Skill `ai` |
+| PRP Template | `.claude/skills/tf-prp/references/prp-base.md` | Skill `tf-prp` |
+| AI Templates | `.claude/skills/tf-ai/references/` | Skill `tf-ai` |
 | Design Systems | `.claude/design-systems/` | Directo (5 sistemas) |
 
 ---
@@ -134,7 +134,7 @@ Los skills referencian estos directorios (NO se mueven):
 ## Crear un Nuevo Skill
 
 ```bash
-# Opcion 1: Usar skill-creator
+# Opcion 1: Usar tf-skill-creator
 /skill-creator
 
 # Opcion 2: Manual
@@ -160,8 +160,8 @@ mkdir .claude/skills/mi-skill
 | `.claude/agents/*.md` | `.claude/skills/*/SKILL.md` (user-invocable: false, context: fork) |
 | `.claude/prompts/*.md` | `.claude/skills/*/SKILL.md` |
 | Agentes como archivos sueltos | Frontmatter `agent:` y `context: fork` en skills |
-| AI Templates como docs | Skill `/ai` con `references/` colocalizados |
-| PRPs como template suelto | Skill `/prp` que genera PRPs con context: fork |
+| AI Templates como docs | Skill `/tf-ai` con `references/` colocalizados |
+| PRPs como template suelto | Skill `/tf-prp` que genera PRPs con context: fork |
 
 ---
 

@@ -1,33 +1,26 @@
 {
   "mcpServers": {
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp?project_ref=${SUPABASE_PROJECT_REF:-bhwyagfoyylgrdgyngrm}"
+    },
     "next-devtools": {
-      "command": "npx",
-      "args": ["-y", "next-devtools-mcp@latest"]
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "next-devtools-mcp@latest"]
     },
     "playwright": {
-      "command": "npx",
-      "args": ["@playwright/mcp@latest"]
-    },
-    "supabase": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@supabase/mcp-server-supabase@latest",
-        "--project-ref=bhwyagfoyylgrdgyngrm"
-      ],
-      "env": {
-        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_TOKEN}"
-      }
+      "command": "cmd",
+      "args": ["/c", "npx", "@playwright/mcp@latest"]
     },
     "n8n-mcp": {
-      "command": "npx",
-      "args": ["n8n-mcp"],
+      "command": "cmd",
+      "args": ["/c", "npx", "n8n-mcp"],
       "env": {
         "MCP_MODE": "stdio",
         "LOG_LEVEL": "error",
         "DISABLE_CONSOLE_OUTPUT": "true",
-        "N8N_API_URL": "YOUR_N8N_INSTANCE_URL",
-        "N8N_API_KEY": "YOUR_N8N_API_KEY"
+        "N8N_API_URL": "${N8N_API_URL:-}",
+        "N8N_API_KEY": "${N8N_API_KEY:-}"
       }
     }
   }

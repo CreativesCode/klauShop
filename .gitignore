@@ -35,3 +35,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# AI agents (shared config is versioned; personal state stays local)
+.claude/settings.local.json
+.claude/logs/
+.claude/skills/**/node_modules
+CLAUDE.local.md
+.titan-toolkit-backups/
