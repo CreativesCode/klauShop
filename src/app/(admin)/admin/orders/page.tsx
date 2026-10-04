@@ -3,7 +3,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { DataTableSkeleton } from "@/features/cms";
 import { OrdersColumns, OrdersDataTable } from "@/features/orders";
 import { gql } from "@/gql";
-import { getClient } from "@/lib/urql";
+import { getServiceClient } from "@/lib/urql-service";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -30,7 +30,8 @@ const AdminOrdersPageQuery = gql(/* GraphQL */ `
 `);
 
 async function OrdersPage({}: AdminOrdersPageProps) {
-  const { data } = await getClient().query(AdminOrdersPageQuery, {});
+  // Service role: orders are not readable with the anon key (RLS); the admin layout guards this page
+  const { data } = await getServiceClient().query(AdminOrdersPageQuery, {});
 
   if (!data) return notFound();
 

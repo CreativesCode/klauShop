@@ -2,15 +2,18 @@
 -- Ejecutar este script en Supabase SQL Editor o mediante migración
 
 -- Función helper para verificar si un usuario es admin
+-- NOTE (2026-10-03): this file had drifted from production. The live RLS state is defined by
+-- migrations 0017 and 0018 (drizzle/0018_lockdown_rls.sql). Admin = JWT app_metadata.isAdmin,
+-- never profiles.is_admin (users could set it on their own row).
 CREATE OR REPLACE FUNCTION public.is_admin(user_id uuid)
-RETURNS boolean AS $$
-BEGIN
-  RETURN EXISTS (
-    SELECT 1 FROM public.profiles
-    WHERE id = user_id AND is_admin = true
-  );
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SET search_path = ''
+AS $$
+  SELECT user_id = auth.uid()
+    AND coalesce((auth.jwt() -> 'app_metadata' ->> 'isAdmin')::boolean, false);
+$$;
 
 -- ============================================
 -- POLÍTICAS PARA TABLA: profiles
@@ -27,10 +30,7 @@ CREATE POLICY "Users can update own profile"
   ON public.profiles FOR UPDATE
   USING (auth.uid() = id);
 
--- Los usuarios pueden insertar su propio perfil (al registrarse)
-CREATE POLICY "Users can insert own profile"
-  ON public.profiles FOR INSERT
-  WITH CHECK (auth.uid() = id);
+-- Los perfiles NO se insertan desde el cliente (permitia crear un perfil con is_admin = true).
 
 -- Los admins pueden leer todos los perfiles
 CREATE POLICY "Admins can read all profiles"

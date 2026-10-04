@@ -31,7 +31,10 @@ function fetchGraphQLSchema(url, options) {
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
-      apiKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      // Service role sees every table; anon no longer has SELECT on orders/profiles (0018)
+      apiKey:
+        process.env.DATABASE_SERVICE_ROLE ||
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     },
     body: JSON.stringify({
       query: getIntrospectionQuery(),
