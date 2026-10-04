@@ -18,7 +18,8 @@ type InsertProductMedias = {
   priority?: number | null;
 };
 
-const SLUG_TAKEN = "Ese slug ya existe. Usa otro (o genéralo de nuevo desde el nombre).";
+const SLUG_TAKEN =
+  "Ese slug ya existe. Usa otro (o genéralo de nuevo desde el nombre).";
 
 // Unique violation on products.slug (postgres-js error, sometimes wrapped by drizzle)
 function isUniqueViolation(error: unknown): boolean {

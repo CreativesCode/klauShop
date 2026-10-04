@@ -158,7 +158,6 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             {items.map((item) => {
-
               return (
                 <div
                   key={item.id}
@@ -210,9 +209,7 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
                             <span className="text-muted-foreground">
                               Tamaño:
                             </span>{" "}
-                            <span className="font-medium">
-                              {item.size}
-                            </span>
+                            <span className="font-medium">{item.size}</span>
                           </div>
                         )}
                         {item.material && (
@@ -220,9 +217,7 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
                             <span className="text-muted-foreground">
                               Material:
                             </span>{" "}
-                            <span className="font-medium">
-                              {item.material}
-                            </span>
+                            <span className="font-medium">{item.material}</span>
                           </div>
                         )}
                       </div>
