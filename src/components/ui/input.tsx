@@ -10,8 +10,10 @@ export interface InputProps
   asChild?: boolean;
 }
 
+// Mobile text is 16px (absolute: the admin sets html{font-size:14px}) so iOS Safari
+// does not zoom in when a field gets focus.
 const inputVariants = cva(
-  "flex h-10 w-full rounded-md px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  "flex h-10 w-full rounded-md px-3 py-2 text-[16px] md:text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -46,6 +48,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const Comp = asChild ? Slot : "input";
     return (
       <Comp
+        type={type}
         className={cn(inputVariants({ variant, className }))}
         ref={ref}
         {...props}
