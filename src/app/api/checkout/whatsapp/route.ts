@@ -11,6 +11,7 @@ import {
 import { createWhatsAppOrderSchema } from "@/features/orders/validations";
 import { resolveShippingZone } from "@/features/shipping/utils/resolveShippingZone";
 import db from "@/lib/supabase/db";
+import { ensureProfile } from "@/lib/supabase/ensureProfile";
 import { orderLines, orders, products } from "@/lib/supabase/schema";
 import { getURL } from "@/lib/utils";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
@@ -93,6 +94,9 @@ export async function POST(request: Request) {
       }, 0);
 
       const totalAmount = subtotal + (shipping.shippingCost ?? 0);
+
+      // orders.user_id references profiles: make sure the logged-in customer has one
+      if (user) await ensureProfile(tx, user);
 
       // 4. Crear la orden
       const [order] = await tx

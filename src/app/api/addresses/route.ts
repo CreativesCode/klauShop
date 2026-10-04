@@ -1,6 +1,7 @@
 import { addressSchema } from "@/features/addresses/validations";
 import { resolveShippingZone } from "@/features/shipping/utils/resolveShippingZone";
 import db from "@/lib/supabase/db";
+import { ensureProfile } from "@/lib/supabase/ensureProfile";
 import { address } from "@/lib/supabase/schema";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { desc, eq } from "drizzle-orm";
@@ -65,6 +66,9 @@ export async function POST(request: Request) {
 
     const addressData = parsed.data;
     const { isDefault, ...addressFields } = addressData;
+
+    // address.userProfileId references profiles
+    await ensureProfile(db, user);
 
     // Si es la dirección predeterminada, desmarcar las demás
     if (isDefault) {
