@@ -54,11 +54,21 @@ export function createClient({
         get(name: string) {
           return cookieStore.get(name)?.value;
         },
+        // Server Components cannot write cookies (Next throws "Cookies can only be modified...").
+        // A refreshed session is written by src/middleware.ts instead, so ignore it here.
         set(name: string, value: string, options: CookieOptions) {
-          cookieStore.set({ name, value, ...options });
+          try {
+            cookieStore.set({ name, value, ...options });
+          } catch {
+            // Called from a Server Component: the middleware persists the session
+          }
         },
         remove(name: string, options: CookieOptions) {
-          cookieStore.set({ name, value: "", ...options });
+          try {
+            cookieStore.set({ name, value: "", ...options });
+          } catch {
+            // Called from a Server Component: the middleware persists the session
+          }
         },
       };
 
