@@ -58,6 +58,8 @@ Todas son manuales (fuera del journal de drizzle-kit); se aplican con node+postg
 - El hook pre-commit (prettier) deja todos los archivos "modificados" solo por finales de linea (CRLF/LF, `core.autocrlf=true`).
   Comprobar con `git diff --ignore-cr-at-eol --quiet`. **No** limpiar con `git checkout -- .` si hay cambios sin commitear en
   otros archivos (asi se perdieron una vez las notas de la Fase 3): commitear todo junto o limpiar solo rutas concretas.
+  Ademas el hook formatea DESPUES de preparar el commit: correr `npx prettier --write` sobre los archivos tocados antes de
+  `git add`, o commitear el formato que quede como `style:`.
 - Playwright: el clic fantasma de Radix Select solo aparece con `tap()`; para movil usar un contexto con `isMobile`, `hasTouch`
   y DPR 2.75 (el navegador por defecto es de escritorio con hover).
 - Pruebas con escritura en prod: usuario QA creado con la admin API (`DATABASE_SERVICE_ROLE`) y borrado al final; no enviar
