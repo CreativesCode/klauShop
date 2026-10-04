@@ -34,7 +34,7 @@ function SearchInput() {
   function onSubmit({ search }: z.infer<typeof filterSelectionSchema>) {
     !search || search.length === 0
       ? router.push(`/shop`)
-      : router.push(`/shop/?search=${search}`);
+      : router.push(`/shop/?search=${encodeURIComponent(search)}`);
   }
 
   return (

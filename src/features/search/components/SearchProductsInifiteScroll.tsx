@@ -2,6 +2,7 @@
 import { OrderByDirection, SearchQueryVariables } from "@/gql/graphql";
 import { ReadonlyURLSearchParams, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { normalizeSearchTerm } from "../utils/normalizeSearchTerm";
 import SearchResultPage from "./SearchResultPage";
 
 const DEFAULT_PRICE_RANGE: [number, number] = [0, 10000];
@@ -123,7 +124,8 @@ const searchParamsVariablesFactory = (
   }
 
   const varaibles: SearchQueryVariables = {
-    search: search ? `%${search.trim()}%` : "%%",
+    // Accent-insensitive: matched against products.search_name (drizzle/0023)
+    search: search ? `%${normalizeSearchTerm(search)}%` : "%%",
     // Backend expects BigFloat inputs as string values. The slider max means "no upper limit".
     lower: priceRangeParam && minPrice > 0 ? String(minPrice) : undefined,
     upper:

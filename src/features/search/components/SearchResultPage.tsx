@@ -6,6 +6,7 @@ import type { ProductCardImage } from "@/features/products/components/ProductCar
 import { gql } from "@/gql";
 import { SearchQuery, SearchQueryVariables } from "@/gql/graphql";
 import { useQuery } from "@urql/next";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import SearchProductsGridSkeleton from "./SearchProductsGridSkeleton";
 
@@ -22,7 +23,7 @@ const ProductSearch = gql(/* GraphQL */ `
     productsCollection(
       filter: {
         and: [
-          { name: { ilike: $search } }
+          { search_name: { ilike: $search } }
           { price: { gte: $lower, lte: $upper } }
           { collection_id: { in: $collections } }
         ]
@@ -56,6 +57,8 @@ const SearchResultPage = ({
   isLastPage: boolean;
 }) => {
   const MAX_AUTOFILL_PAGES = 20;
+  // The query variable holds the normalized term; show what the customer typed
+  const searchParams = useSearchParams();
 
   const variablesKey = useMemo(() => {
     // We intentionally exclude `after` because this component manages it
@@ -215,10 +218,8 @@ const SearchResultPage = ({
         <>
           {!fetching && inStockEdges.length === 0 && (
             <p>
-              {`There is no Products with name `}
-              <span className="font-bold">
-                {(variables.search || []).slice(1, -2)}
-              </span>
+              {`No encontramos productos con el nombre `}
+              <span className="font-bold">{searchParams.get("search")}</span>
               {"."}
             </p>
           )}
