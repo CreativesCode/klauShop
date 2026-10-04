@@ -12,14 +12,93 @@ import { createWhatsAppOrderSchema } from "@/features/orders/validations";
 import { resolveShippingZone } from "@/features/shipping/utils/resolveShippingZone";
 import db from "@/lib/supabase/db";
 import { ensureProfile } from "@/lib/supabase/ensureProfile";
-import { orderLines, orders, products } from "@/lib/supabase/schema";
+import {
+  CustomerData,
+  orderLines,
+  orders,
+  products,
+} from "@/lib/supabase/schema";
 import { getURL } from "@/lib/utils";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { inArray } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
+type OrderMessageItem = Parameters<
+  typeof generateWhatsAppOrderData
+>[0]["items"][number];
+
+// Response shared by a new order and a replayed request (same order number and WhatsApp link)
+function buildOrderResponse(
+  orderId: string,
+  items: OrderMessageItem[],
+  shippingCost: number | null,
+  customerData: CustomerData,
+) {
+  const orderNumber = formatOrderNumber(orderId);
+  // URL de redirección inteligente que redirige según el tipo de usuario
+  const adminUrl = `${getURL()}order/${orderId}`;
+  const subtotal = items.reduce(
+    (acc, item) => acc + item.quantity * item.price,
+    0,
+  );
+  const { message, url } = generateWhatsAppOrderData({
+    orderNumber,
+    items,
+    subtotal,
+    shippingCost,
+    customerData,
+    adminUrl,
+  });
+
+  return {
+    success: true,
+    orderId,
+    orderNumber,
+    whatsappUrl: url,
+    whatsappMessage: message,
+    adminUrl,
+  };
+}
+
+// A retry of a checkout attempt that already created its order (e.g. the response was lost)
+async function findReplayedOrder(clientRequestId: string) {
+  const order = await db.query.orders.findFirst({
+    where: eq(orders.client_request_id, clientRequestId),
+  });
+  if (!order) return null;
+
+  const lines = await db
+    .select({
+      quantity: orderLines.quantity,
+      price: orderLines.price,
+      listPrice: orderLines.listPrice,
+      discount: orderLines.discount,
+      name: products.name,
+    })
+    .from(orderLines)
+    .leftJoin(products, eq(products.id, orderLines.productId))
+    .where(eq(orderLines.orderId, order.id));
+
+  const items = lines.map((line) => ({
+    name: line.name || "Producto",
+    quantity: line.quantity,
+    price: Number(line.price),
+    listPrice: Number(line.listPrice || line.price),
+    discount: Number(line.discount || 0),
+  }));
+
+  return buildOrderResponse(
+    order.id,
+    items,
+    order.shipping_cost === null ? null : Number(order.shipping_cost),
+    order.customer_data as CustomerData,
+  );
+}
+
 export async function POST(request: Request) {
+  let clientRequestId: string | undefined;
+
   try {
     const body = await request.json();
 
@@ -37,6 +116,12 @@ export async function POST(request: Request) {
     }
 
     const { cartItems, customerData } = parsed.data;
+    clientRequestId = parsed.data.clientRequestId;
+
+    if (clientRequestId) {
+      const replayed = await findReplayedOrder(clientRequestId);
+      if (replayed) return NextResponse.json(replayed, { status: 200 });
+    }
 
     // Obtener usuario si está autenticado
     const supabase = createRouteHandlerClient({ cookies });
@@ -114,6 +199,7 @@ export async function POST(request: Request) {
           shipping_zone_id: shipping.shippingZoneId,
           shipping_cost: shipping.shippingCost?.toString() ?? null,
           name: customerData.name,
+          client_request_id: clientRequestId ?? null,
         })
         .returning();
 
@@ -150,10 +236,6 @@ export async function POST(request: Request) {
     });
 
     // 7. Generar mensaje de WhatsApp
-    const orderNumber = formatOrderNumber(result.order.id);
-    // URL de redirección inteligente que redirige según el tipo de usuario
-    const orderRedirectUrl = `${getURL()}order/${result.order.id}`;
-
     const items = cartItems.map((item) => {
       const product = result.productsData.find((p) => p.id === item.productId);
       return {
@@ -168,19 +250,12 @@ export async function POST(request: Request) {
       };
     });
 
-    const subtotal = items.reduce(
-      (acc, item) => acc + item.quantity * item.price,
-      0,
-    );
-
-    const { message, url } = generateWhatsAppOrderData({
-      orderNumber,
+    const response = buildOrderResponse(
+      result.order.id,
       items,
-      subtotal,
-      shippingCost: result.shipping.shippingCost,
-      customerData: toCustomerData(customerData, result.shipping.zoneName),
-      adminUrl: orderRedirectUrl,
-    });
+      result.shipping.shippingCost,
+      toCustomerData(customerData, result.shipping.zoneName),
+    );
 
     // 8. Limpiar el carrito del usuario si está autenticado
     if (user?.id) {
@@ -194,19 +269,15 @@ export async function POST(request: Request) {
     }
 
     // 9. Responder con la información de la orden
-    return NextResponse.json(
-      {
-        success: true,
-        orderId: result.order.id,
-        orderNumber,
-        whatsappUrl: url,
-        whatsappMessage: message,
-        adminUrl: orderRedirectUrl,
-      },
-      { status: 201 },
-    );
+    return NextResponse.json(response, { status: 201 });
   } catch (error: any) {
     console.error("Error creating WhatsApp order:", error);
+
+    // Two retries of the same attempt raced: the other one created the order
+    if (clientRequestId && error?.code === "23505") {
+      const replayed = await findReplayedOrder(clientRequestId);
+      if (replayed) return NextResponse.json(replayed, { status: 200 });
+    }
 
     // Manejo especial para errores de stock
     if (error.message?.startsWith("OUT_OF_STOCK")) {
@@ -219,10 +290,12 @@ export async function POST(request: Request) {
       );
     }
 
+    // Never send raw database errors to the customer
     return NextResponse.json(
       {
         error: "Error al crear la orden",
-        message: error.message || "Error desconocido",
+        message:
+          "No se pudo crear tu pedido. Inténtalo de nuevo en unos segundos.",
       },
       { status: 500 },
     );

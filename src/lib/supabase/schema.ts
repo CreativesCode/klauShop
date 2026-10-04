@@ -282,6 +282,8 @@ export const orders = pgTable(
       { onDelete: "set null" },
     ),
     shipping_cost: decimal("shipping_cost", { precision: 8, scale: 2 }),
+    // One id per checkout attempt, reused on retries (unique): makes the checkout idempotent
+    client_request_id: text("client_request_id").unique(),
     createdAt: timestamp("created_at", {
       withTimezone: true,
     })

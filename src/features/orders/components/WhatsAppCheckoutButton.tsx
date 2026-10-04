@@ -44,6 +44,37 @@ type WhatsAppCheckoutButtonProps = {
 };
 
 const GUEST_ADDRESS_KEY = "guest_last_address";
+const CHECKOUT_ATTEMPT_KEY = "checkout_attempt";
+
+// One id per checkout attempt, tied to the cart: a retry after a lost response or a double tap
+// reuses it (the server returns the same order); a different cart starts a new attempt.
+// Kept in sessionStorage (survives a reload) and in memory (when storage is unavailable).
+let memoryAttempt: { id: string; cart: string } | null = null;
+
+function getCheckoutAttemptId(cartItems: CartItem[]): string {
+  const cart = JSON.stringify(cartItems);
+  try {
+    const saved = JSON.parse(
+      sessionStorage.getItem(CHECKOUT_ATTEMPT_KEY) || "null",
+    );
+    if (saved?.cart === cart && typeof saved.id === "string") return saved.id;
+  } catch {
+    // Storage unavailable: use the in-memory attempt
+  }
+  if (memoryAttempt?.cart === cart) return memoryAttempt.id;
+
+  const id =
+    typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  memoryAttempt = { id, cart };
+  try {
+    sessionStorage.setItem(CHECKOUT_ATTEMPT_KEY, JSON.stringify({ id, cart }));
+  } catch {
+    // Storage unavailable: memoryAttempt still covers retries in this page
+  }
+  return id;
+}
 
 export function WhatsAppCheckoutButton({
   cartItems,
@@ -211,20 +242,34 @@ export function WhatsAppCheckoutButton({
 
   const handleSubmit = async (customerData: CustomerInfoInput) => {
     setIsLoading(true);
+    const clientRequestId = getCheckoutAttemptId(cartItems);
 
     try {
-      const response = await fetch("/api/checkout/whatsapp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          cartItems,
-          customerData,
-        }),
-      });
+      let response: Response;
+      try {
+        response = await fetch("/api/checkout/whatsapp", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cartItems,
+            customerData,
+            clientRequestId,
+          }),
+        });
+      } catch {
+        // Network drop: the order may or may not exist; retrying is safe (same clientRequestId)
+        toast({
+          title: "Sin conexión",
+          description:
+            "Es posible que tu pedido se haya creado. Pulsa de nuevo cuando tengas conexión: no se duplicará.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
         if (data.error === "INSUFFICIENT_STOCK") {
@@ -243,6 +288,12 @@ export function WhatsAppCheckoutButton({
 
       // Éxito - cerrar modal
       setIsOpen(false);
+      memoryAttempt = null;
+      try {
+        sessionStorage.removeItem(CHECKOUT_ATTEMPT_KEY);
+      } catch {
+        // Storage unavailable: nothing to clear
+      }
 
       // Mostrar mensaje de éxito
       toast({

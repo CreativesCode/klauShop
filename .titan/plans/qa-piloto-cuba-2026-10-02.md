@@ -104,7 +104,7 @@ Para BD: migracion Drizzle en `drizzle/` + `drizzle/rls_policies.sql`. Despues d
     4. Pedir una API key de OpenWA limitada a esta sesion (hoy la key da acceso tambien a `vitis-bot`).
   - **Verificar**: crear un pedido QA → `select status_code from net._http_response order by created desc limit 3` → 200/201 y el mensaje llega a +5353077035.
 
-- [ ] **P0-06 · Checkout sin idempotencia: pedidos duplicados al reintentar** · Sev ALTA · Esf M
+- [x] **P0-06 · Checkout sin idempotencia: pedidos duplicados al reintentar** — HECHO 2026-10-04: `orders.client_request_id` unico (0021, APLICADA en prod), id por intento ligado al carrito (sessionStorage + memoria), replay devuelve el mismo pedido (200) tambien en carrera (23505); toast "Sin conexion" sin mensaje crudo. Verificado: respuesta perdida + reintento → 1 pedido y 1 reserva; 6 peticiones concurrentes → 1 pedido. Pendiente: la orden manual del admin (doble clic) no es idempotente. · Sev ALTA · Esf M
   `[GUEST-01, PERF-05, INTEGRITY-05, REG-10, CODE-08]`
   - **Donde**: `src/app/api/checkout/whatsapp/route.ts:21-146` (cada POST inserta pedido, lineas y reservas). `src/features/orders/components/WhatsAppCheckoutButton.tsx:211-273` (sin clave; muestra `error.message` crudo; `response.json()` sin proteger en :225).
   - **Evidencia**: pares duplicados `kk49…/iqkm…`, `fqir…/nemx…`, `bazj…/ak5l…` y `e7xy…/x0az…`, cada uno con reservas activas. Un tercer intento dio 409 porque los duplicados agotaron el stock.

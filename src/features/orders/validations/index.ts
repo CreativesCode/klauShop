@@ -40,6 +40,8 @@ export const createWhatsAppOrderSchema = z.object({
     .min(1, "El carrito debe tener al menos un producto"),
   // Shipping cost is resolved on the server from shipping_zones
   customerData: customerInfoSchema,
+  // Same id on every retry of one checkout attempt: a repeated request returns the same order
+  clientRequestId: z.string().min(8).max(100).optional(),
 });
 
 export type CreateWhatsAppOrderInput = z.infer<

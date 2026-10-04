@@ -31,6 +31,6 @@ Lo que si esta bien: integridad de stock del checkout (riesgos #3/#4 de 2026-09-
   IOS-01 (boton WhatsApp en la confirmacion), P0-07, P0-08, MPC-01/02/03/04/05/06/07, IOS-02, P0-11/MPC-08 (src/middleware.ts).
 - Migraciones SIN aplicar en prod: 0018 (RLS, aplicar DESPUES del deploy), 0019 (texto WhatsApp) y 0020 (perfiles),
   ambas aditivas: se pueden aplicar antes o despues.
-- Pendiente P0-06 (idempotencia del checkout): necesita la columna `orders.client_request_id`. Como dev usa la BD de prod,
-  hay que aplicar la migracion ANTES de tocar `schema.ts`, o se rompen todas las lecturas de orders en dev.
+- P0-06 HECHO: `0021_orders_client_request_id.sql` APLICADA en prod 2026-10-04 (columna opcional + indice unico).
+  El codigo con `client_request_id` en `schema.ts` exige 0021 aplicada (Drizzle lee/inserta todas las columnas).
 - Leccion: en las pruebas con Playwright, el clic fantasma de Radix Select solo aparece con `tap()`, no con `click()`.
