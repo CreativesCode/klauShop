@@ -26,6 +26,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CustomerInfoInput } from "../validations";
 import CustomerInfoForm from "./CustomerInfoForm";
+import useCartStore from "@/features/carts/useCartStore";
+import { getWhatsAppUrlStorageKey } from "./OpenWhatsAppButton";
 
 type CartItem = {
   productId: string;
@@ -245,21 +247,30 @@ export function WhatsAppCheckoutButton({
       // Mostrar mensaje de éxito
       toast({
         title: "¡Orden creada exitosamente!",
-        description: `Tu orden ${data.orderNumber} ha sido reservada. Serás redirigido a WhatsApp.`,
+        description: `Tu orden ${data.orderNumber} ha sido reservada. Envíanosla por WhatsApp.`,
       });
 
-      // Disparar evento para que el carrito se recargue (se habrá limpiado en el backend)
+      // The guest cart lives in a cookie (the server only clears the logged-in cart)
+      useCartStore.getState().removeAllProducts();
       window.dispatchEvent(new Event("cart-updated"));
 
-      // Redirigir a la página de confirmación
-      router.push(
+      // The confirmation page shows a tappable WhatsApp link with the full message
+      try {
+        sessionStorage.setItem(
+          getWhatsAppUrlStorageKey(data.orderId),
+          data.whatsappUrl,
+        );
+      } catch {
+        // Storage unavailable: the page falls back to a short message
+      }
+
+      // Desktop/Android may allow this; iOS blocks popups after an await (button is the fallback)
+      window.open(data.whatsappUrl, "_blank");
+
+      // replace: going back must not return to the (now empty) checkout
+      router.replace(
         `/orders/confirmation?orderId=${data.orderId}&orderNumber=${data.orderNumber}`,
       );
-
-      // Abrir WhatsApp después de un pequeño delay
-      setTimeout(() => {
-        window.open(data.whatsappUrl, "_blank");
-      }, 1500);
     } catch (error: any) {
       console.error("Error creating WhatsApp order:", error);
       toast({
