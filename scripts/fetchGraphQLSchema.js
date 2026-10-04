@@ -35,6 +35,10 @@ function fetchGraphQLSchema(url, options) {
       apiKey:
         process.env.DATABASE_SERVICE_ROLE ||
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${
+        process.env.DATABASE_SERVICE_ROLE ||
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      }`,
     },
     body: JSON.stringify({
       query: getIntrospectionQuery(),

@@ -17,9 +17,10 @@ export const makeServiceClient = (access_token?: string) => {
         apiKey: env.DATABASE_SERVICE_ROLE,
       };
 
-      if (access_token) {
-        headers["Authorization"] = `Bearer ${access_token}`;
-      }
+      // The gateway takes the role from Authorization: with only apiKey the request ran as
+      // anon, which stopped seeing orders/profiles once RLS was locked down (0018).
+      headers["Authorization"] =
+        `Bearer ${access_token ?? env.DATABASE_SERVICE_ROLE}`;
 
       return { headers };
     },
