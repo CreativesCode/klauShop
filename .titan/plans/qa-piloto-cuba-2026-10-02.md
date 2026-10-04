@@ -117,7 +117,7 @@ Para BD: migracion Drizzle en `drizzle/` + `drizzle/rls_policies.sql`. Despues d
   - **Fix**: tras `response.ok`, `useCartStore.getState().removeAllProducts()` (importar de `@/features/carts/useCartStore`, no de `hooks/useCartStore.ts`) y despues `router.replace` (no push) a `/orders/confirmation`. Opcional: vaciarlo tambien en la confirmacion si llega `orderId`.
   - **Verificar**: invitado → pedido → la cookie y el localStorage `cart` quedan `{}`, Atras no muestra el carrito lleno y `/cart` dice "vacio".
 
-- [ ] **P0-08 · Con mas de 8 productos distintos, el resto se omite del pedido** · Sev ALTA · Esf S
+- [x] **P0-08 · Con mas de 8 productos distintos, el resto se omite del pedido** — HECHO 2026-10-04: `first: productIds.length`; verificado con 10 productos → 10 lineas en el payload. · Sev ALTA · Esf S
   `[GUEST-04, CODE-24]`
   - **Donde**: `src/features/carts/components/GuestCartSection.tsx:51` (`first: 8`). La UI, el subtotal y el payload del checkout salen de `data.edges` (:144-189). El servidor confia en `cartItems`.
   - **Fix**: `first: productIds.length` (pg_graphql max_rows=1000). Construir el payload del checkout desde el store, no desde la query. Si faltan ids (borrados o inactivos), quitarlos del store y mostrar un toast en espanol. Revisar tambien `orders/page.tsx:36` (`first: 8`).

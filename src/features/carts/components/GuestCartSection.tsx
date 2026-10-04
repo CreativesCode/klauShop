@@ -48,7 +48,8 @@ function GuestCartSection() {
     query: FetchGuestCartQuery,
     variables: {
       cartItems: productIds,
-      first: 8,
+      // Every product in the cart: the checkout payload is built from this result
+      first: Math.max(productIds.length, 1),
     },
     pause: productIds.length === 0, // Pausar query si no hay productos
   });
@@ -90,7 +91,7 @@ function GuestCartSection() {
           currentItem?.material,
         );
       } else {
-        toast({ title: "Product Limit is reached." });
+        toast({ title: "Has alcanzado el máximo por producto." });
       }
     } finally {
       setIsLoading(false);
@@ -113,7 +114,7 @@ function GuestCartSection() {
         setIsLoading(false);
       }
     } else {
-      toast({ title: "Minimum is reached." });
+      toast({ title: "La cantidad mínima es 1." });
     }
   };
   const removeHandler = (cartKey: string) => {
@@ -128,7 +129,7 @@ function GuestCartSection() {
       if (remainingItems.length === 0) {
         toast({ title: "Carrito vaciado." });
       } else {
-        toast({ title: "Removed a Product." });
+        toast({ title: "Producto eliminado." });
       }
     } finally {
       setIsLoading(false);
