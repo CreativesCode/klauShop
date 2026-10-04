@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getServiceClient } from "@/lib/urql-service";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
+import { RefreshOnFocus } from "@/features/orders/components/RefreshOnFocus";
 
 // Import fragments to ensure they're available for gql.tada
 // Reference them to ensure gql.tada includes them in the query
@@ -81,6 +82,7 @@ async function OrderPage({ searchParams }: OrderPageProps) {
 
   return (
     <Shell layout="narrow" className="max-w-screen-2xl mx-auto">
+      <RefreshOnFocus />
       <h1 className="pb-8 text-3xl font-semibold border-b">Órdenes</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-5">

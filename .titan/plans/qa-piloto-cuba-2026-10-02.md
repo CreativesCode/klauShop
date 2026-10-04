@@ -289,13 +289,13 @@ Para BD: migracion Drizzle en `drizzle/` + `drizzle/rls_policies.sql`. Despues d
   - **Fix**: estado local `{status,paymentStatus}` desde la respuesta del API; `startTransition(()=>router.refresh())`; `disabled={isChanging||isPending}`.
   - **Verificar**: tras "Confirmar orden", la tarjeta muestra "Pendiente de Pago" al instante y no ofrece "Confirmar orden".
 
-- [ ] **P2-05 · El cliente urql se recrea en cada cambio de sesion (y al volver el foco): consultas duplicadas, cache vacia, skeletons** · Sev MEDIA · Esf S
+- [ ] **P2-05 · (NO REPRODUCIDO 2026-10-04: 0 consultas GraphQL tras 3 cambios de pestaña en /wish-list y /shop; posible solo al refrescar el token cada hora. Sin cambios) El cliente urql se recrea en cada cambio de sesion (y al volver el foco): consultas duplicadas, cache vacia, skeletons** · Sev MEDIA · Esf S
   `[PERF-10, CODE-23]`
   - **Donde**: `src/providers/UrqlProvider.tsx:19-55` (`useMemo([session])`, `suspense:true`), keys de graphcache (falta `id` en `product_mediasCollection`; carts por `product_id`). `AuthProvider.tsx:43`.
   - **Fix**: crear el cliente una sola vez y leer el token desde una ref en fetchOptions. `setSession` solo si cambia el access_token. Pedir `id` en `product_mediasCollection` (ProductCard, ProductImageShowcase) o declarar `keys`. La key de carts debe ser `id`.
   - **Verificar**: logueado en /wish-list, simular visibilitychange → 0 consultas nuevas y sin skeleton.
 
-- [ ] **P2-06 · La vista del pedido del cliente no se refresca sola** · Sev MEDIA · Esf S
+- [x] **P2-06 · (HECHO 2026-10-04: `RefreshOnFocus` en /orders y /orders/[id], router.refresh al volver a la pestaña con throttle de 15 s; verificado con cliente QA) La vista del pedido del cliente no se refresca sola** · Sev MEDIA · Esf S
   `[REG-11]`
   - **Fix**: componente cliente que llama a `router.refresh()` en `visibilitychange`/`focus`, con throttle de 15 s, en `/orders` y `/orders/[id]` (sin websockets ni polling).
   - **Verificar**: el admin confirma el pedido y el cliente que vuelve a la pestana ve "Pendiente de Pago".

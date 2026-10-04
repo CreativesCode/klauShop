@@ -302,10 +302,7 @@ export default function OrderStatusChanger({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmStatusChange}
-              disabled={isBusy}
-            >
+            <AlertDialogAction onClick={confirmStatusChange} disabled={isBusy}>
               {isChanging ? "Actualizando..." : "Confirmar"}
             </AlertDialogAction>
           </AlertDialogFooter>

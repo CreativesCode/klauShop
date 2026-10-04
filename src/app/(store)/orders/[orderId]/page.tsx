@@ -31,6 +31,7 @@ import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { RefreshOnFocus } from "@/features/orders/components/RefreshOnFocus";
 
 type TrackOrderProps = {
   params: { orderId: string };
@@ -111,6 +112,7 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
 
   return (
     <Shell className="max-w-screen-2xl mx-auto">
+      <RefreshOnFocus />
       <div className="space-y-6">
         <div className="mb-4">
           <Link href="/orders">
