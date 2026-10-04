@@ -25,3 +25,12 @@ Lo que si esta bien: integridad de stock del checkout (riesgos #3/#4 de 2026-09-
 - Envios (decision del dueño: opcion A + bloquear "Confirmar orden"): "Recoger en tienda" (costo 0, zona "Recogida en tienda")
   y "Otra zona — acordar envio por WhatsApp" (costo NULL). Confirmar / marcar pagada exigen costo de envio.
   `drizzle/0019_whatsapp_shipping_to_agree.sql` (texto del aviso automatico) **sin aplicar**.
+
+## Estado 2026-10-04 (rama `fix/pilot-qa-p0`, 14 commits, sin push)
+- Hechos y verificados en dev (:3001, BD prod, datos QA borrados tras cada prueba): P0-04 (perfil al vuelo + 0020),
+  IOS-01 (boton WhatsApp en la confirmacion), P0-07, P0-08, MPC-01/02/03/04/05/06/07, IOS-02, P0-11/MPC-08 (src/middleware.ts).
+- Migraciones SIN aplicar en prod: 0018 (RLS, aplicar DESPUES del deploy), 0019 (texto WhatsApp) y 0020 (perfiles),
+  ambas aditivas: se pueden aplicar antes o despues.
+- Pendiente P0-06 (idempotencia del checkout): necesita la columna `orders.client_request_id`. Como dev usa la BD de prod,
+  hay que aplicar la migracion ANTES de tocar `schema.ts`, o se rompen todas las lecturas de orders en dev.
+- Leccion: en las pruebas con Playwright, el clic fantasma de Radix Select solo aparece con `tap()`, no con `click()`.
