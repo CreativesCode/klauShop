@@ -50,10 +50,13 @@ Lo que si esta bien: integridad de stock del checkout (riesgos #3/#4 de 2026-09-
 - Siguiente sugerido: Fase 1 (friccion de venta: total antes de confirmar, validacion de telefono), luego Fase 3 (bundle
   de admin en la tienda, ~300 KB). Resumen por bloques en "Estado de ejecucion" del plan.
 
-## Estado 2026-10-04 (noche) — Fase 1 en rama `fix/pilot-qa-p1` (sin commitear)
+## Estado 2026-10-04 (noche) — Fase 1 en `main` (6cac576), 0022 aplicada
 - Hechos: P1-01..P1-14, P1-16 (solo aviso admin "Hace N dias"), P1-17, y de paso P0-10 (login/registro) y P0-12.
-- Pendiente: P1-15 (busqueda sin tildes: migracion `unaccent` en prod), TTL de reservas (decision del dueño),
-  aplicar `drizzle/0022` (enlace WhatsApp admin → `/order/{id}`; aditiva, aplicar despues del deploy).
+- Decision del dueño: reservas viejas → **solo aviso al admin**, sin caducidad automatica.
+- P1-15 (busqueda sin tildes) en rama LOCAL `fix/pilot-qa-p1-15` (823e80f): `drizzle/0023` (unaccent + `products.search_name`
+  generada) probada con ROLLBACK, sin aplicar. Orden: aplicar 0023 → `npm run codegen:fetch && npm run codegen` → merge a main.
+  El codigo de esa rama rompe la busqueda si se despliega sin 0023.
+- Datos de prod corregidos: las 2 direcciones con telefono raro quedaron `+53 53077035` (autorizado por el dueño).
 - Telefono: fuente unica `src/lib/phone.ts` (`phoneSchema` normaliza a `+53 5XXXXXXX`; Cuba solo moviles 5/6).
   Hay 1 direccion guardada invalida (`+53077035`): el checkout avisa en vez de mandar el 400.
 - Leccion: `next build` con `next dev` corriendo en la misma carpeta rompe `.next` del dev (500/404) → parar el dev, compilar

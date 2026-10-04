@@ -1,6 +1,6 @@
 # QA-PILOTO-CUBA: Plan de correccion pre-piloto
 
-> **Estado**: EN EJECUCION — Fase 0 y Fase 2 casi completas, desplegadas en `main` (2026-10-04). Fase 1 casi completa en la rama `fix/pilot-qa-p1` (sin commitear). Ver "Estado de ejecucion".
+> **Estado**: EN EJECUCION — Fase 0 y Fase 2 casi completas, desplegadas en `main` (2026-10-04). Fase 1 en `main` (6cac576, 2026-10-04); P1-15 lista en la rama local `fix/pilot-qa-p1-15`. Ver "Estado de ejecucion".
 > **Fecha**: 2026-10-02
 > **Proyecto**: Klau's Shop
 > **Evidencia**: `.titan/qa/2026-10-02-piloto-cuba.md` · Datos QA creados: `.titan/qa/2026-10-02-datos-qa-ledger.jsonl`
@@ -19,7 +19,7 @@ Los datos QA se borraron tras cada prueba; la BD coincide con la linea base.
 | iPhone (anexo B) | IOS-01 (falta probar en iPhone fisico), IOS-02, IOS-03 | IOS-04..09 (bajos) |
 | Admin movil (anexo C) | MPC-01..08, CSA-1..7 | MPC-09/10/11, CSA-8..10 (bajos/medios) |
 | Fase 2 (refresco) | P2-01, P2-02, P2-03, P2-04, P2-06 | P2-05 (no reproducido), P2-07 |
-| Fase 1 (rama `fix/pilot-qa-p1`) | P1-01..P1-14, P1-16 (solo el aviso "Hace N días"), P1-17. P1-10 ya venia de SN-05 | P1-15 (necesita migracion `unaccent` en prod), P1-16 TTL (decision del dueño), `drizzle/0022` sin aplicar |
+| Fase 1 (en `main`, 6cac576) | P1-01..P1-14, P1-16, P1-17. P1-10 ya venia de SN-05. 0022 APLICADA | P1-15: codigo + `drizzle/0023` en rama local `fix/pilot-qa-p1-15` (probada con ROLLBACK), falta aplicar 0023 → `codegen:fetch` → merge |
 | Fase 3, 4, 5 | — | todo |
 
 **Migraciones aplicadas en prod:** 0018 (RLS, despues del deploy), 0019 (texto WhatsApp envio a acordar), 0020 (perfiles
@@ -183,12 +183,14 @@ Para BD: migracion Drizzle en `drizzle/` + `drizzle/rls_policies.sql`. Despues d
 
 ### Fase 1 — Friccion en la venta
 
-> **Ejecucion 2026-10-04 (rama `fix/pilot-qa-p1`, sin commitear).** Verificado en dev :3001 contra la BD de prod **sin escribir**:
+> **Ejecucion 2026-10-04 — en `main` (6cac576), migracion 0022 aplicada.** Verificado en dev :3001 contra la BD de prod **sin escribir**:
 > errores del checkout (400 JSON/telefono, 409 PRODUCT_NOT_FOUND/INSUFFICIENT_STOCK en español, 0 pedidos creados), dialogo de
 > invitado en 390 px (total antes de confirmar, `+5353077035` → `+53 53077035`, `1234` → error, 1 sola peticion de zonas),
 > confirmacion de invitado sin "Ver mis ordenes", `/order/x` → `/sign-in?redirect=/order/x`, login con error en español sin password
 > en la URL, invitado sin peticiones a `/auth/v1/user`, filtro de precio sin cotas (pg_graphql OK). Tests: 20 de `src/lib/phone.ts`.
-> **Sin verificar** (requieren usuario logueado y escribir en prod): fusion del carrito al iniciar sesion (P1-07), P1-11, P1-12.
+> Con usuario QA (creado y borrado; 0 pedidos): carrito invitado → login → fila en `carts` y localStorage vacio (P1-07),
+> formulario de primera direccion sin alias ni casilla y con el nombre de la cuenta (P1-12), direccion no predeterminada →
+> "Continuar con esta direccion" + total (P1-11). Decision del dueño P1-16: **solo aviso al admin**, sin caducidad automatica.
 > `document is not defined` en consola al hidratar ya ocurre en `main` (no es de esta rama).
 > Piezas nuevas: `src/lib/phone.ts` (schema compartido + normalizacion), `src/lib/safeRedirect.ts`, `OrderTotalSummary`,
 > `features/orders/utils/checkoutErrors.ts`, errores tipados `OutOfStockError`/`ProductNotFoundError` en `inventory.ts`.
