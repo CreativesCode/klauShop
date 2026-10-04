@@ -112,6 +112,7 @@ export function AddressForm({
             <FormItem>
               <FormLabel>Zona de entrega *</FormLabel>
               <ShippingZoneSelect
+                allowPickup={false}
                 value={{
                   zoneId: form.watch("shippingZoneId") ?? null,
                   zoneName: field.value,

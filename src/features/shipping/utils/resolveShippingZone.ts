@@ -1,7 +1,12 @@
 import db from "@/lib/supabase/db";
 import { shippingZones } from "@/lib/supabase/schema";
 import { eq } from "drizzle-orm";
-import { getZoneCost, matchShippingZone } from "./matchShippingZone";
+import {
+  PICKUP_ZONE_NAME,
+  getZoneCost,
+  isPickupZone,
+  matchShippingZone,
+} from "./matchShippingZone";
 
 export type ResolvedShipping = {
   shippingZoneId: string | null;
@@ -28,6 +33,14 @@ export async function resolveShippingZone(
     .where(eq(shippingZones.isActive, true));
 
   const zone = matchShippingZone(activeZones, value);
+
+  if (!zone && isPickupZone(value.zoneName)) {
+    return {
+      shippingZoneId: null,
+      zoneName: PICKUP_ZONE_NAME,
+      shippingCost: 0,
+    };
+  }
 
   if (!zone) {
     return {

@@ -25,12 +25,15 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { getDiscountedUnitPrice } from "@/features/orders/utils/pricing";
+import {
+  formatOrderTotal,
+  formatShipping,
+  getDiscountedUnitPrice,
+} from "@/features/orders/utils/pricing";
 import { customerInfoSchema } from "@/features/orders/validations";
 import {
   ShippingZoneSelect,
-  getZoneCost,
-  matchShippingZone,
+  getShippingCostFor,
   useShippingZones,
 } from "@/features/shipping";
 import type { SelectProducts } from "@/lib/supabase/schema";
@@ -126,13 +129,11 @@ export default function AdminOrderCreateForm({
 
   const cartItems = watch("cartItems");
   const { zones: shippingZones } = useShippingZones();
-  // Preview only; null = "Otro" (por definir)
-  const shippingCost = getZoneCost(
-    matchShippingZone(shippingZones, {
-      zoneId: watch("customerData.shippingZoneId"),
-      zoneName: watch("customerData.zone"),
-    }),
-  );
+  // Preview only; 0 = pickup in store, null = agreed over WhatsApp
+  const shippingCost = getShippingCostFor(shippingZones, {
+    zoneId: watch("customerData.shippingZoneId"),
+    zoneName: watch("customerData.zone"),
+  });
 
   const subtotal = useMemo(() => {
     return (cartItems || []).reduce((acc, item) => {
@@ -555,15 +556,13 @@ export default function AdminOrderCreateForm({
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Envío</span>
                   <span>
-                    {shippingCost === null
-                      ? "Por definir"
-                      : formatPrice(shippingCost)}
+                    {formatShipping(shippingCost, watch("customerData.zone"))}
                   </span>
                 </div>
                 <Separator />
                 <div className="flex justify-between font-semibold">
                   <span>Total</span>
-                  <span>{formatPrice(total)}</span>
+                  <span>{formatOrderTotal(total, shippingCost)}</span>
                 </div>
               </div>
 

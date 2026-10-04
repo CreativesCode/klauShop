@@ -109,6 +109,10 @@ export type OrderStatusAction = {
   description: string;
 };
 
+// Confirming or marking paid needs a defined shipping cost (null = still agreed over WhatsApp)
+export const SHIPPING_REQUIRED_MESSAGE =
+  "Primero define el costo de envío (usa 0 si es gratis). Así el cliente recibe el total correcto.";
+
 /**
  * Admin action that moves an order INTO each status (button copy).
  */

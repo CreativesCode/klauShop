@@ -2,6 +2,7 @@ import { consumeReservationsAndDeductStock } from "@/features/orders/utils/inven
 import {
   getOrderStatusLabel,
   isValidStatusTransition,
+  SHIPPING_REQUIRED_MESSAGE,
 } from "@/features/orders/utils/orderStatus";
 import db from "@/lib/supabase/db";
 import {
@@ -50,6 +51,10 @@ export async function POST(
 
       if (order.payment_status === "paid") {
         throw new Error("La orden ya está marcada como pagada");
+      }
+
+      if (order.shipping_cost === null) {
+        throw new Error(SHIPPING_REQUIRED_MESSAGE);
       }
 
       const currentStatus = order.order_status as OrderStatus;

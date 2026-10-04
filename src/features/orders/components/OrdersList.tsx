@@ -12,7 +12,11 @@ import { Badge } from "../../../components/ui/badge";
 import { Button, buttonVariants } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader } from "../../../components/ui/card";
 import { getOrderStatusInfo } from "../utils/orderStatus";
-import { getOrderTotals } from "../utils/pricing";
+import {
+  formatOrderTotal,
+  formatShipping,
+  getOrderTotals,
+} from "../utils/pricing";
 import OrderLinePrice from "./OrderLinePrice";
 import { formatOrderNumber } from "../utils/whatsapp";
 
@@ -32,6 +36,7 @@ export const OrdersListFragment = gql(/* GraphQL */ `
       id
       amount
       shipping_cost
+      zone
       order_status
       created_at
       item: order_linesCollection {
@@ -261,15 +266,13 @@ function OrdersList({ orders, pageInfo }: OrdersListProps) {
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Envío</span>
                         <span className="font-medium">
-                          {shippingCost === null
-                            ? "Por definir"
-                            : formatPrice(shippingCost)}
+                          {formatShipping(shippingCost, order.zone)}
                         </span>
                       </div>
                       <div className="flex justify-between border-t pt-2">
                         <span className="font-semibold">Total</span>
                         <span className="font-semibold">
-                          {formatPrice(total)}
+                          {formatOrderTotal(total, shippingCost)}
                         </span>
                       </div>
                     </div>

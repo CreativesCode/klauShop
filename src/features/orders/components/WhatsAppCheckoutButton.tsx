@@ -329,12 +329,10 @@ export function WhatsAppCheckoutButton({
                   if (cost === null) {
                     return (
                       <Alert>
-                        <AlertTitle>Envío por definir</AlertTitle>
+                        <AlertTitle>Envío a acordar</AlertTitle>
                         <AlertDescription>
-                          Esta dirección tiene una zona que no está registrada
-                          en el sistema.{" "}
-                          <b>El costo de envío se confirmará por WhatsApp</b>{" "}
-                          antes de coordinar el pago.
+                          Acordaremos contigo el costo de envío{" "}
+                          <b>por WhatsApp</b> antes de confirmar el pedido.
                         </AlertDescription>
                       </Alert>
                     );

@@ -5,7 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { OrderLinePrice, OrderProgress } from "@/features/orders";
 import { getOrderStatusInfo } from "@/features/orders/utils/orderStatus";
-import { getOrderTotals } from "@/features/orders/utils/pricing";
+import {
+  formatOrderTotal,
+  formatShipping,
+  getOrderTotals,
+} from "@/features/orders/utils/pricing";
 import {
   getPaymentMethodLabel,
   getPaymentStatusInfo,
@@ -288,15 +292,11 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Envío:</span>
-                <span>
-                  {shippingCost === null
-                    ? "Por definir"
-                    : formatPrice(shippingCost)}
-                </span>
+                <span>{formatShipping(shippingCost, order.zone)}</span>
               </div>
               <div className="flex justify-between font-semibold pt-2 border-t">
                 <span>Total:</span>
-                <span>{formatPrice(amountNumber)}</span>
+                <span>{formatOrderTotal(amountNumber, shippingCost)}</span>
               </div>
             </CardContent>
           </Card>

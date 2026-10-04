@@ -12,9 +12,16 @@ import {
 import { formatPrice } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useShippingZones } from "../hooks/useShippingZones";
-import { getZoneCost, matchShippingZone } from "../utils/matchShippingZone";
+import {
+  PICKUP_ZONE_NAME,
+  TO_AGREE_ZONE_NAME,
+  getZoneCost,
+  isPickupZone,
+  matchShippingZone,
+} from "../utils/matchShippingZone";
 
 const OTHER_VALUE = "__other__";
+const PICKUP_VALUE = "__pickup__";
 
 export type ShippingZoneValue = {
   zoneId: string | null;
@@ -25,22 +32,39 @@ type ShippingZoneSelectProps = {
   value: ShippingZoneValue;
   onChange: (value: ShippingZoneValue) => void;
   disabled?: boolean;
+  // Saved addresses are for delivery, so they hide "Recoger en tienda"
+  allowPickup?: boolean;
 };
+
+// Initial option before zones load: pickup, "otra zona" (free text) or nothing chosen yet
+function getInitialSelectValue(value: ShippingZoneValue, allowPickup: boolean) {
+  if (allowPickup && !value.zoneId && isPickupZone(value.zoneName)) {
+    return PICKUP_VALUE;
+  }
+  if (value.zoneId) return value.zoneId;
+  return value.zoneName.trim() ? OTHER_VALUE : "";
+}
+
+const getTypedZone = (zoneName: string) =>
+  zoneName === TO_AGREE_ZONE_NAME || isPickupZone(zoneName) ? "" : zoneName;
 
 /**
  * Zone picker shared by checkout, saved addresses and admin order creation.
- * Registered zones carry their id and cost; "Otro" keeps a free-text name
- * and leaves the shipping cost to be defined by the admin.
+ * Registered zones carry their id and cost; "Recoger en tienda" means no shipping (cost 0);
+ * "Otra zona" keeps an optional free-text name and the cost is agreed over WhatsApp.
  */
 export function ShippingZoneSelect({
   value,
   onChange,
   disabled = false,
+  allowPickup = true,
 }: ShippingZoneSelectProps) {
   const { zones, isLoading } = useShippingZones();
-  const [selectValue, setSelectValue] = useState<string>(OTHER_VALUE);
+  const [selectValue, setSelectValue] = useState<string>(() =>
+    getInitialSelectValue(value, allowPickup),
+  );
   const [otherZone, setOtherZone] = useState<string>(
-    value.zoneId ? "" : value.zoneName,
+    value.zoneId ? "" : getTypedZone(value.zoneName),
   );
 
   // Once zones load, link the initial value (id or legacy name) to a zone
@@ -59,15 +83,17 @@ export function ShippingZoneSelect({
         onChange({ zoneId: matched.id, zoneName: matched.name });
       }
     } else {
-      setSelectValue(OTHER_VALUE);
-      setOtherZone(value.zoneName);
+      setSelectValue(
+        getInitialSelectValue({ ...value, zoneId: null }, allowPickup),
+      );
+      setOtherZone(getTypedZone(value.zoneName));
       if (value.zoneId) onChange({ zoneId: null, zoneName: value.zoneName });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [zones]);
 
   const selectedZone =
-    selectValue === OTHER_VALUE
+    selectValue === OTHER_VALUE || selectValue === PICKUP_VALUE
       ? null
       : zones.find((z) => z.id === selectValue) ?? null;
   const selectedCost = getZoneCost(selectedZone);
@@ -79,8 +105,16 @@ export function ShippingZoneSelect({
         onValueChange={(next) => {
           setSelectValue(next);
 
+          if (next === PICKUP_VALUE) {
+            onChange({ zoneId: null, zoneName: PICKUP_ZONE_NAME });
+            return;
+          }
+
           if (next === OTHER_VALUE) {
-            onChange({ zoneId: null, zoneName: otherZone.trim() });
+            onChange({
+              zoneId: null,
+              zoneName: otherZone.trim() || TO_AGREE_ZONE_NAME,
+            });
             return;
           }
 
@@ -104,37 +138,52 @@ export function ShippingZoneSelect({
               </SelectItem>
             );
           })}
-          <SelectItem value={OTHER_VALUE}>Otro / no aparece</SelectItem>
+          {allowPickup && (
+            <SelectItem value={PICKUP_VALUE}>
+              Recoger en tienda (sin envío)
+            </SelectItem>
+          )}
+          <SelectItem value={OTHER_VALUE}>
+            Otra zona — acordar envío por WhatsApp
+          </SelectItem>
         </SelectContent>
       </Select>
 
-      {selectValue === OTHER_VALUE ? (
+      {selectValue === PICKUP_VALUE && (
+        <p className="text-sm text-muted-foreground">
+          Recoges tu pedido en la tienda. <b>Sin costo de envío.</b>
+        </p>
+      )}
+
+      {selectValue === OTHER_VALUE && (
         <>
           <Input
-            placeholder="Escribe tu zona (ej: Camajuaní...)"
+            placeholder="¿Dónde? (opcional, ej: Camajuaní)"
             value={otherZone}
             onChange={(e) => {
               setOtherZone(e.target.value);
-              onChange({ zoneId: null, zoneName: e.target.value });
+              onChange({
+                zoneId: null,
+                zoneName: e.target.value.trim() || TO_AGREE_ZONE_NAME,
+              });
             }}
             disabled={disabled}
           />
           <Alert>
-            <AlertTitle>Envío por definir</AlertTitle>
+            <AlertTitle>Envío a acordar</AlertTitle>
             <AlertDescription>
-              El costo de envío para esta zona <b>se confirmará por WhatsApp</b>{" "}
-              antes de coordinar el pago.
+              Acordaremos contigo el costo de envío <b>por WhatsApp</b> antes de
+              confirmar el pedido.
             </AlertDescription>
           </Alert>
         </>
-      ) : (
-        selectedZone &&
-        selectedCost !== null && (
-          <p className="text-sm text-muted-foreground">
-            Costo de envío para <b>{selectedZone.name}</b>:{" "}
-            <b>{formatPrice(selectedCost)}</b>
-          </p>
-        )
+      )}
+
+      {selectedZone && selectedCost !== null && (
+        <p className="text-sm text-muted-foreground">
+          Costo de envío para <b>{selectedZone.name}</b>:{" "}
+          <b>{formatPrice(selectedCost)}</b>
+        </p>
       )}
     </div>
   );

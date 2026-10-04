@@ -1,4 +1,10 @@
-import { getZoneCost, matchShippingZone } from "../matchShippingZone";
+import {
+  PICKUP_ZONE_NAME,
+  TO_AGREE_ZONE_NAME,
+  getShippingCostFor,
+  getZoneCost,
+  matchShippingZone,
+} from "../matchShippingZone";
 
 const zones = [
   { id: "z1", name: "Placetas", cost: "150.00" },
@@ -38,5 +44,27 @@ describe("getZoneCost", () => {
   it("parses the decimal cost and returns null without a zone", () => {
     expect(getZoneCost(zones[0])).toBe(150);
     expect(getZoneCost(null)).toBeNull();
+  });
+});
+
+describe("getShippingCostFor", () => {
+  it("uses the registered zone cost", () => {
+    expect(
+      getShippingCostFor(zones, { zoneId: "z1", zoneName: "Placetas" }),
+    ).toBe(150);
+  });
+
+  it("is 0 for pickup in store", () => {
+    expect(getShippingCostFor(zones, { zoneName: PICKUP_ZONE_NAME })).toBe(0);
+    expect(
+      getShippingCostFor(zones, { zoneName: " recogida en tienda " }),
+    ).toBe(0);
+  });
+
+  it("is null (agreed over WhatsApp) for other zones", () => {
+    expect(getShippingCostFor(zones, { zoneName: "Caibarién" })).toBeNull();
+    expect(
+      getShippingCostFor(zones, { zoneName: TO_AGREE_ZONE_NAME }),
+    ).toBeNull();
   });
 });

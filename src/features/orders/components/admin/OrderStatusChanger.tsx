@@ -28,12 +28,15 @@ type OrderStatusChangerProps = {
   orderId: string;
   currentStatus: OrderStatus;
   paymentStatus: string;
+  // Shipping still agreed over WhatsApp: confirming/marking paid is blocked until it is set
+  shippingPending?: boolean;
 };
 
 export default function OrderStatusChanger({
   orderId,
   currentStatus,
   paymentStatus,
+  shippingPending = false,
 }: OrderStatusChangerProps) {
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | null>(
     null,
@@ -199,11 +202,14 @@ export default function OrderStatusChanger({
                   if (!statusInfo) return null;
                   const action = ORDER_STATUS_ACTIONS[status];
                   const Icon = statusInfo.icon;
+                  const blockedByShipping =
+                    shippingPending &&
+                    (status === "pending_payment" || status === "paid");
                   return (
                     <Button
                       key={status}
                       onClick={() => handleStatusChange(status)}
-                      disabled={isChanging}
+                      disabled={isChanging || blockedByShipping}
                       variant="outline"
                       className={cn(
                         "w-full justify-start gap-2 h-auto py-3 transition-colors",
@@ -218,9 +224,11 @@ export default function OrderStatusChanger({
                           {action.label}
                         </span>
                         <span className="text-xs text-muted-foreground whitespace-normal text-left">
-                          {status === "cancelled" && isPaid
-                            ? "Devuelve el stock; el reembolso se hace fuera de la app"
-                            : action.description}
+                          {blockedByShipping
+                            ? "Primero define el costo de envío (junto al total)"
+                            : status === "cancelled" && isPaid
+                              ? "Devuelve el stock; el reembolso se hace fuera de la app"
+                              : action.description}
                         </span>
                       </div>
                     </Button>

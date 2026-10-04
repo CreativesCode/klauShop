@@ -2623,6 +2623,7 @@ export type OrderPageQueryQuery = {
         id: string;
         amount: any;
         shipping_cost?: any | null;
+        zone?: string | null;
         order_status?: string | null;
         created_at: any;
         item?: {
@@ -3428,6 +3429,7 @@ export type OrdersListFragmentFragment = {
     id: string;
     amount: any;
     shipping_cost?: any | null;
+    zone?: string | null;
     order_status?: string | null;
     created_at: any;
     item?: {
@@ -4254,6 +4256,7 @@ export const OrdersListFragmentFragmentDoc = {
                   kind: "Field",
                   name: { kind: "Name", value: "shipping_cost" },
                 },
+                { kind: "Field", name: { kind: "Name", value: "zone" } },
                 {
                   kind: "Field",
                   name: { kind: "Name", value: "order_status" },
@@ -6216,6 +6219,7 @@ export const OrderPageQueryDocument = {
                   kind: "Field",
                   name: { kind: "Name", value: "shipping_cost" },
                 },
+                { kind: "Field", name: { kind: "Name", value: "zone" } },
                 {
                   kind: "Field",
                   name: { kind: "Name", value: "order_status" },

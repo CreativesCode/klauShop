@@ -48,7 +48,7 @@ export default function ShippingCostEditor({
         title: "Envío actualizado",
         description:
           shippingCost === null
-            ? "Envío marcado como por definir."
+            ? "Envío marcado como a acordar."
             : `Envío guardado: ${formatPrice(shippingCost)}`,
       });
 
@@ -91,7 +91,7 @@ export default function ShippingCostEditor({
           onClick={() => save(null)}
           disabled={isSaving}
         >
-          Marcar “por definir”
+          Marcar “a acordar”
         </Button>
       </div>
     </div>

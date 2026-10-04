@@ -3,5 +3,12 @@
 export { ShippingZoneSelect } from "./components/ShippingZoneSelect";
 export type { ShippingZoneValue } from "./components/ShippingZoneSelect";
 export { useShippingZones } from "./hooks/useShippingZones";
-export { getZoneCost, matchShippingZone } from "./utils/matchShippingZone";
+export {
+  PICKUP_ZONE_NAME,
+  TO_AGREE_ZONE_NAME,
+  getShippingCostFor,
+  getZoneCost,
+  isPickupZone,
+  matchShippingZone,
+} from "./utils/matchShippingZone";
 export type { ShippingZoneOption } from "./utils/matchShippingZone";

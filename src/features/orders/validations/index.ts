@@ -15,7 +15,7 @@ export const customerInfoSchema = z.object({
     ),
   zone: z
     .string()
-    .min(2, "La zona debe tener al menos 2 caracteres")
+    .min(2, "Selecciona tu zona de envío")
     .max(200, "La zona es demasiado larga"),
   // Registered zone; null/absent = "Otro" (cost defined later by the admin)
   shippingZoneId: z.string().nullable().optional(),

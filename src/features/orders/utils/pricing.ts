@@ -1,3 +1,6 @@
+import { isPickupZone } from "@/features/shipping/utils/matchShippingZone";
+import { formatPrice } from "@/lib/utils";
+
 /**
  * Unit price after applying the product's percentage discount, rounded to
  * cents so that order_lines.price (decimal 8,2) times quantity adds up to the
@@ -14,6 +17,29 @@ export function getDiscountedUnitPrice(
       ? priceValue - (priceValue * discountValue) / 100
       : priceValue;
   return Math.round(unitPrice * 100) / 100;
+}
+
+/**
+ * Shipping line shared by every order view: null = agreed over WhatsApp (not set yet),
+ * 0 with the pickup zone = picked up in store.
+ */
+export function formatShipping(
+  shippingCost: number | null,
+  zone?: string | null,
+): string {
+  if (shippingCost === null) return "A acordar por WhatsApp";
+  if (shippingCost === 0 && isPickupZone(zone)) return "Recogida en tienda";
+  return formatPrice(shippingCost);
+}
+
+/** Total line: while shipping is not set, the amount is only the subtotal. */
+export function formatOrderTotal(
+  total: number,
+  shippingCost: number | null,
+): string {
+  return shippingCost === null
+    ? `${formatPrice(total)} + envío`
+    : formatPrice(total);
 }
 
 /**

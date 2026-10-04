@@ -1,6 +1,7 @@
 import {
   getOrderStatusLabel,
   isValidStatusTransition,
+  SHIPPING_REQUIRED_MESSAGE,
 } from "@/features/orders/utils/orderStatus";
 import db from "@/lib/supabase/db";
 import { orders, OrderStatus } from "@/lib/supabase/schema";
@@ -77,6 +78,11 @@ export async function POST(
       }
 
       const currentStatus = order.order_status as OrderStatus;
+
+      // The customer is told "Total a pagar" on confirmation, so the shipping must be set first
+      if (newStatus === "pending_payment" && order.shipping_cost === null) {
+        throw new Error(SHIPPING_REQUIRED_MESSAGE);
+      }
 
       // No permitir avanzar a estados operativos si el pago no está confirmado
       // (evita órdenes "processing/shipped/delivered" con payment_status = unpaid).

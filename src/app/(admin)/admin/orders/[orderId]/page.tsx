@@ -9,7 +9,11 @@ import { DeleteOrderDialog } from "@/features/orders/components/admin/DeleteOrde
 import OrderStatusChanger from "@/features/orders/components/admin/OrderStatusChanger";
 import ShippingCostEditor from "@/features/orders/components/admin/ShippingCostEditor";
 import { getOrderStatusInfo } from "@/features/orders/utils/orderStatus";
-import { getOrderTotals } from "@/features/orders/utils/pricing";
+import {
+  formatOrderTotal,
+  formatShipping,
+  getOrderTotals,
+} from "@/features/orders/utils/pricing";
 import {
   getPaymentMethodLabel,
   getPaymentStatusInfo,
@@ -275,11 +279,7 @@ export default async function AdminOrderDetailPage({
 
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Envío</span>
-                  <span>
-                    {shippingCost === null
-                      ? "Por definir"
-                      : formatPrice(shippingCost)}
-                  </span>
+                  <span>{formatShipping(shippingCost, order.zone)}</span>
                 </div>
                 <div className="pt-2">
                   <ShippingCostEditor
@@ -291,7 +291,7 @@ export default async function AdminOrderDetailPage({
                 <Separator />
                 <div className="flex justify-between font-semibold text-lg">
                   <span>Total</span>
-                  <span>{formatPrice(total)}</span>
+                  <span>{formatOrderTotal(total, shippingCost)}</span>
                 </div>
               </div>
             </CardContent>
@@ -305,6 +305,7 @@ export default async function AdminOrderDetailPage({
             orderId={order.id}
             currentStatus={orderStatus}
             paymentStatus={order.payment_status}
+            shippingPending={shippingCost === null}
           />
 
           {/* Eliminar Orden */}

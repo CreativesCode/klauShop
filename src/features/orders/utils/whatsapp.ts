@@ -1,4 +1,5 @@
 import { siteConfig } from "@/config/site";
+import { isPickupZone } from "@/features/shipping/utils/matchShippingZone";
 import { CustomerData } from "@/lib/supabase/schema";
 import type { CustomerInfoInput } from "../validations";
 
@@ -17,7 +18,7 @@ type WhatsAppMessageData = {
   orderNumber: string;
   items: OrderItem[];
   subtotal: number;
-  // null = unregistered zone, cost to be defined by the admin
+  // null = cost agreed over WhatsApp (unregistered zone); 0 + pickup zone = picked up in store
   shippingCost: number | null;
   customerData: CustomerData;
   adminUrl: string;
@@ -69,8 +70,11 @@ export function generateWhatsAppMessage(data: WhatsAppMessageData): string {
 
   // Shipping
   if (shippingCost === null) {
-    message += `\n*Envío:* Por definir (zona no registrada)`;
-    message += `\n*Total:* ${subtotal.toFixed(2)} CUP + envío por definir`;
+    message += `\n*Envío:* a acordar por WhatsApp`;
+    message += `\n*Total:* ${subtotal.toFixed(2)} CUP + envío`;
+  } else if (shippingCost === 0 && isPickupZone(customerData.zone)) {
+    message += `\n*Envío:* recogida en tienda (sin costo)`;
+    message += `\n*Total:* ${subtotal.toFixed(2)} CUP`;
   } else {
     message += `\n*Envío:* ${shippingCost.toFixed(2)} CUP`;
     message += `\n*Total:* ${(subtotal + shippingCost).toFixed(2)} CUP`;
