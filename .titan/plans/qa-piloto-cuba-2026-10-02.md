@@ -1,6 +1,6 @@
 # QA-PILOTO-CUBA: Plan de correccion pre-piloto
 
-> **Estado**: EN EJECUCION — Fase 0 y Fase 2 casi completas, desplegadas en `main` (2026-10-04). Fase 1 en `main` (6cac576, 2026-10-04); P1-15 lista en la rama local `fix/pilot-qa-p1-15`. Ver "Estado de ejecucion".
+> **Estado**: EN EJECUCION — Fases 0, 1, 2 y 3 en `main` y desplegadas (2026-10-04). Siguiente: Fase 4. Ver "Estado de ejecucion".
 > **Fecha**: 2026-10-02
 > **Proyecto**: Klau's Shop
 > **Evidencia**: `.titan/qa/2026-10-02-piloto-cuba.md` · Datos QA creados: `.titan/qa/2026-10-02-datos-qa-ledger.jsonl`
@@ -19,11 +19,12 @@ Los datos QA se borraron tras cada prueba; la BD coincide con la linea base.
 | iPhone (anexo B) | IOS-01 (falta probar en iPhone fisico), IOS-02, IOS-03 | IOS-04..09 (bajos) |
 | Admin movil (anexo C) | MPC-01..08, CSA-1..7 | MPC-09/10/11, CSA-8..10 (bajos/medios) |
 | Fase 2 (refresco) | P2-01, P2-02, P2-03, P2-04, P2-06 | P2-05 (no reproducido), P2-07 |
-| Fase 1 (en `main`, 6cac576) | P1-01..P1-14, P1-16, P1-17. P1-10 ya venia de SN-05. 0022 APLICADA | P1-15: codigo + `drizzle/0023` en rama local `fix/pilot-qa-p1-15` (probada con ROLLBACK), falta aplicar 0023 → `codegen:fetch` → merge |
-| Fase 3, 4, 5 | — | todo |
+| Fase 1 (6cac576, c875676) | P1-01..P1-17 (P1-16 solo aviso, decision del dueño). P1-10 venia de SN-05. 0022 y 0023 APLICADAS | — |
+| Fase 3 (20bc0bc) | P3-01..P3-08 | P3-05 parcial: el select del carrito logueado mantiene `description` (CartItemCard la muestra) y no hay store optimista. Catalogo offline (SW StaleWhileRevalidate) = 2o paso |
+| Fase 4, 5 | — | todo |
 
 **Migraciones aplicadas en prod:** 0018 (RLS, despues del deploy), 0019 (texto WhatsApp envio a acordar), 0020 (perfiles
-al registrarse + backfill), 0021 (`orders.client_request_id`).
+al registrarse + backfill), 0021 (`orders.client_request_id`), 0022 (enlace admin → `/order/{id}`), 0023 (unaccent + `products.search_name`).
 
 **Incidente:** tras aplicar 0018, `/admin/orders` dio 404 unos minutos: `urql-service.ts` solo enviaba `apiKey` y el
 gateway lo trataba como anon. Arreglado con `Authorization: Bearer <service role>` (cbb7aa5).
@@ -342,6 +343,21 @@ Para BD: migracion Drizzle en `drizzle/` + `drizzle/rls_policies.sql`. Despues d
   - **Fix**: filtrar por el store; `setWishlist({})` en SIGNED_OUT; toggle solo si la mutacion fue bien; copy en espanol.
 
 ### Fase 3 — Rendimiento y consumo de datos (+ estrategia de cache local)
+
+> **Ejecucion 2026-10-04 (20bc0bc).** Verificado con `next build` + `next start` (:3002), Pixel 5 emulado (tactil, DPR 2.75) y prod:
+> - P3-01: First Load JS `/shop` 615→261 kB, `/shop/[slug]` 613→249, `/cart` 645→282, `/` 245 (objetivo <=320). Entradas
+>   `@/features/{products,orders,collections,users}/admin` (documentado en `docs/project-structure.md`); react-quill con
+>   `next/dynamic` ssr:false (era el "document is not defined").
+> - P3-02: tarjetas piden w=640 (antes 828), 16 imagenes ≈430 KB en /shop; 0 imagenes de hover y 0 llamadas a additional-images en tactil; ficha con `priority`.
+> - P3-03: `/_next/image` → `max-age=2592000`; subidas nuevas con `CacheControl: immutable`.
+> - P3-04: `stock > 0` en el servidor (Search, home, slider, recomendaciones), sin autofill, sin `description` en tarjetas. 0 consultas GraphQL desde el cliente en /shop.
+> - P3-05 (parcial): contador del carrito logueado compartido (1 peticion, solo `quantity`, con re-lectura si cambia en vuelo),
+>   +/- sin skeleton, sin avatar 404, carrito invitado solo en localStorage (cookies viejas expiradas).
+> - P3-06: `public/sw.js` + `public/offline.html` (solo tienda, solo produccion): offline → "Sin conexion"; /cart desde cache.
+> - P3-07: "Sin conexion. Reintentar" + reintento al volver `online` + `retryExchange` (solo errores de red).
+> - P3-08: pool Postgres singleton (`max` 1 en prod, 5 en dev; ningun `db` dentro de tx); errores de direcciones genericos.
+>   Las rutas admin mantienen sus mensajes de negocio (solo los ve el admin).
+> - Visto 1 vez: `data-dgst` en la 1a peticion a /shop tras el deploy; no reproducible (ver memoria).
 
 - [ ] **P3-01 · La tienda descarga ~300 KB gzip de codigo de admin (recharts, xlsx, quill, framer-motion, drizzle, tanstack)** · Sev ALTA · Esf M
   `[PERF-04, CODE-10, GUEST-18, ADMIN-CAT-10]`

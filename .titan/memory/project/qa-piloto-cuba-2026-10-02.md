@@ -1,63 +1,64 @@
-# QA pre-piloto Cuba (2026-10-02)
+# QA pre-piloto Cuba (2026-10-02) — estado de la ejecucion
 
-Prueba general antes del piloto: 7 personas QA (invitado movil 3G, cliente registrado, admin de pedidos, admin de catalogo, integridad/API, rendimiento/conectividad y auditoria de cache), cada hallazgo verificado por 2 revisores escepticos. Entornos: dev :3001, build de prod :3002 y klau-shop.vercel.app. BD de PRODUCCION.
+QA general antes del piloto (7 personas QA, cada hallazgo verificado por 2 revisores) contra la BD de PRODUCCION.
+71 items en 6 fases. Detalle completo, evidencia y "Estado de ejecucion": `.titan/plans/qa-piloto-cuba-2026-10-02.md`.
+Evidencia: `.titan/qa/` (2026-10-02-piloto-cuba.md, capturas 2026-10-04-*.png). Ledger de datos QA: `.titan/qa/2026-10-02-datos-qa-ledger.jsonl`.
 
-- Plan de correccion por fases (71 items: 3 criticos, 21 altos, 28 medios, 19 bajos): `.titan/plans/qa-piloto-cuba-2026-10-02.md`
-- Evidencia y metricas: `.titan/qa/2026-10-02-piloto-cuba.md`. Datos QA a limpiar en prod: `.titan/qa/2026-10-02-datos-qa-ledger.jsonl`
+## Estado actual (2026-10-04, todo en `main` y desplegado en Vercel)
 
-Bloqueantes principales (estado 2026-10-02, sin corregir):
-1. Server actions de admin (`src/_actions/*`, `features/users/actions.ts`) sin chequeo de auth: se pueden ejecutar sin sesion.
-2. RLS de orders/order_lines/profiles abierta a anon (politicas "Service role…" TO public USING true que no estan en el repo): anon lee y edita pedidos.
-3. No existe trigger para crear `profiles`: los clientes registrados no pueden comprar ni guardar direcciones (FK 500). Arreglar antes `is_admin()` (lee profiles.is_admin, que el propio usuario puede editar).
-4. OpenWA devuelve 500 en el 100% de los envios (la sesion `robert-us` dice ready pero esta muerta) y no hay monitoreo.
-5. Checkout sin idempotencia (duplicados al perder la respuesta), carrito invitado sin vaciar, >8 productos omitidos.
-6. Data Cache de Next de 1 ano en /shop/[slug] y layout; /api/shipping-zones estatico; 0 revalidateTag/Path en el repo.
-7. ~300 KB gzip de JS de admin en la tienda por los barrels de features.
+| Fase | Estado |
+|---|---|
+| 0 Bloqueantes (seguridad, stock, venta rota) | Hecha. Pendientes: P0-05 (aparcado), P0-09 (Stripe dormido crea pedidos), P0-10 en reset-password y AccountClient |
+| 1 Friccion de venta | Hecha (P1-01..P1-17). P1-16 = solo aviso en admin |
+| 2 Refresco / datos obsoletos | Hecha. Pendientes: P2-05 (no reproducido), P2-07 |
+| 3 Rendimiento / datos / offline | Hecha. Parcial: P3-05 (ver abajo) |
+| 4 Admin | **Siguiente** |
+| 5 Pulido y copy | Pendiente |
+| Anexos (envios SN, iPhone IOS, admin movil MPC/CSA) | Hechos los altos. Pendientes: SN-02/03/08/09-11, IOS-04..09, MPC-09..11, CSA-5/8/9/10 |
 
-Lo que si esta bien: integridad de stock del checkout (riesgos #3/#4 de 2026-09-24 ya resueltos en prod), precios y envio en el servidor, ciclo de estados admin y dashboard.
+**Migraciones aplicadas en prod:** 0018 (RLS), 0019 (WhatsApp envio a acordar), 0020 (perfiles al registrarse),
+0021 (`orders.client_request_id`), 0022 (enlace admin → `/order/{id}`), 0023 (unaccent + `products.search_name`).
+Todas son manuales (fuera del journal de drizzle-kit); se aplican con node+postgres (ver `reference/acceso-bd-sin-mcp.md`).
 
-## Estado 2026-10-03 (rama `fix/pilot-qa-p0`, sin commitear)
-- Datos QA borrados de prod por diff contra baseline: BD = estado previo a la QA.
-- Punto 4 corregido por el dueño: OpenWA responde 500 pero **los mensajes SI llegan**. No es bloqueante; ignorar por ahora.
-- P0-01 hecho (`requireAdmin()` en `src/lib/supabase/requireAdmin.ts`; `isAdmin` puro en `features/users/utils.ts`).
-- P0-02/P0-03: codigo listo + `drizzle/0018_lockdown_rls.sql` probada con ROLLBACK, **sin aplicar**. Orden: desplegar el codigo
-  (/admin/orders usa getServiceClient) y DESPUES aplicar 0018, si no la lista admin de pedidos queda vacia.
-- Envios (decision del dueño: opcion A + bloquear "Confirmar orden"): "Recoger en tienda" (costo 0, zona "Recogida en tienda")
-  y "Otra zona — acordar envio por WhatsApp" (costo NULL). Confirmar / marcar pagada exigen costo de envio.
-  `drizzle/0019_whatsapp_shipping_to_agree.sql` (texto del aviso automatico) **sin aplicar**.
+## Decisiones del dueño
+- OpenWA responde 500 pero **los mensajes SI llegan**: no es bloqueante (P0-05 aparcado).
+- Envios: "Recoger en tienda" (costo 0) y "Otra zona — acordar por WhatsApp" (costo NULL). Confirmar o marcar pagada **exige** costo de envio.
+- Reservas de pedidos viejos: **solo aviso en el admin** ("Hace N dias" en pendientes > 48 h), sin caducidad automatica.
+- Direcciones con telefono raro corregidas a `+53 53077035` (autorizado).
+- Flujo de trabajo: commit y push **directo a `main`**; aplicar migraciones cuando el codigo que las necesita ya esta listo.
 
-## Estado 2026-10-04 (rama `fix/pilot-qa-p0`, 14 commits, sin push)
-- Hechos y verificados en dev (:3001, BD prod, datos QA borrados tras cada prueba): P0-04 (perfil al vuelo + 0020),
-  IOS-01 (boton WhatsApp en la confirmacion), P0-07, P0-08, MPC-01/02/03/04/05/06/07, IOS-02, P0-11/MPC-08 (src/middleware.ts).
-- Migraciones SIN aplicar en prod: 0018 (RLS, aplicar DESPUES del deploy), 0019 (texto WhatsApp) y 0020 (perfiles),
-  ambas aditivas: se pueden aplicar antes o despues.
-- P0-06 HECHO: `0021_orders_client_request_id.sql` APLICADA en prod 2026-10-04 (columna opcional + indice unico).
-  El codigo con `client_request_id` en `schema.ts` exige 0021 aplicada (Drizzle lee/inserta todas las columnas).
-- Leccion: en las pruebas con Playwright, el clic fantasma de Radix Select solo aparece con `tap()`, no con `click()`.
+## Reglas que salieron de la QA (respetarlas en codigo nuevo)
+- Toda mutacion que cambie precio, stock o colecciones llama `revalidateStorefront()` (`src/lib/revalidateStorefront.ts`).
+- Codigo de admin solo via `@/features/{products,orders,collections,users}/admin`; nunca reexportarlo en `index.ts`
+  (los barrels no hacen tree-shaking: metia ~350 kB de admin en la tienda). Documentado en `docs/project-structure.md`.
+- `db.ts` es un pool singleton con `max: 1` en produccion: **nunca** usar `db` dentro de un `db.transaction` (usar `tx`), se bloquearia.
+- Telefonos: fuente unica `src/lib/phone.ts` (`phoneSchema` normaliza a `+53 5XXXXXXX`; Cuba solo moviles 5/6).
+- Errores al cliente: nunca `error.message` crudo de Postgres; mensajes en espanol (`features/orders/utils/checkoutErrors.ts`).
+- Service worker `public/sw.js` (solo tienda, solo produccion): no cachear APIs, admin, pedidos ni cuenta; subir `VERSION` si cambia algo de `/public`.
+- Login/registro: volver con `?redirect=` (helper `src/lib/safeRedirect.ts`, solo rutas internas).
+- Busqueda: filtra por `products.search_name` (sin tildes); normalizar el termino con `features/search/utils/normalizeSearchTerm.ts`.
+- Catalogo: filtrar `stock > 0` en la consulta GraphQL, no en el cliente.
 
-## Estado 2026-10-04 (tarde) — en `main`, desplegado en Vercel
-- `fix/pilot-qa-p0` fusionada en `main` (fast-forward) y pusheada. Migraciones APLICADAS en prod: 0019, 0020, 0021 y 0018
-  (esta despues del deploy). Verificado: anon recibe 401 en orders/order_lines/profiles/address y GraphQL no expone
-  ordersCollection; productos y zonas siguen publicos; los 3 usuarios tienen perfil.
-- Incidente breve tras 0018: `/admin/orders` dio 404 en prod porque `urql-service.ts` solo mandaba `apiKey` y el gateway
-  lo trataba como anon. Arreglado mandando `Authorization: Bearer <service role>` (commit cbb7aa5).
+## Pendiente conocido (decidido dejarlo para despues)
+- P3-05 parcial: el select del carrito logueado sigue trayendo `description` (la tarjeta del carrito la muestra);
+  no hay store unico con updates optimistas.
+- Catalogo offline (SW StaleWhileRevalidate de paginas de producto): segundo paso.
+- `data-dgst` intermitente en la 1a peticion a `/shop` tras un deploy (visto 1 vez en prod y 1 en local; no se reproduce en 15+ intentos).
+  Hipotesis: fallo de red puntual de GraphQL durante el SSR de componentes cliente con urql `suspense` → Next pasa a render
+  en cliente y la pagina se ve bien. `retryExchange` ya reintenta. Si vuelve: mirar los logs de la funcion en Vercel.
+- Validar IOS-01 (boton WhatsApp tras pedir) en un iPhone fisico.
 
-## Estado 2026-10-04 (cierre de la jornada)
-- Fase 2 desplegada: ficha de producto con ISR 60 s + `revalidateStorefront()` (src/lib/revalidateStorefront.ts) en acciones de
-  producto/coleccion, mark-paid y cancel; admin lists y `/api/shipping-zones` dinamicos; estado admin optimista;
-  `RefreshOnFocus` en los pedidos del cliente. Verificado en prod: zonas MISS/age 0 y 6/6 fichas con el precio de la BD.
-- Regla nueva: cualquier mutacion que cambie precio, stock o colecciones debe llamar `revalidateStorefront()`.
-- Siguiente sugerido: Fase 1 (friccion de venta: total antes de confirmar, validacion de telefono), luego Fase 3 (bundle
-  de admin en la tienda, ~300 KB). Resumen por bloques en "Estado de ejecucion" del plan.
+## Lecciones operativas
+- `next build` con `next dev` corriendo en la misma carpeta rompe el `.next` del dev (500/404): parar el dev, compilar, relanzar `next dev -p 3001`.
+- El hook pre-commit (prettier) deja todos los archivos "modificados" solo por finales de linea (CRLF/LF, `core.autocrlf=true`).
+  Comprobar con `git diff --ignore-cr-at-eol --quiet`. **No** limpiar con `git checkout -- .` si hay cambios sin commitear en
+  otros archivos (asi se perdieron una vez las notas de la Fase 3): commitear todo junto o limpiar solo rutas concretas.
+- Playwright: el clic fantasma de Radix Select solo aparece con `tap()`; para movil usar un contexto con `isMobile`, `hasTouch`
+  y DPR 2.75 (el navegador por defecto es de escritorio con hover).
+- Pruebas con escritura en prod: usuario QA creado con la admin API (`DATABASE_SERVICE_ROLE`) y borrado al final; no enviar
+  pedidos si no hace falta (cada pedido dispara WhatsApp a los admins).
 
-## Estado 2026-10-04 (noche) — Fase 1 en `main` (6cac576), 0022 aplicada
-- Hechos: P1-01..P1-14, P1-16 (solo aviso admin "Hace N dias"), P1-17, y de paso P0-10 (login/registro) y P0-12.
-- Decision del dueño: reservas viejas → **solo aviso al admin**, sin caducidad automatica.
-- P1-15 (busqueda sin tildes) en rama LOCAL `fix/pilot-qa-p1-15` (823e80f): `drizzle/0023` (unaccent + `products.search_name`
-  generada) probada con ROLLBACK, sin aplicar. Orden: aplicar 0023 → `npm run codegen:fetch && npm run codegen` → merge a main.
-  El codigo de esa rama rompe la busqueda si se despliega sin 0023.
-- Datos de prod corregidos: las 2 direcciones con telefono raro quedaron `+53 53077035` (autorizado por el dueño).
-- Telefono: fuente unica `src/lib/phone.ts` (`phoneSchema` normaliza a `+53 5XXXXXXX`; Cuba solo moviles 5/6).
-  Hay 1 direccion guardada invalida (`+53077035`): el checkout avisa en vez de mandar el 400.
-- Leccion: `next build` con `next dev` corriendo en la misma carpeta rompe `.next` del dev (500/404) → parar el dev, compilar
-  y relanzar `next dev -p 3001`.
+## Historial resumido
+- 2026-10-02: QA y plan. 2026-10-03: P0-01..P0-04 + borrado de datos QA (BD = baseline).
+- 2026-10-04: Fase 0 en main (incidente tras 0018: `/admin/orders` 404 porque `urql-service.ts` no mandaba Bearer; arreglado en cbb7aa5),
+  Fase 2, Fase 1 (6cac576), P1-15 (c875676/77b1d26), Fase 3 (20bc0bc).
