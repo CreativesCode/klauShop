@@ -283,7 +283,7 @@ Para BD: migracion Drizzle en `drizzle/` + `drizzle/rls_policies.sql`. Despues d
   - **Fix**: `export const dynamic = 'force-dynamic'` (como `admin/products/page.tsx:17-18`). Sale tambien de P0-02 si se cambia a Drizzle o service. Purgar `.next/cache/fetch-cache` y la Data Cache de Vercel.
   - **Verificar**: dashboard → menu "Ordenes" → "Todas (N)" = `select count(*) from orders`.
 
-- [ ] **P2-04 · Tras una accion admin, la UI muestra unos segundos el estado anterior con los botones habilitados** · Sev MEDIA · Esf S
+- [x] **P2-04 · (HECHO 2026-10-04: estado local tras la respuesta + useTransition; botones deshabilitados durante el refresh; verificado: 250 ms tras el API ya muestra "Pendiente de Pago") Tras una accion admin, la UI muestra unos segundos el estado anterior con los botones habilitados** · Sev MEDIA · Esf S
   `[ADMIN-ORD-08]`
   - **Donde**: `src/features/orders/components/admin/OrderStatusChanger.tsx:141-157`.
   - **Fix**: estado local `{status,paymentStatus}` desde la respuesta del API; `startTransition(()=>router.refresh())`; `disabled={isChanging||isPending}`.

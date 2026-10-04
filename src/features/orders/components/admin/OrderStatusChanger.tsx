@@ -17,7 +17,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { OrderStatus } from "@/lib/supabase/schema";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import {
   ORDER_STATUS_ACTIONS,
   getOrderStatusInfo,
@@ -42,6 +42,16 @@ export default function OrderStatusChanger({
     null,
   );
   const [isChanging, setIsChanging] = useState(false);
+  // Shown right after a successful action, until router.refresh() brings the new props
+  const [status, setStatus] = useState<OrderStatus>(currentStatus);
+  const [payment, setPayment] = useState(paymentStatus);
+  const [isRefreshing, startRefresh] = useTransition();
+  const isBusy = isChanging || isRefreshing;
+
+  useEffect(() => {
+    setStatus(currentStatus);
+    setPayment(paymentStatus);
+  }, [currentStatus, paymentStatus]);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [actionType, setActionType] = useState<
     "change" | "mark-paid" | "cancel"
@@ -49,7 +59,7 @@ export default function OrderStatusChanger({
   const { toast } = useToast();
   const router = useRouter();
 
-  const validNextStatuses = getValidNextStatuses(currentStatus);
+  const validNextStatuses = getValidNextStatuses(status);
 
   // Función helper para obtener el color hover más fuerte basado en el bgColor
   const getHoverColor = (bgColor: string): string => {
@@ -65,7 +75,7 @@ export default function OrderStatusChanger({
     return colorMap[bgColor] || "hover:bg-opacity-80";
   };
 
-  const isPaid = paymentStatus === "paid";
+  const isPaid = payment === "paid";
 
   // Construir lista de estados disponibles
   const availableStatuses = validNextStatuses.filter(
@@ -73,7 +83,7 @@ export default function OrderStatusChanger({
       status !== "pending_confirmation" && !(status === "paid" && isPaid),
   );
 
-  const currentStatusInfo = getOrderStatusInfo(currentStatus) || {
+  const currentStatusInfo = getOrderStatusInfo(status) || {
     label: "Desconocido",
     description: "Estado desconocido",
     icon: () => null,
@@ -146,9 +156,11 @@ export default function OrderStatusChanger({
         description: successMessage,
       });
 
+      setStatus(selectedStatus);
+      if (actionType === "mark-paid") setPayment("paid");
       setShowConfirmDialog(false);
       setSelectedStatus(null);
-      router.refresh();
+      startRefresh(() => router.refresh());
     } catch (error: any) {
       console.error("Error changing status:", error);
       toast({
@@ -209,7 +221,7 @@ export default function OrderStatusChanger({
                     <Button
                       key={status}
                       onClick={() => handleStatusChange(status)}
-                      disabled={isChanging || blockedByShipping}
+                      disabled={isBusy || blockedByShipping}
                       variant="outline"
                       className={cn(
                         "w-full justify-start gap-2 h-auto py-3 transition-colors",
@@ -292,7 +304,7 @@ export default function OrderStatusChanger({
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmStatusChange}
-              disabled={isChanging}
+              disabled={isBusy}
             >
               {isChanging ? "Actualizando..." : "Confirmar"}
             </AlertDialogAction>
