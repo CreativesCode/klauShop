@@ -1,6 +1,7 @@
 "use server";
 
 import db from "@/lib/supabase/db";
+import { requireAdmin } from "@/lib/supabase/requireAdmin";
 import {
   InsertCollection,
   SelectCollection,
@@ -12,6 +13,8 @@ import { eq } from "drizzle-orm";
 export const createCollectionAction = async (
   data: InsertCollection,
 ): Promise<SelectCollection> => {
+  await requireAdmin();
+
   const [createdCollection] = await db
     .insert(collections)
     .values({
@@ -32,6 +35,8 @@ export const updateCollectionAction = async (
   collectionId: string,
   data: Partial<InsertCollection>,
 ): Promise<SelectCollection> => {
+  await requireAdmin();
+
   const [updatedCollection] = await db
     .update(collections)
     .set({
@@ -50,6 +55,8 @@ export const updateCollectionAction = async (
 };
 
 export const deleteCollectionAction = async (collectionId: string) => {
+  await requireAdmin();
+
   // Verificar si la colección tiene productos asociados
   const collectionProducts = await db
     .select()

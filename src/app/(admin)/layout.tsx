@@ -1,4 +1,5 @@
-import { getCurrentUser, isAdmin } from "@/features/users/actions";
+import { getCurrentUser } from "@/features/users/actions";
+import { isAdmin } from "@/features/users/utils";
 import MainFooter from "@/components/layouts/MainFooter";
 import Navbar from "@/components/layouts/MainNavbar";
 import { redirect } from "next/navigation";

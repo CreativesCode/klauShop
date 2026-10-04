@@ -1,4 +1,5 @@
-import { getCurrentUser, isAdmin } from "@/features/users/actions";
+import { getCurrentUser } from "@/features/users/actions";
+import { isAdmin } from "@/features/users/utils";
 import db from "@/lib/supabase/db";
 import { orders } from "@/lib/supabase/schema";
 import { eq } from "drizzle-orm";

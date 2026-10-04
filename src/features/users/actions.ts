@@ -4,12 +4,13 @@ import {
   AdminUserFormData,
   adminPhoneSchema,
 } from "@/features/users/validations";
+import { isAdmin } from "@/features/users/utils";
 import db from "@/lib/supabase/db";
+import { requireAdmin } from "@/lib/supabase/requireAdmin";
 import {
   default as createClient,
   default as createServerClient,
 } from "@/lib/supabase/server";
-import { User } from "@supabase/supabase-js";
 import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import {
@@ -36,10 +37,12 @@ export const getCurrentUserSession = async () => {
   return userResponse.data.session;
 };
 
-export const isAdmin = (currentUser: User | null) =>
-  currentUser?.app_metadata.isAdmin;
-
 export const getProfilePhone = async (userId: string) => {
+  const currentUser = await getCurrentUser();
+  if (!currentUser || (currentUser.id !== userId && !isAdmin(currentUser))) {
+    throw new Error("No autorizado.");
+  }
+
   const profile = await db.query.profiles.findFirst({
     where: eq(profiles.id, userId),
     columns: { phone: true },
@@ -68,6 +71,8 @@ export const updateAdminPhone = async (input: unknown) => {
 };
 
 export const getUser = async ({ userId }: { userId: string }) => {
+  await requireAdmin();
+
   const cookieStore = cookies();
   const adminAuthClient = createClient({ cookieStore, isAdmin: true }).auth
     .admin;
@@ -87,6 +92,8 @@ export const listUsers = async ({
   page?: number;
   perPage?: number;
 }) => {
+  await requireAdmin();
+
   const cookieStore = cookies();
   const adminAuthClient = createClient({ cookieStore, isAdmin: true }).auth
     .admin;
@@ -105,6 +112,8 @@ export const createUser = async ({
   name,
   password,
 }: AdminUserFormData) => {
+  await requireAdmin();
+
   const cookieStore = cookies();
   const adminAuthClient = createClient({ cookieStore, isAdmin: true }).auth
     .admin;
@@ -129,6 +138,8 @@ export const createUser = async ({
 };
 
 export const deleteUserAction = async (userId: string) => {
+  await requireAdmin();
+
   const cookieStore = cookies();
   const adminAuthClient = createClient({ cookieStore, isAdmin: true }).auth
     .admin;

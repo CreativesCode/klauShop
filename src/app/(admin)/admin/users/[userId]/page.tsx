@@ -1,5 +1,3 @@
-"use server";
-
 import AdminShell from "@/components/admin/AdminShell";
 import { getUser, UpdateUserForm } from "@/features/users";
 import { notFound } from "next/navigation";

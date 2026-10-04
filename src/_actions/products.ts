@@ -1,6 +1,7 @@
 "use server";
 
 import db from "@/lib/supabase/db";
+import { requireAdmin } from "@/lib/supabase/requireAdmin";
 import {
   InsertProducts,
   orderLines,
@@ -20,6 +21,8 @@ export const createProductAction = async (
   product: InsertProducts,
   additionalImages?: string[],
 ) => {
+  await requireAdmin();
+
   // Limpiar los datos antes de validar
   const cleanedProduct: InsertProducts = {
     ...product,
@@ -65,6 +68,8 @@ export const updateProductAction = async (
   product: InsertProducts,
   additionalImages?: string[],
 ) => {
+  await requireAdmin();
+
   // Limpiar los datos antes de validar
   const cleanedProduct: InsertProducts = {
     ...product,
@@ -123,6 +128,7 @@ export const updateProductAction = async (
 };
 
 export const getProductAdditionalImages = async (productId: string) => {
+  await requireAdmin();
   return await db
     .select()
     .from(productMedias)
@@ -138,6 +144,8 @@ export const getProductsByIds = async (productIds: string[]) => {
 };
 
 export const deleteProductAction = async (productId: string) => {
+  await requireAdmin();
+
   // Verificar si el producto tiene órdenes relacionadas
   const productOrders = await db
     .select()
