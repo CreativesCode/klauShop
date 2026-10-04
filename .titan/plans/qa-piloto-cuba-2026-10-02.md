@@ -1,6 +1,6 @@
 # QA-PILOTO-CUBA: Plan de correccion pre-piloto
 
-> **Estado**: EN EJECUCION — Fase 0 y Fase 2 casi completas, desplegadas en `main` (2026-10-04). Ver "Estado de ejecucion".
+> **Estado**: EN EJECUCION — Fase 0 y Fase 2 casi completas, desplegadas en `main` (2026-10-04). Fase 1 casi completa en la rama `fix/pilot-qa-p1` (sin commitear). Ver "Estado de ejecucion".
 > **Fecha**: 2026-10-02
 > **Proyecto**: Klau's Shop
 > **Evidencia**: `.titan/qa/2026-10-02-piloto-cuba.md` · Datos QA creados: `.titan/qa/2026-10-02-datos-qa-ledger.jsonl`
@@ -14,12 +14,13 @@ Los datos QA se borraron tras cada prueba; la BD coincide con la linea base.
 
 | Bloque | Hecho | Pendiente |
 |---|---|---|
-| Fase 0 (bloqueantes) | P0-01, P0-02, P0-03, P0-04, P0-06, P0-07, P0-08, P0-11, P0-13 | P0-05 (OpenWA da 500 pero los mensajes llegan: aparcado por el dueño), P0-09 (Stripe dormido crea pedidos), P0-10 (password en URL antes de hidratar), P0-12 |
+| Fase 0 (bloqueantes) | P0-01, P0-02, P0-03, P0-04, P0-06, P0-07, P0-08, P0-11, P0-13; P0-10 (login/registro) y P0-12 en `fix/pilot-qa-p1` | P0-05 (OpenWA da 500 pero los mensajes llegan: aparcado por el dueño), P0-09 (Stripe dormido crea pedidos), P0-10 en reset-password y AccountClient |
 | Envios (anexo A) | SN-01, SN-04, SN-05 (opcion A), SN-07 | SN-02, SN-03, SN-08, SN-09/10/11 |
 | iPhone (anexo B) | IOS-01 (falta probar en iPhone fisico), IOS-02, IOS-03 | IOS-04..09 (bajos) |
 | Admin movil (anexo C) | MPC-01..08, CSA-1..7 | MPC-09/10/11, CSA-8..10 (bajos/medios) |
 | Fase 2 (refresco) | P2-01, P2-02, P2-03, P2-04, P2-06 | P2-05 (no reproducido), P2-07 |
-| Fase 1, 3, 4, 5 | — | todo |
+| Fase 1 (rama `fix/pilot-qa-p1`) | P1-01..P1-14, P1-16 (solo el aviso "Hace N días"), P1-17. P1-10 ya venia de SN-05 | P1-15 (necesita migracion `unaccent` en prod), P1-16 TTL (decision del dueño), `drizzle/0022` sin aplicar |
+| Fase 3, 4, 5 | — | todo |
 
 **Migraciones aplicadas en prod:** 0018 (RLS, despues del deploy), 0019 (texto WhatsApp envio a acordar), 0020 (perfiles
 al registrarse + backfill), 0021 (`orders.client_request_id`).
@@ -181,6 +182,17 @@ Para BD: migracion Drizzle en `drizzle/` + `drizzle/rls_policies.sql`. Despues d
   - **Verificar**: `select count(*) from orders where name ilike 'QA%' and order_status not in ('cancelled')` = 0. Ninguna coleccion ni producto QA en el menu ni en /shop.
 
 ### Fase 1 — Friccion en la venta
+
+> **Ejecucion 2026-10-04 (rama `fix/pilot-qa-p1`, sin commitear).** Verificado en dev :3001 contra la BD de prod **sin escribir**:
+> errores del checkout (400 JSON/telefono, 409 PRODUCT_NOT_FOUND/INSUFFICIENT_STOCK en español, 0 pedidos creados), dialogo de
+> invitado en 390 px (total antes de confirmar, `+5353077035` → `+53 53077035`, `1234` → error, 1 sola peticion de zonas),
+> confirmacion de invitado sin "Ver mis ordenes", `/order/x` → `/sign-in?redirect=/order/x`, login con error en español sin password
+> en la URL, invitado sin peticiones a `/auth/v1/user`, filtro de precio sin cotas (pg_graphql OK). Tests: 20 de `src/lib/phone.ts`.
+> **Sin verificar** (requieren usuario logueado y escribir en prod): fusion del carrito al iniciar sesion (P1-07), P1-11, P1-12.
+> `document is not defined` en consola al hidratar ya ocurre en `main` (no es de esta rama).
+> Piezas nuevas: `src/lib/phone.ts` (schema compartido + normalizacion), `src/lib/safeRedirect.ts`, `OrderTotalSummary`,
+> `features/orders/utils/checkoutErrors.ts`, errores tipados `OutOfStockError`/`ProductNotFoundError` en `inventory.ts`.
+> `drizzle/0022_wa_admin_order_url_redirector.sql` (enlace admin → `/order/{id}`) **sin aplicar**.
 
 - [ ] **P1-01 · Telefono: acepta 4 digitos y genera doble prefijo `+53 5353077035`** · Sev ALTA · Esf S
   `[GUEST-05]` (+ `GUEST-23` carrera de efectos, baja)

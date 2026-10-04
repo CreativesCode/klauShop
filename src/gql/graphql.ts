@@ -2406,6 +2406,7 @@ export type AdminOrdersPageQueryQuery = {
         id: string;
         order_status?: string | null;
         payment_status: string;
+        created_at: any;
         order_linesCollection?: {
           __typename?: "order_linesConnection";
           edges: Array<{
@@ -3485,6 +3486,7 @@ export type OrderColumnsFragmentFragment = {
   id: string;
   order_status?: string | null;
   payment_status: string;
+  created_at: any;
   order_linesCollection?: {
     __typename?: "order_linesConnection";
     edges: Array<{
@@ -4474,6 +4476,7 @@ export const OrderColumnsFragmentFragmentDoc = {
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "order_status" } },
           { kind: "Field", name: { kind: "Name", value: "payment_status" } },
+          { kind: "Field", name: { kind: "Name", value: "created_at" } },
           {
             kind: "Field",
             name: { kind: "Name", value: "order_linesCollection" },
@@ -5170,6 +5173,7 @@ export const AdminOrdersPageQueryDocument = {
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "order_status" } },
           { kind: "Field", name: { kind: "Name", value: "payment_status" } },
+          { kind: "Field", name: { kind: "Name", value: "created_at" } },
           {
             kind: "Field",
             name: { kind: "Name", value: "order_linesCollection" },
@@ -10306,7 +10310,7 @@ export const SearchDocument = {
                                   fields: [
                                     {
                                       kind: "ObjectField",
-                                      name: { kind: "Name", value: "gt" },
+                                      name: { kind: "Name", value: "gte" },
                                       value: {
                                         kind: "Variable",
                                         name: { kind: "Name", value: "lower" },
@@ -10314,7 +10318,7 @@ export const SearchDocument = {
                                     },
                                     {
                                       kind: "ObjectField",
-                                      name: { kind: "Name", value: "lt" },
+                                      name: { kind: "Name", value: "lte" },
                                       value: {
                                         kind: "Variable",
                                         name: { kind: "Name", value: "upper" },

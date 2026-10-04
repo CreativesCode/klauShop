@@ -59,7 +59,7 @@ export function ShippingZoneSelect({
   disabled = false,
   allowPickup = true,
 }: ShippingZoneSelectProps) {
-  const { zones, isLoading } = useShippingZones();
+  const { zones, isLoading, error, retry } = useShippingZones();
   const [selectValue, setSelectValue] = useState<string>(() =>
     getInitialSelectValue(value, allowPickup),
   );
@@ -148,6 +148,19 @@ export function ShippingZoneSelect({
           </SelectItem>
         </SelectContent>
       </Select>
+
+      {error && (
+        <p className="text-sm text-destructive">
+          No se pudieron cargar las zonas.{" "}
+          <button
+            type="button"
+            className="underline font-medium"
+            onClick={retry}
+          >
+            Reintentar
+          </button>
+        </p>
+      )}
 
       {selectValue === PICKUP_VALUE && (
         <p className="text-sm text-muted-foreground">

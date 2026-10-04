@@ -13,21 +13,29 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ShippingZoneSelect } from "@/features/shipping";
+import {
+  ShippingZoneSelect,
+  getShippingCostFor,
+  useShippingZones,
+} from "@/features/shipping";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CustomerInfoInput, customerInfoSchema } from "../validations";
+import { OrderTotalSummary } from "./OrderTotalSummary";
 
 type CustomerInfoFormProps = {
   onSubmit: (data: CustomerInfoInput) => void;
   isLoading?: boolean;
   initialData?: Partial<CustomerInfoInput>;
+  // When set, a Subtotal / Envío / Total box is shown above the submit button
+  subtotal?: number;
 };
 
 export function CustomerInfoForm({
   onSubmit,
   isLoading = false,
   initialData,
+  subtotal,
 }: CustomerInfoFormProps) {
   const form = useForm<CustomerInfoInput>({
     resolver: zodResolver(customerInfoSchema),
@@ -39,6 +47,14 @@ export function CustomerInfoForm({
       address: initialData?.address || "",
       notes: initialData?.notes || "",
     },
+  });
+
+  // Same cached request as the zone select (no extra fetch)
+  const { zones } = useShippingZones(subtotal !== undefined);
+  const zoneName = form.watch("zone");
+  const shippingCost = getShippingCostFor(zones, {
+    zoneId: form.watch("shippingZoneId"),
+    zoneName,
   });
 
   return (
@@ -141,6 +157,14 @@ export function CustomerInfoForm({
             </FormItem>
           )}
         />
+
+        {subtotal !== undefined && (
+          <OrderTotalSummary
+            subtotal={subtotal}
+            shippingCost={shippingCost}
+            zoneName={zoneName}
+          />
+        )}
 
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Procesando..." : "Continuar con WhatsApp"}

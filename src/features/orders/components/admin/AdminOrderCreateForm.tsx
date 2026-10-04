@@ -25,11 +25,8 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  formatOrderTotal,
-  formatShipping,
-  getDiscountedUnitPrice,
-} from "@/features/orders/utils/pricing";
+import { OrderTotalSummary } from "@/features/orders/components/OrderTotalSummary";
+import { getDiscountedUnitPrice } from "@/features/orders/utils/pricing";
 import { customerInfoSchema } from "@/features/orders/validations";
 import {
   ShippingZoneSelect,
@@ -142,8 +139,6 @@ export default function AdminOrderCreateForm({
       return acc + item.quantity * price;
     }, 0);
   }, [cartItems, productById]);
-
-  const total = subtotal + (shippingCost ?? 0);
 
   const addProduct = (productId: string) => {
     const current = getValues("cartItems");
@@ -548,23 +543,11 @@ export default function AdminOrderCreateForm({
 
               <Separator />
 
-              <div className="rounded-md border p-3 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Subtotal</span>
-                  <span>{formatPrice(subtotal)}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Envío</span>
-                  <span>
-                    {formatShipping(shippingCost, watch("customerData.zone"))}
-                  </span>
-                </div>
-                <Separator />
-                <div className="flex justify-between font-semibold">
-                  <span>Total</span>
-                  <span>{formatOrderTotal(total, shippingCost)}</span>
-                </div>
-              </div>
+              <OrderTotalSummary
+                subtotal={subtotal}
+                shippingCost={shippingCost}
+                zoneName={watch("customerData.zone")}
+              />
 
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? "Creando..." : "Crear orden"}

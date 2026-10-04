@@ -60,8 +60,51 @@ export function sumQuantitiesByProduct(
   return totals;
 }
 
+export type StockShortage = {
+  productId: string;
+  name: string;
+  available: number;
+  requested: number;
+};
+
+/** A cart asks for more units than are available (copy is customer-facing). */
+export class OutOfStockError extends Error {
+  constructor(public readonly items: StockShortage[]) {
+    super(
+      items
+        .map((item) =>
+          item.available > 0
+            ? `Solo quedan ${item.available} de "${item.name}" (pediste ${item.requested}).`
+            : `"${item.name}" ya no tiene stock.`,
+        )
+        .join(" "),
+    );
+    this.name = "OutOfStockError";
+  }
+}
+
+/** Some cart products no longer exist. */
+export class ProductNotFoundError extends Error {
+  constructor(public readonly productIds: string[]) {
+    super(
+      "Algún producto de tu carrito ya no está disponible. Quítalo del carrito y vuelve a intentarlo.",
+    );
+    this.name = "ProductNotFoundError";
+  }
+}
+
+/** Throws ProductNotFoundError unless every requested id was loaded. */
+export function assertProductsFound(
+  requestedIds: string[],
+  productsData: { id: string }[],
+): void {
+  const found = new Set(productsData.map((p) => p.id));
+  const missing = requestedIds.filter((id) => !found.has(id));
+  if (missing.length) throw new ProductNotFoundError(missing);
+}
+
 /**
- * Throws `OUT_OF_STOCK: ...` if any product lacks stock for the whole cart.
+ * Throws OutOfStockError listing every product that lacks stock for the whole cart.
  * Must run inside the transaction that locked the products (FOR UPDATE).
  */
 export async function assertCartStock(
@@ -69,16 +112,16 @@ export async function assertCartStock(
   items: CartQuantity[],
   productsData: { id: string; name: string }[],
 ): Promise<void> {
+  const shortages: StockShortage[] = [];
   for (const [productId, requested] of sumQuantitiesByProduct(items)) {
     const available = await getAvailableStock(productId, tx);
     if (available < requested) {
       const name =
         productsData.find((p) => p.id === productId)?.name || "Producto";
-      throw new Error(
-        `OUT_OF_STOCK: ${name} - Disponible: ${available}, Solicitado: ${requested}`,
-      );
+      shortages.push({ productId, name, available, requested });
     }
   }
+  if (shortages.length) throw new OutOfStockError(shortages);
 }
 
 /**

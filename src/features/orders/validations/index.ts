@@ -1,3 +1,4 @@
+import { phoneSchema } from "@/lib/phone";
 import { z } from "zod";
 
 // Validación para información del cliente en checkout de WhatsApp
@@ -6,13 +7,7 @@ export const customerInfoSchema = z.object({
     .string()
     .min(2, "El nombre debe tener al menos 2 caracteres")
     .max(100, "El nombre es demasiado largo"),
-  phone: z
-    .string()
-    .min(8, "El teléfono debe tener al menos 8 caracteres")
-    .regex(
-      /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/,
-      "Formato de teléfono inválido",
-    ),
+  phone: phoneSchema,
   zone: z
     .string()
     .min(2, "Selecciona tu zona de envío")
@@ -30,7 +25,7 @@ export const createWhatsAppOrderSchema = z.object({
   cartItems: z
     .array(
       z.object({
-        productId: z.string(),
+        productId: z.string().min(1),
         quantity: z.number().int().positive(),
         color: z.string().nullable().optional(),
         size: z.string().nullable().optional(),

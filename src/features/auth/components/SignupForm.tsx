@@ -20,7 +20,8 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { useToast } from "@/components/ui/use-toast";
-import { signupSchema } from "../validations";
+import { getSafeRedirect } from "@/lib/safeRedirect";
+import { getAuthErrorMessage, signupSchema } from "../validations";
 import { PasswordInput } from "./PasswordInput";
 
 type FormData = z.infer<typeof signupSchema>;
@@ -31,13 +32,16 @@ export function SignUpForm() {
   const { toast } = useToast();
   const supabase = createClient();
   const [isLoading, setIsLoading] = React.useState(false);
+  // Before hydration a submit would be a native GET with the password in the URL
+  const [ready, setReady] = React.useState(false);
+  React.useEffect(() => setReady(true), []);
 
   const form = useForm<FormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
       name: searchParams.get("name") || "",
       email: searchParams.get("email") || "",
-      password: searchParams.get("password") || "",
+      password: "",
     },
   });
 
@@ -53,26 +57,48 @@ export function SignUpForm() {
         },
       },
     });
-    const from = searchParams?.get("from");
-
-    if (data) {
-      router.push(from ? from : "/");
-    }
-
-    const unknownError = "Something went wrong, please try again.";
+    setIsLoading(false);
 
     if (error) {
       toast({
-        title: "Error",
-        description: error?.message || unknownError,
+        title: "No se pudo crear la cuenta",
+        description: getAuthErrorMessage(error),
+        variant: "destructive",
       });
-      setIsLoading(false);
+      return;
     }
+
+    // With email confirmation on, an existing email returns a user without identities
+    if (data.user && data.user.identities?.length === 0) {
+      toast({
+        title: "No se pudo crear la cuenta",
+        description:
+          "Ya existe una cuenta con este correo. Inicia sesión o recupera tu contraseña.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!data.session) {
+      toast({
+        title: "Revisa tu correo",
+        description:
+          "Te enviamos un correo para confirmar tu cuenta. Ábrelo y luego inicia sesión.",
+      });
+      return;
+    }
+
+    router.push(
+      getSafeRedirect(
+        searchParams?.get("redirect") ?? searchParams?.get("from"),
+      ) ?? "/",
+    );
   }
 
   return (
     <Form {...form}>
       <form
+        method="post"
         className="grid gap-4"
         onSubmit={(...args) => void form.handleSubmit(onSubmit)(...args)}
       >
@@ -116,7 +142,7 @@ export function SignUpForm() {
             </FormItem>
           )}
         />
-        <Button disabled={isLoading}>
+        <Button disabled={!ready || isLoading}>
           {isLoading && (
             <Icons.spinner
               className="mr-2 h-4 w-4 animate-spin"

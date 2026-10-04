@@ -76,7 +76,17 @@ const useCartStore = create<CartStore>(
   ),
 );
 
-export { createCartKey };
+// El `cartKey` se construye como:
+// `${productId}-${color||"none"}-${size||"none"}-${material||"none"}`
+// Ojo: si `productId` es UUID, contiene guiones. Por eso NO podemos usar split("-")[0].
+const getProductIdFromCartKey = (cartKey: string) => {
+  const parts = cartKey.split("-");
+  // Si por algún motivo no tiene opciones, devolvemos el key completo
+  if (parts.length <= 3) return cartKey;
+  return parts.slice(0, -3).join("-");
+};
+
+export { createCartKey, getProductIdFromCartKey };
 
 export const calcProductCountStorage = (cartItems: CartItems) => {
   if (!cartItems) return 0;

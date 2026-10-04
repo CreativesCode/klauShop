@@ -1,3 +1,4 @@
+import { phoneSchema } from "@/lib/phone";
 import { z } from "zod";
 
 // Esquema de validación para crear/actualizar dirección
@@ -10,13 +11,7 @@ export const addressSchema = z.object({
     .string()
     .min(2, "El nombre del destinatario debe tener al menos 2 caracteres")
     .max(100, "El nombre es demasiado largo"),
-  phone: z
-    .string()
-    .min(8, "El teléfono debe tener al menos 8 caracteres")
-    .regex(
-      /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/,
-      "Formato de teléfono inválido",
-    ),
+  phone: phoneSchema,
   zone: z
     .string()
     .min(2, "Selecciona tu zona de envío")

@@ -108,7 +108,11 @@ function UserNav() {
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        <Link href="/sign-in" className="flex items-center text-foreground">
+        <Link
+          href="/sign-in"
+          prefetch={false}
+          className="flex items-center text-foreground"
+        >
           <Icons.user className="h-5 w-5 mr-2 text-primary" />
           <p className="text-sm text-primary hidden sm:inline-block">Entrar</p>
         </Link>

@@ -25,6 +25,7 @@ export const OrderColumnsFragment = gql(/* GraphQL */ `
     id
     order_status
     payment_status
+    created_at
     order_linesCollection {
       edges {
         node {
@@ -35,6 +36,21 @@ export const OrderColumnsFragment = gql(/* GraphQL */ `
     }
   }
 `);
+
+// Pending orders keep stock reserved: flag the old ones so the admin can follow up or cancel
+const STALE_PENDING_HOURS = 48;
+
+function getStalePendingDays(
+  status: string | null | undefined,
+  createdAt: string | null | undefined,
+): number | null {
+  if (status !== "pending_confirmation" && status !== "pending_payment") {
+    return null;
+  }
+  if (!createdAt) return null;
+  const hours = (Date.now() - new Date(createdAt).getTime()) / 36e5;
+  return hours > STALE_PENDING_HOURS ? Math.floor(hours / 24) : null;
+}
 
 const OrdersColumns: ColumnDef<{
   node: DocumentType<typeof OrderColumnsFragment>;
@@ -84,20 +100,32 @@ const OrdersColumns: ColumnDef<{
       }
 
       const Icon = statusInfo.icon;
+      const staleDays = getStalePendingDays(status, order.created_at);
 
       return (
-        <Badge
-          variant="outline"
-          className={cn(
-            "rounded-md px-2 py-1",
-            "font-medium flex items-center gap-2 w-fit",
-            statusInfo.color,
-            statusInfo.borderColor,
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge
+            variant="outline"
+            className={cn(
+              "rounded-md px-2 py-1",
+              "font-medium flex items-center gap-2 w-fit",
+              statusInfo.color,
+              statusInfo.borderColor,
+            )}
+          >
+            <Icon size={14} />
+            {statusInfo.label}
+          </Badge>
+          {staleDays !== null && (
+            <Badge
+              variant="outline"
+              className="rounded-md px-2 py-1 w-fit text-amber-700 border-amber-500"
+              title="Pendiente hace más de 48 h: el stock sigue reservado"
+            >
+              Hace {staleDays} días
+            </Badge>
           )}
-        >
-          <Icon size={14} />
-          {statusInfo.label}
-        </Badge>
+        </div>
       );
     },
   },

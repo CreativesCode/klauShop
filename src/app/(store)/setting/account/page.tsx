@@ -1,3 +1,4 @@
+import { signInRedirect } from "@/lib/safeRedirect";
 import { getProfilePhone } from "@/features/users";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
@@ -14,7 +15,7 @@ export default async function AccountPage() {
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    redirect("/sign-in");
+    redirect(signInRedirect("/setting/account"));
   }
 
   const isAdmin = Boolean(user.app_metadata?.isAdmin);

@@ -1,6 +1,6 @@
 "use client";
 import { AddProductToCartForm } from "@/features/carts";
-import { useState } from "react";
+import { useAvailableStock } from "@/features/carts/hooks/useAvailableStock";
 import { ProductStockDisplay } from "./ProductStockDisplay";
 
 interface ProductStockAndFormWrapperProps {
@@ -18,25 +18,16 @@ export function ProductStockAndFormWrapper({
   sizes,
   materials,
 }: ProductStockAndFormWrapperProps) {
-  const [selectedColor, setSelectedColor] = useState<string | undefined>(
-    undefined,
-  );
-  const [selectedSize, setSelectedSize] = useState<string | undefined>(
-    undefined,
-  );
-  const [selectedMaterial, setSelectedMaterial] = useState<string | undefined>(
-    undefined,
-  );
+  // One stock request shared by the header and the form (same number in both)
+  const { availableStock, isLoading } = useAvailableStock(productId);
 
   return (
     <>
       <section className="mb-2">
         <ProductStockDisplay
-          productId={productId}
+          availableStock={availableStock}
           totalStock={totalStock}
-          selectedColor={selectedColor}
-          selectedSize={selectedSize}
-          selectedMaterial={selectedMaterial}
+          isLoading={isLoading}
         />
       </section>
 
@@ -46,11 +37,8 @@ export function ProductStockAndFormWrapper({
           colors={colors}
           sizes={sizes}
           materials={materials}
-          onVariantChange={{
-            color: setSelectedColor,
-            size: setSelectedSize,
-            material: setSelectedMaterial,
-          }}
+          availableStock={availableStock}
+          isLoadingStock={isLoading}
         />
       </section>
     </>

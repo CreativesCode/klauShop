@@ -1,3 +1,4 @@
+import { signInRedirect } from "@/lib/safeRedirect";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -13,7 +14,7 @@ export default async function ProfilePage() {
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    redirect("/sign-in");
+    redirect(signInRedirect("/setting"));
   }
 
   return <ProfileClient />;

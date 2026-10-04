@@ -2,7 +2,7 @@
 import { QuantityInput } from "@/components/layouts/QuantityInput";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import {
@@ -19,7 +19,6 @@ import { ColorPicker } from "@/features/products/components/ColorPicker";
 import { MaterialSelector } from "@/features/products/components/MaterialSelector";
 import { SizeSelector } from "@/features/products/components/SizeSelector";
 import { useAuth } from "@/providers/AuthProvider";
-import { useAvailableStock } from "../hooks/useAvailableStock";
 import useCartActions from "../hooks/useCartActions";
 import { AddProductCartData, AddProductToCartSchema } from "../validations";
 
@@ -28,6 +27,9 @@ interface AddProductToCartFormProps {
   colors?: string[] | null;
   sizes?: string[] | null;
   materials?: string[] | null;
+  // Shared with the stock header (ProductStockAndFormWrapper)
+  availableStock: number | null;
+  isLoadingStock?: boolean;
   onVariantChange?: {
     color?: (color: string | undefined) => void;
     size?: (size: string | undefined) => void;
@@ -40,10 +42,15 @@ function AddProductToCartForm({
   colors,
   sizes,
   materials,
+  availableStock,
+  isLoadingStock = false,
   onVariantChange,
 }: AddProductToCartFormProps) {
   const { user } = useAuth();
   const { addProductToCart } = useCartActions(user, productId);
+  // Before hydration a submit would do a native GET (page reload, nothing added)
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const form = useForm<AddProductCartData>({
     resolver: zodResolver(AddProductToCartSchema),
@@ -84,16 +91,6 @@ function AddProductToCartForm({
     !hasMaterials || (hasMaterials && selectedMaterial !== undefined);
 
   const areAllVariantsSelected = isColorValid && isSizeValid && isMaterialValid;
-
-  // Obtener el stock disponible para la variante seleccionada
-  // Solo se verifica cuando todas las variantes requeridas están seleccionadas
-  const { availableStock, isLoading: isLoadingStock } = useAvailableStock(
-    productId,
-    selectedColor,
-    selectedSize,
-    selectedMaterial,
-    areAllVariantsSelected,
-  );
 
   // Limitar la cantidad máxima al stock disponible o 8 (lo que sea menor)
   const maxQuantity = availableStock !== null ? Math.min(availableStock, 8) : 8;
@@ -182,7 +179,7 @@ function AddProductToCartForm({
             name="quantity"
             render={({ field }) => (
               <FormItem className="flex-1">
-                <FormLabel>Quantity</FormLabel>
+                <FormLabel>Cantidad</FormLabel>
                 <div className="flex items-center gap-x-2">
                   <FormControl>
                     <QuantityInput
@@ -194,15 +191,16 @@ function AddProductToCartForm({
                   <Button
                     type="submit"
                     disabled={
+                      !mounted ||
                       isLoadingStock ||
                       availableStock === 0 ||
                       !areAllVariantsSelected
                     }
                   >
-                    {isLoadingStock && (
+                    {(!mounted || isLoadingStock) && (
                       <Spinner className="mr-2 h-4 w-4" aria-hidden="true" />
                     )}
-                    Add to Cart
+                    {mounted ? "Añadir al carrito" : "Cargando…"}
                   </Button>
                 </div>
                 {availableStock !== null && (

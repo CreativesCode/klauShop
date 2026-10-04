@@ -22,7 +22,8 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { useToast } from "@/components/ui/use-toast";
 import { createClient } from "@/lib/supabase/client";
-import { authSchema } from "../validations";
+import { getSafeRedirect } from "@/lib/safeRedirect";
+import { authSchema, getAuthErrorMessage } from "../validations";
 import { PasswordInput } from "./PasswordInput";
 
 type FormData = z.infer<typeof authSchema>;
@@ -33,6 +34,9 @@ export function SignInForm() {
   const { toast } = useToast();
   const supabase = createClient();
   const [isPending, startTransition] = React.useTransition();
+  // Before hydration a submit would be a native GET with the password in the URL
+  const [ready, setReady] = React.useState(false);
+  React.useEffect(() => setReady(true), []);
 
   const form = useForm<FormData>({
     resolver: zodResolver(authSchema),
@@ -49,17 +53,24 @@ export function SignInForm() {
 
   function onSubmit({ email, password }: FormData) {
     startTransition(async () => {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      console.log("data", data);
 
       if (error) {
-        toast({ title: "Error", description: error.message });
+        toast({
+          title: "No se pudo iniciar sesión",
+          description: getAuthErrorMessage(error),
+          variant: "destructive",
+        });
       } else {
         toast({ title: "Inicio de sesión exitoso" });
-        router.push(searchParams?.get("from") || "/");
+        router.push(
+          getSafeRedirect(
+            searchParams?.get("redirect") ?? searchParams?.get("from"),
+          ) ?? "/",
+        );
       }
     });
   }
@@ -67,6 +78,7 @@ export function SignInForm() {
   return (
     <Form {...form}>
       <form
+        method="post"
         className="grid gap-4"
         onSubmit={(...args) => void form.handleSubmit(onSubmit)(...args)}
       >
@@ -124,7 +136,7 @@ export function SignInForm() {
             ¿Olvidaste tu contraseña?
           </Link>
         </div>
-        <Button disabled={isPending} className="w-full rounded-full">
+        <Button disabled={!ready || isPending} className="w-full rounded-full">
           {isPending && (
             <Spinner className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
           )}

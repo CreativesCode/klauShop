@@ -1,7 +1,9 @@
 import { Shell } from "@/components/layouts/Shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { siteConfig } from "@/config/site";
 import { OpenWhatsAppButton } from "@/features/orders/components/OpenWhatsAppButton";
+import { getCurrentUser } from "@/features/users/actions";
 import { CheckCircle2, MessageCircle, Package } from "lucide-react";
 import Link from "next/link";
 
@@ -12,7 +14,7 @@ type ConfirmationPageProps = {
   };
 };
 
-export default function OrderConfirmationPage({
+export default async function OrderConfirmationPage({
   searchParams,
 }: ConfirmationPageProps) {
   const { orderId, orderNumber } = searchParams;
@@ -35,6 +37,9 @@ export default function OrderConfirmationPage({
       </Shell>
     );
   }
+
+  // Guests have no order list: "Ver mis órdenes" would send them to sign in
+  const user = await getCurrentUser();
 
   return (
     <Shell layout="narrow">
@@ -61,7 +66,7 @@ export default function OrderConfirmationPage({
           <div className="space-y-2">
             <OpenWhatsAppButton orderId={orderId} orderNumber={orderNumber} />
             <p className="text-xs text-center text-muted-foreground">
-              Toca el botón para enviarnos tu pedido por WhatsApp.
+              Envía tu pedido por WhatsApp para confirmarlo.
             </p>
           </div>
 
@@ -99,19 +104,22 @@ export default function OrderConfirmationPage({
           <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
             <p className="text-sm text-blue-900 dark:text-blue-100">
               <span className="font-semibold">Importante:</span> Si no puedes
-              abrir WhatsApp desde aquí, escribe a nuestra vendedora mencionando
-              tu número de orden:{" "}
+              abrir WhatsApp desde aquí, escribe a nuestra vendedora al{" "}
+              <span className="font-bold">{siteConfig.whatsappPhone}</span>{" "}
+              mencionando tu número de orden:{" "}
               <span className="font-bold">{orderNumber}</span>
             </p>
           </div>
 
           {/* Acciones */}
           <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <Link href="/orders" className="flex-1">
-              <Button variant="outline" className="w-full">
-                Ver mis órdenes
-              </Button>
-            </Link>
+            {user && (
+              <Link href="/orders" className="flex-1">
+                <Button variant="outline" className="w-full">
+                  Ver mis órdenes
+                </Button>
+              </Link>
+            )}
             <Link href="/shop" className="flex-1">
               <Button className="w-full">Continuar comprando</Button>
             </Link>

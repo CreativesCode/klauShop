@@ -1,4 +1,5 @@
 import { getCurrentUser } from "@/features/users/actions";
+import { signInRedirect } from "@/lib/safeRedirect";
 import { isAdmin } from "@/features/users/utils";
 import db from "@/lib/supabase/db";
 import { orders } from "@/lib/supabase/schema";
@@ -15,7 +16,7 @@ async function OrderRedirectPage({ params: { orderId } }: OrderRedirectProps) {
 
   // Si no hay usuario, redirigir a login con el orderId como parámetro para volver después
   if (!currentUser) {
-    redirect(`/sign-in?redirect=/order/${orderId}`);
+    redirect(signInRedirect(`/order/${orderId}`));
   }
 
   // Obtener la orden desde la base de datos

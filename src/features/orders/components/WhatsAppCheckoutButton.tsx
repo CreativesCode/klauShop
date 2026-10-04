@@ -13,19 +13,16 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { AddressSelector } from "@/features/addresses/components";
 import { AddressInput } from "@/features/addresses/validations";
-import {
-  getZoneCost,
-  matchShippingZone,
-  useShippingZones,
-} from "@/features/shipping";
+import { getShippingCostFor, useShippingZones } from "@/features/shipping";
+import { normalizePhone } from "@/lib/phone";
 import { SelectAddress } from "@/lib/supabase/schema";
-import { formatPrice } from "@/lib/utils";
 import { useAuth } from "@/providers/AuthProvider";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CustomerInfoInput } from "../validations";
 import CustomerInfoForm from "./CustomerInfoForm";
+import { OrderTotalSummary } from "./OrderTotalSummary";
 import useCartStore from "@/features/carts/useCartStore";
 import { getWhatsAppUrlStorageKey } from "./OpenWhatsAppButton";
 
@@ -39,6 +36,8 @@ type CartItem = {
 
 type WhatsAppCheckoutButtonProps = {
   cartItems: CartItem[];
+  // Cart subtotal (same rounding as the server) for the total preview
+  subtotal: number;
   disabled?: boolean;
   className?: string;
 };
@@ -78,6 +77,7 @@ function getCheckoutAttemptId(cartItems: CartItem[]): string {
 
 export function WhatsAppCheckoutButton({
   cartItems,
+  subtotal,
   disabled = false,
   className,
 }: WhatsAppCheckoutButtonProps) {
@@ -134,12 +134,12 @@ export function WhatsAppCheckoutButton({
         setAddresses(loadedAddresses);
         // Inicializar el modo según si hay direcciones o no
         setAddressMode(loadedAddresses.length > 0 ? "existing" : "new");
-        // Auto-seleccionar la dirección predeterminada
-        const defaultAddress = loadedAddresses.find(
-          (a: SelectAddress) => a.isDefault,
-        );
-        if (defaultAddress) {
-          setSelectedAddress(defaultAddress);
+        // Auto-select the default address, or the first one if none is default
+        const initialAddress =
+          loadedAddresses.find((a: SelectAddress) => a.isDefault) ??
+          loadedAddresses[0];
+        if (initialAddress) {
+          setSelectedAddress(initialAddress);
         }
       }
     } catch (error) {
@@ -228,6 +228,17 @@ export function WhatsAppCheckoutButton({
       return;
     }
 
+    // Addresses saved before phone validation may hold an invalid number
+    if (!normalizePhone(selectedAddress.phone)) {
+      toast({
+        title: "Teléfono inválido",
+        description:
+          "El teléfono de esta dirección no es válido. Usa una nueva dirección o corrígela en Configuración → Direcciones.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const customerData: CustomerInfoInput = {
       name: selectedAddress.recipientName,
       phone: selectedAddress.phone,
@@ -275,11 +286,31 @@ export function WhatsAppCheckoutButton({
         if (data.error === "INSUFFICIENT_STOCK") {
           toast({
             title: "Stock insuficiente",
-            description:
-              data.message || "Algunos productos no tienen stock disponible",
+            description: `${
+              data.message || "Algunos productos no tienen stock disponible."
+            } Ajusta las cantidades en tu carrito.`,
             variant: "destructive",
           });
-          setIsLoading(false);
+          setIsOpen(false);
+          return;
+        }
+
+        if (data.error === "PRODUCT_NOT_FOUND") {
+          // Drop the missing products from the guest cart (the logged-in cart is in the DB)
+          const missing: string[] = Array.isArray(data.productIds)
+            ? data.productIds
+            : [];
+          const { cart, removeProduct } = useCartStore.getState();
+          Object.keys(cart)
+            .filter((key) => missing.some((id) => key.startsWith(`${id}-`)))
+            .forEach(removeProduct);
+          window.dispatchEvent(new Event("cart-updated"));
+          toast({
+            title: "Producto no disponible",
+            description: data.message,
+            variant: "destructive",
+          });
+          setIsOpen(false);
           return;
         }
 
@@ -382,32 +413,27 @@ export function WhatsAppCheckoutButton({
             {addressMode === "existing" && selectedAddress && (
               <>
                 {(() => {
-                  const cost = getZoneCost(
-                    matchShippingZone(shippingZones, {
-                      zoneId: selectedAddress.shippingZoneId,
-                      zoneName: selectedAddress.zone,
-                    }),
-                  );
-                  if (cost === null) {
-                    return (
-                      <Alert>
-                        <AlertTitle>Envío a acordar</AlertTitle>
-                        <AlertDescription>
-                          Acordaremos contigo el costo de envío{" "}
-                          <b>por WhatsApp</b> antes de confirmar el pedido.
-                        </AlertDescription>
-                      </Alert>
-                    );
-                  }
-
+                  const cost = getShippingCostFor(shippingZones, {
+                    zoneId: selectedAddress.shippingZoneId,
+                    zoneName: selectedAddress.zone,
+                  });
                   return (
-                    <Alert>
-                      <AlertTitle>Costo de envío</AlertTitle>
-                      <AlertDescription>
-                        Para <b>{selectedAddress.zone}</b>:{" "}
-                        <b>{formatPrice(cost)}</b>
-                      </AlertDescription>
-                    </Alert>
+                    <>
+                      {cost === null && (
+                        <Alert>
+                          <AlertTitle>Envío a acordar</AlertTitle>
+                          <AlertDescription>
+                            Acordaremos contigo el costo de envío{" "}
+                            <b>por WhatsApp</b> antes de confirmar el pedido.
+                          </AlertDescription>
+                        </Alert>
+                      )}
+                      <OrderTotalSummary
+                        subtotal={subtotal}
+                        shippingCost={cost}
+                        zoneName={selectedAddress.zone}
+                      />
+                    </>
                   );
                 })()}
               </>
@@ -427,6 +453,7 @@ export function WhatsAppCheckoutButton({
         ) : (
           // Usuario guest: formulario tradicional con autocompletado
           <CustomerInfoForm
+            subtotal={subtotal}
             onSubmit={handleGuestSubmit}
             isLoading={isLoading}
             initialData={guestAddress || undefined}

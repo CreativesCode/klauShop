@@ -1,5 +1,11 @@
 import {
+  cartConflictResponse,
+  invalidDataResponse,
+  invalidJsonResponse,
+} from "@/features/orders/utils/checkoutErrors";
+import {
   assertCartStock,
+  assertProductsFound,
   createReservation,
 } from "@/features/orders/utils/inventory";
 import { getDiscountedUnitPrice } from "@/features/orders/utils/pricing";
@@ -34,19 +40,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
 
-    const body = await request.json();
+    const body = await request.json().catch(() => undefined);
+    if (body === undefined) return invalidJsonResponse();
 
     // Validar datos de entrada (mismo contrato que WhatsApp checkout)
     const parsed = createWhatsAppOrderSchema.safeParse(body);
 
     if (parsed.success === false) {
-      return NextResponse.json(
-        {
-          error: "Datos inválidos",
-          details: parsed.error.errors,
-        },
-        { status: 400 },
-      );
+      return invalidDataResponse(parsed.error);
     }
 
     const { cartItems, customerData } = parsed.data;
@@ -63,13 +64,7 @@ export async function POST(request: Request) {
         .where(inArray(products.id, uniqueProductIds))
         .for("update");
 
-      if (productsData.length !== uniqueProductIds.length) {
-        const foundIds = productsData.map((p) => p.id);
-        const missingIds = uniqueProductIds.filter(
-          (id) => !foundIds.includes(id),
-        );
-        throw new Error(`Productos no encontrados: ${missingIds.join(", ")}`);
-      }
+      assertProductsFound(uniqueProductIds, productsData);
 
       // Verificar stock (por producto, sumando variantes) dentro de la tx
       await assertCartStock(tx, cartItems, productsData);
@@ -187,20 +182,14 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error("Error creating admin order:", error);
 
-    if (error.message?.startsWith("OUT_OF_STOCK")) {
-      return NextResponse.json(
-        {
-          error: "INSUFFICIENT_STOCK",
-          message: error.message,
-        },
-        { status: 409 },
-      );
-    }
+    const conflict = cartConflictResponse(error);
+    if (conflict) return conflict;
 
     return NextResponse.json(
       {
         error: "Error al crear la orden",
-        message: error.message || "Error desconocido",
+        message:
+          "No se pudo crear la orden. Inténtalo de nuevo en unos segundos.",
       },
       { status: 500 },
     );

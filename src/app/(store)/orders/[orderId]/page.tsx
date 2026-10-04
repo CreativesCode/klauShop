@@ -1,3 +1,4 @@
+import { signInRedirect } from "@/lib/safeRedirect";
 import { Shell } from "@/components/layouts/Shell";
 import { Icons } from "@/components/layouts/icons";
 import { Badge } from "@/components/ui/badge";
@@ -47,7 +48,7 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
     error: authError,
   } = await supabase.auth.getUser();
   if (authError || !user) {
-    redirect("/sign-in");
+    redirect(signInRedirect(`/orders/${orderId}`));
   }
 
   // Obtener orden desde la base de datos
@@ -59,8 +60,8 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
     return notFound();
   }
 
-  // Verificar que la orden pertenezca al usuario autenticado
-  if (order.user_id && order.user_id !== user.id) {
+  // Only the owner (or an admin) sees it; guest orders have no owner to match
+  if (order.user_id !== user.id && !user.app_metadata?.isAdmin) {
     return notFound();
   }
 

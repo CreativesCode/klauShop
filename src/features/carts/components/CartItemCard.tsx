@@ -19,6 +19,7 @@ import { keytoUrl, stripHtml } from "@/lib/utils";
 import Link from "next/link";
 import { Icons } from "../../../components/layouts/icons";
 import { Button } from "../../../components/ui/button";
+import { getDiscountedUnitPrice } from "@/features/orders/utils/pricing";
 
 export const CartItemCardFragment = gql(/* GraphQL */ `
   fragment CartItemCardFragment on products {
@@ -67,9 +68,8 @@ function CartItemCard({
     : 0;
   const hasDiscount = discountValue > 0;
   const priceValue = parseFloat(product.price.toString());
-  const discountedPrice = hasDiscount
-    ? priceValue - (priceValue * discountValue) / 100
-    : priceValue;
+  // Same per-unit rounding as the server (order_lines.price)
+  const discountedPrice = getDiscountedUnitPrice(priceValue, discountValue);
 
   return (
     <Card className="flex items-center justify-between gap-x-6 gap-y-8 px-5 py-3 shadow-none border-0 border-b">

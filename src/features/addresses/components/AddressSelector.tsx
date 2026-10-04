@@ -49,7 +49,12 @@ export function AddressSelector({
         <p className="text-sm text-muted-foreground">
           No tienes direcciones guardadas. Completa los datos de entrega:
         </p>
-        <AddressForm onSubmit={onNewAddress} isLoading={isLoading} />
+        <AddressForm
+          checkout
+          onSubmit={onNewAddress}
+          isLoading={isLoading}
+          submitLabel="Continuar con WhatsApp"
+        />
       </div>
     );
   }
@@ -106,6 +111,7 @@ export function AddressSelector({
       {selectedMode === "new" && (
         <div className="space-y-4">
           <AddressForm
+            checkout
             onSubmit={onNewAddress}
             isLoading={isLoading}
             submitLabel="Usar esta dirección"

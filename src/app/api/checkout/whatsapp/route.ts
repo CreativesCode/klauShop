@@ -1,5 +1,11 @@
 import {
+  cartConflictResponse,
+  invalidDataResponse,
+  invalidJsonResponse,
+} from "@/features/orders/utils/checkoutErrors";
+import {
   assertCartStock,
+  assertProductsFound,
   createReservation,
 } from "@/features/orders/utils/inventory";
 import { getDiscountedUnitPrice } from "@/features/orders/utils/pricing";
@@ -100,19 +106,14 @@ export async function POST(request: Request) {
   let clientRequestId: string | undefined;
 
   try {
-    const body = await request.json();
+    const body = await request.json().catch(() => undefined);
+    if (body === undefined) return invalidJsonResponse();
 
     // Validar datos de entrada
     const parsed = createWhatsAppOrderSchema.safeParse(body);
 
     if (parsed.success === false) {
-      return NextResponse.json(
-        {
-          error: "Datos inválidos",
-          details: parsed.error.errors,
-        },
-        { status: 400 },
-      );
+      return invalidDataResponse(parsed.error);
     }
 
     const { cartItems, customerData } = parsed.data;
@@ -150,14 +151,7 @@ export async function POST(request: Request) {
       );
 
       // Verificar que todos los productos únicos fueron encontrados
-      if (productsData.length !== uniqueProductIds.length) {
-        const foundIds = productsData.map((p) => p.id);
-        const missingIds = uniqueProductIds.filter(
-          (id) => !foundIds.includes(id),
-        );
-        console.error("❌ Productos faltantes:", missingIds);
-        throw new Error(`Productos no encontrados: ${missingIds.join(", ")}`);
-      }
+      assertProductsFound(uniqueProductIds, productsData);
 
       // 2. Verificar stock (por producto, sumando variantes) dentro de la tx
       await assertCartStock(tx, cartItems, productsData);
@@ -279,16 +273,9 @@ export async function POST(request: Request) {
       if (replayed) return NextResponse.json(replayed, { status: 200 });
     }
 
-    // Manejo especial para errores de stock
-    if (error.message?.startsWith("OUT_OF_STOCK")) {
-      return NextResponse.json(
-        {
-          error: "INSUFFICIENT_STOCK",
-          message: error.message,
-        },
-        { status: 409 }, // Conflict
-      );
-    }
+    // Stock or catalog problems the customer can fix from the cart
+    const conflict = cartConflictResponse(error);
+    if (conflict) return conflict;
 
     // Never send raw database errors to the customer
     return NextResponse.json(

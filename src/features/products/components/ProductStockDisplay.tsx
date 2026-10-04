@@ -1,42 +1,27 @@
 "use client";
-import { useAvailableStock } from "@/features/carts/hooks/useAvailableStock";
 
 interface ProductStockDisplayProps {
-  productId: string;
+  // Available stock (physical minus reservations); null while unknown
+  availableStock: number | null;
   totalStock: number;
-  selectedColor?: string | null;
-  selectedSize?: string | null;
-  selectedMaterial?: string | null;
+  isLoading?: boolean;
 }
 
 export function ProductStockDisplay({
-  productId,
+  availableStock,
   totalStock,
-  selectedColor,
-  selectedSize,
-  selectedMaterial,
+  isLoading = false,
 }: ProductStockDisplayProps) {
-  // Determinar si hay variantes seleccionadas (no undefined)
-  const hasVariantsSelected =
-    selectedColor !== undefined ||
-    selectedSize !== undefined ||
-    selectedMaterial !== undefined;
+  if (isLoading) {
+    return (
+      <div className="text-muted-foreground font-semibold">
+        Comprobando stock…
+      </div>
+    );
+  }
 
-  // Solo consultar el stock de la variante si hay alguna seleccionada
-  const { availableStock, isLoading } = useAvailableStock(
-    productId,
-    hasVariantsSelected ? selectedColor : undefined,
-    hasVariantsSelected ? selectedSize : undefined,
-    hasVariantsSelected ? selectedMaterial : undefined,
-    hasVariantsSelected, // Solo hacer la llamada si hay variantes seleccionadas
-  );
-
-  // Si hay variantes seleccionadas y tenemos el stock disponible, usarlo
-  // De lo contrario, usar el stock total
-  const displayStock =
-    hasVariantsSelected && availableStock !== null && !isLoading
-      ? availableStock
-      : totalStock;
+  // Physical stock only as a fallback when the check failed
+  const displayStock = availableStock ?? totalStock;
 
   if (displayStock === 0) {
     return (

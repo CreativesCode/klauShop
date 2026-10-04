@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import CartItemCard from "@/features/carts/components/CartItemCard";
 import EmptyCart from "@/features/carts/components/EmptyCart";
+import { getDiscountedUnitPrice } from "@/features/orders/utils/pricing";
 import { WhatsAppCheckoutButton } from "@/features/orders";
 import { User } from "@supabase/supabase-js";
 import { useEffect, useMemo, useState } from "react";
@@ -76,10 +77,11 @@ function UserCartSection({ user }: UserCartSectionProps) {
 
   const subtotal = useMemo(() => {
     return cart.reduce((acc, item) => {
-      const price = Number(item.product?.price || 0);
-      const discount = Number(item.product?.discount || 0);
-      const discountedPrice =
-        discount > 0 ? price - (price * discount) / 100 : price;
+      // Same per-unit rounding as the server (order_lines.price)
+      const discountedPrice = getDiscountedUnitPrice(
+        item.product?.price,
+        item.product?.discount,
+      );
       return acc + item.quantity * discountedPrice;
     }, 0);
   }, [cart]);
@@ -235,6 +237,7 @@ function UserCartSection({ user }: UserCartSectionProps) {
                   size: item.size,
                   material: item.material,
                 }))}
+                subtotal={subtotal}
                 disabled={isLoading}
                 className="w-full"
               />

@@ -1,3 +1,4 @@
+import { signInRedirect } from "@/lib/safeRedirect";
 import { SidebarNav } from "@/components/admin/SidebarNav";
 import { ScrollArea } from "@/components/ui/scrollArea";
 import { dashboardConfig } from "@/config/dashboard";
@@ -20,7 +21,7 @@ export default async function DashboardLayout({
     error: authError,
   } = await supabase.auth.getUser();
   if (authError || !user) {
-    redirect("/sign-in");
+    redirect(signInRedirect("/admin"));
   }
 
   // Verificar que el usuario sea admin usando app_metadata

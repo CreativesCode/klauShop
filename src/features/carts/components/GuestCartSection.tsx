@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
+import { getDiscountedUnitPrice } from "@/features/orders/utils/pricing";
 import { WhatsAppCheckoutButton } from "@/features/orders/components/WhatsAppCheckoutButton";
 import { DocumentType, gql } from "@/gql";
 import { useQuery } from "@urql/next";
@@ -16,19 +17,10 @@ import { useMemo, useState } from "react";
 import useCartStore, {
   CartItems,
   calcProductCountStorage,
+  getProductIdFromCartKey,
 } from "../useCartStore";
 import CartItemCard from "./CartItemCard";
 import EmptyCart from "./EmptyCart";
-
-// El `cartKey` se construye como:
-// `${productId}-${color||"none"}-${size||"none"}-${material||"none"}`
-// Ojo: si `productId` es UUID, contiene guiones. Por eso NO podemos usar split("-")[0].
-const getProductIdFromCartKey = (cartKey: string) => {
-  const parts = cartKey.split("-");
-  // Si por algún motivo no tiene opciones, devolvemos el key completo
-  if (parts.length <= 3) return cartKey;
-  return parts.slice(0, -3).join("-");
-};
 
 function GuestCartSection() {
   const { toast } = useToast();
@@ -188,6 +180,7 @@ function GuestCartSection() {
                   }));
               }) || []
             }
+            subtotal={subtotal}
             disabled={isLoading}
             className="w-full"
           />
@@ -247,10 +240,11 @@ const calcSubtotal = ({
 
   // Sumar todas las combinaciones de cada producto considerando descuentos
   return productPrices.reduce((acc, cur) => {
-    const price = Number(cur.node.price || 0);
-    const discount = Number(cur.node.discount || 0);
-    const discountedPrice =
-      discount > 0 ? price - (price * discount) / 100 : price;
+    // Same per-unit rounding as the server (order_lines.price)
+    const discountedPrice = getDiscountedUnitPrice(
+      cur.node.price,
+      cur.node.discount,
+    );
 
     const productSubtotal = Object.entries(quantity)
       .filter(([key]) => key.startsWith(cur.node.id + "-"))

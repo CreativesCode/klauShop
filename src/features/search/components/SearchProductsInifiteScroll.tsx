@@ -6,6 +6,7 @@ import SearchResultPage from "./SearchResultPage";
 
 const DEFAULT_PRICE_RANGE: [number, number] = [0, 10000];
 
+// Without a price filter no bound is sent: products above the slider max must still show
 function parsePriceRangeParam(param: string | null): [number, number] {
   if (!param) return DEFAULT_PRICE_RANGE;
   const parts = param.split("-");
@@ -88,9 +89,8 @@ const searchParamsVariablesFactory = (
   collectionId?: string,
   collectionIds?: string[],
 ) => {
-  const [minPrice, maxPrice] = parsePriceRangeParam(
-    searchParams.get("price_range"),
-  );
+  const priceRangeParam = searchParams.get("price_range");
+  const [minPrice, maxPrice] = parsePriceRangeParam(priceRangeParam);
   const collections =
     (JSON.parse(searchParams.get("collections") || "null") as string[]) ?? [];
   const sort = searchParams.get("sort") ?? undefined;
@@ -124,9 +124,12 @@ const searchParamsVariablesFactory = (
 
   const varaibles: SearchQueryVariables = {
     search: search ? `%${search.trim()}%` : "%%",
-    // Backend expects BigFloat inputs as string values.
-    lower: String(minPrice),
-    upper: String(maxPrice),
+    // Backend expects BigFloat inputs as string values. The slider max means "no upper limit".
+    lower: priceRangeParam && minPrice > 0 ? String(minPrice) : undefined,
+    upper:
+      priceRangeParam && maxPrice < DEFAULT_PRICE_RANGE[1]
+        ? String(maxPrice)
+        : undefined,
     collections:
       collectionIds && collectionIds.length > 0
         ? collectionIds

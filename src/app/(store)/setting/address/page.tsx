@@ -1,3 +1,4 @@
+import { signInRedirect } from "@/lib/safeRedirect";
 import db from "@/lib/supabase/db";
 import { address } from "@/lib/supabase/schema";
 import { createClient } from "@/lib/supabase/server";
@@ -16,7 +17,7 @@ async function AddressPage() {
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    redirect("/sign-in");
+    redirect(signInRedirect("/setting/address"));
   }
 
   // Obtener direcciones del usuario

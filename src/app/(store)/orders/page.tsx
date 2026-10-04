@@ -1,3 +1,4 @@
+import { signInRedirect } from "@/lib/safeRedirect";
 import { Shell } from "@/components/layouts/Shell";
 import { BuyAgainCard, OrdersList } from "@/features/orders/components";
 import { BuyAgainCardFragment } from "@/features/orders/components/BuyAgainCard";
@@ -57,7 +58,7 @@ async function OrderPage({ searchParams }: OrderPageProps) {
     error: authError,
   } = await supabase.auth.getUser();
   if (authError || !user) {
-    redirect("/sign-in");
+    redirect(signInRedirect("/orders"));
   }
 
   const queryVars: {
