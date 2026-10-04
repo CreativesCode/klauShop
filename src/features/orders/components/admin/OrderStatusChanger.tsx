@@ -23,6 +23,7 @@ import {
   getOrderStatusInfo,
   getValidNextStatuses,
 } from "../../utils/orderStatus";
+import { needsRefund } from "../../utils/paymentStatus";
 
 type OrderStatusChangerProps = {
   orderId: string;
@@ -98,6 +99,36 @@ export default function OrderStatusChanger({
     setSelectedStatus("delivered");
     setActionType("mark-paid-deliver");
     setShowConfirmDialog(true);
+  };
+
+  const [isRefunding, setIsRefunding] = useState(false);
+  const markRefunded = async () => {
+    if (!window.confirm("¿Ya le devolviste el dinero al cliente?")) return;
+    setIsRefunding(true);
+    try {
+      const response = await fetch(
+        `/api/admin/orders/${orderId}/mark-refunded`,
+        {
+          method: "POST",
+        },
+      );
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.message || "No se pudo marcar como reembolsada");
+      }
+      setPayment("refunded");
+      toast({ title: "Reembolso registrado" });
+      startRefresh(() => router.refresh());
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "No se pudo guardar",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRefunding(false);
+    }
   };
 
   const handleStatusChange = async (status: OrderStatus) => {
@@ -284,8 +315,29 @@ export default function OrderStatusChanger({
               </div>
             </div>
           ) : (
-            <div className="text-sm text-muted-foreground p-3 bg-muted rounded-lg">
-              Esta orden está en un estado final y no puede cambiar.
+            <div className="space-y-3">
+              <div className="text-sm text-muted-foreground p-3 bg-muted rounded-lg">
+                Esta orden está en un estado final y no puede cambiar.
+              </div>
+              {needsRefund(status, payment) && (
+                <div className="space-y-2 rounded-lg border border-amber-300 bg-amber-50 p-3">
+                  <p className="text-sm font-medium text-amber-800">
+                    Reembolso pendiente
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Estaba pagada cuando se canceló. Devuélvele el dinero al
+                    cliente y márcalo aquí.
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    disabled={isRefunding}
+                    onClick={markRefunded}
+                  >
+                    {isRefunding ? "Guardando..." : "Marcar como reembolsado"}
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </CardContent>

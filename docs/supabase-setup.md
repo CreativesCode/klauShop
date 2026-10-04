@@ -32,10 +32,6 @@ S3_ACCESS_KEY_ID=tu_access_key
 S3_SECRET_ACCESS_KEY=tu_secret_key
 S3_ENDPOINT=tu_endpoint
 
-# Stripe (opcional)
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=tu_stripe_publishable_key
-STRIPE_SECRET_KEY=tu_stripe_secret_key
-STRIPE_WEBHOOK_SECERT_KEY=tu_stripe_webhook_secret
 ```
 
 ### 🔑 Cómo obtener las credenciales de Supabase:

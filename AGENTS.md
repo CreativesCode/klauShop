@@ -54,7 +54,7 @@ Aplican a TODO el trabajo: features, fixes, refactors.
 | Estado cliente | Zustand (carrito invitado, wishlist, busqueda). Redux Toolkit esta en package.json pero sin uso |
 | Formularios / validacion | react-hook-form + Zod; env validado con `@t3-oss/env-nextjs` (`src/env.mjs`) |
 | Media | **Supabase Storage via API S3-compatible** (`src/lib/s3.ts`, bucket `klaushop`) |
-| Checkout | **WhatsApp** (activo). Stripe existe pero esta **desactivado** en la UI |
+| Checkout | **WhatsApp** (unico). Stripe se elimino del todo el 2026-10-04 (rutas, paquetes y env vars) |
 | Notificaciones | WhatsApp automatico via OpenWA (trigger en `orders` → pg_net) |
 | Tests | Jest + Testing Library (cobertura minima). Cypress instalado sin uso |
 | Deploy | Vercel (GitHub `CreativesCode/klauShop`, rama `main`) |
@@ -72,11 +72,11 @@ src/
 │   ├── (auth)/         # /sign-in, /sign-up, reset-password, auth/callback
 │   ├── (admin)/admin/  # CMS: dashboard, products, collections, orders, medias, users, shipping-zones
 │   ├── order/[orderId] # Redirector: admin → /admin/orders/:id, cliente → /orders/:id (link del WhatsApp)
-│   └── api/            # Route handlers (checkout, pedidos admin, stock, direcciones, medias, webhook Stripe)
+│   └── api/            # Route handlers (checkout WhatsApp, pedidos admin, stock, direcciones, medias)
 ├── features/[feature]/ # components/, hooks/, validations/, actions.ts, query.ts — exporta via index.ts
 ├── _actions/           # Server actions legacy (products, collections, medias, orders)
 ├── components/         # ui/ (shadcn), layouts/, forms/, admin/
-├── lib/                # supabase/ (clients, db, schema, seed), urql, s3, stripe, utils
+├── lib/                # supabase/ (clients, db, schema, seed), urql, s3, phone, utils
 ├── config/site.ts      # Nombre, WhatsApp, zonas, prefijo de orden "KS", getPageMetadata()
 └── gql/                # GENERADO por codegen — no editar a mano
 ```
@@ -103,8 +103,7 @@ Convencion de features: importar desde `@/features/x`, no desde subrutas interna
 - Nuevo `any` prohibido (usar `unknown`); el codigo existente tiene algunos, no los "arregles" de paso.
 - Si cambias queries GraphQL → `npm run codegen`. Si cambias el esquema de BD en Supabase → `npm run codegen:fetch` y luego `codegen`.
 - Cliente Supabase con service role: `createClient({ cookieStore, isAdmin: true })` — no adjunta cookies a proposito.
-- NUNCA exponer secrets (ni en codigo, ni en memoria, ni en `.mcp.json`). El nombre `STRIPE_WEBHOOK_SECERT_KEY` (con typo)
-  es el real: no lo renombres sin coordinar env vars.
+- NUNCA exponer secrets (ni en codigo, ni en memoria, ni en `.mcp.json`).
 - RLS habilitado en tablas nuevas; politicas en `drizzle/rls_policies.sql` (`npm run db:apply-rls`).
 
 ## Comandos

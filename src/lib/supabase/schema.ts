@@ -223,7 +223,11 @@ export const productsRelations = relations(products, ({ one }) => ({
   }),
 }));
 
-export type PaymentStatus = "paid" | "unpaid" | "no_payment_required";
+export type PaymentStatus =
+  | "paid"
+  | "unpaid"
+  | "no_payment_required"
+  | "refunded";
 export type OrderStatus =
   | "pending_confirmation" // creada + stock reservado; falta confirmar envío/total/disponibilidad
   | "pending_payment" // total confirmado; esperando pago fuera de la app
@@ -269,7 +273,8 @@ export const orders = pgTable(
     addressId: text("addressId"),
     stripe_payment_intent_id: text("stripe_payment_intent_id"),
     payment_status: text("payment_status", {
-      enum: ["paid", "unpaid", "no_payment_required"],
+      // refunded: a paid order that was cancelled and its money returned (outside the app)
+      enum: ["paid", "unpaid", "no_payment_required", "refunded"],
     }).notNull(),
     payment_method: text("payment_method"),
     // Campos nuevos para WhatsApp checkout

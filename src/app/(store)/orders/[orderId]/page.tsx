@@ -104,7 +104,10 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
       : rawOrderStatus;
   const statusInfo = getOrderStatusInfo(orderStatus);
   const StatusIcon = statusInfo?.icon;
-  const paymentInfo = getPaymentStatusInfo(order.payment_status);
+  const paymentInfo = getPaymentStatusInfo(
+    order.payment_status,
+    order.order_status,
+  );
   const { subtotal, shippingCost, total: amountNumber } = getOrderTotals(order);
 
   return (
@@ -299,7 +302,7 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
                 <p className="text-sm text-muted-foreground">Estado del pago</p>
                 <Badge
                   variant={paymentInfo.badgeVariant}
-                  className="text-sm mt-1"
+                  className={cn("text-sm mt-1", paymentInfo.className)}
                 >
                   {paymentInfo.label}
                 </Badge>

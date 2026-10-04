@@ -11,7 +11,7 @@
 ## Features
 
 - **Searching Feature with GraphQL**: Dynamic and efficient searching, allowing complex queries with optimized data fetching.
-- **Stripe Checkout with Webhooks**: Seamless payment processing integrated with real-time notifications for automated order and inventory management.
+- **WhatsApp Checkout**: Orders are reserved in the store and confirmed over WhatsApp (payment happens outside the app).
 - **Custom CMS**: Easy management for orders, users, products, and collections through a user-friendly interface designed for e-commerce.
 - **Next.js 14 AppDir Support**: Utilizes the latest Next.js features for improved routing, page organization, and performance.
 - **Authentication**: Secure login options using credentials or OAuth with Google, ensuring flexibility and security.

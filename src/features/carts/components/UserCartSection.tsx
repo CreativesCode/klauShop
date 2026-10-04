@@ -178,23 +178,6 @@ function UserCartSection({ user }: UserCartSectionProps) {
     }
   };
 
-  const createCartObject = (): CartItems => {
-    const cartObj: CartItems = {};
-    cart.forEach((item) => {
-      if (item.product) {
-        // Usar una clave única que incluya las opciones
-        const key = `${item.product.id}-${item.color || "none"}-${item.size || "none"}-${item.material || "none"}`;
-        cartObj[key] = {
-          quantity: item.quantity,
-          color: item.color,
-          size: item.size,
-          material: item.material,
-        };
-      }
-    });
-    return cartObj;
-  };
-
   return (
     <>
       {cart && cart.length > 0 ? (
@@ -251,11 +234,6 @@ function UserCartSection({ user }: UserCartSectionProps) {
                 disabled={isLoading}
                 className="w-full"
               />
-              {/* <CheckoutButton
-                guest={false}
-                disabled={isLoading}
-                order={createCartObject()}
-              /> */}
             </CardFooter>
           </Card>
         </section>

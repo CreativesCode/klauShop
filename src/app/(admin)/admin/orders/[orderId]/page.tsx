@@ -27,7 +27,7 @@ import {
   orders,
   products,
 } from "@/lib/supabase/schema";
-import { formatPrice, keytoUrl } from "@/lib/utils";
+import { cn, formatPrice, keytoUrl } from "@/lib/utils";
 import { eq } from "drizzle-orm";
 import Image from "next/image";
 import Link from "next/link";
@@ -104,7 +104,10 @@ export default async function AdminOrderDetailPage({
     borderColor: "border-gray-300",
   };
   const StatusIcon = statusInfo.icon;
-  const paymentInfo = getPaymentStatusInfo(order.payment_status);
+  const paymentInfo = getPaymentStatusInfo(
+    order.payment_status,
+    order.order_status,
+  );
   const { subtotal, shippingCost, total } = getOrderTotals(order);
 
   return (
@@ -164,7 +167,10 @@ export default async function AdminOrderDetailPage({
                   </p>
                   <Badge
                     variant={paymentInfo.badgeVariant}
-                    className="mt-1 rounded-md px-2 py-1"
+                    className={cn(
+                      "mt-1 rounded-md px-2 py-1",
+                      paymentInfo.className,
+                    )}
                   >
                     {paymentInfo.label}
                   </Badge>

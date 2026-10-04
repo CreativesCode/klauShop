@@ -8,12 +8,12 @@ Evidencia: `.titan/qa/` (2026-10-02-piloto-cuba.md, capturas 2026-10-04-*.png). 
 
 | Fase | Estado |
 |---|---|
-| 0 Bloqueantes (seguridad, stock, venta rota) | Hecha. Pendientes: P0-05 (aparcado), P0-09 (Stripe dormido crea pedidos), P0-10 en reset-password y AccountClient |
+| 0 Bloqueantes (seguridad, stock, venta rota) | Hecha. P0-09 resuelto eliminando Stripe. Pendientes: P0-05 (aparcado), P0-10 en reset-password y AccountClient |
 | 1 Friccion de venta | Hecha (P1-01..P1-17). P1-16 = solo aviso en admin |
 | 2 Refresco / datos obsoletos | Hecha. Pendientes: P2-05 (no reproducido), P2-07 |
 | 3 Rendimiento / datos / offline | Hecha. Parcial: P3-05 (ver abajo) |
 | 4 Admin | Hecha (P4-08 y colecciones vacias hechos tras la decision del dueño) |
-| 5 Pulido y copy | Hecha. Pendiente: badge "Reembolso pendiente" (decision del dueño) |
+| 5 Pulido y copy | Hecha, incluido "Reembolso pendiente" + "Marcar como reembolsado" |
 | Anexos (envios SN, iPhone IOS, admin movil MPC/CSA) | Hechos los altos. Pendientes: SN-02/03/08/09-11, IOS-04..09, MPC-09..11, CSA-5/8/9/10 |
 
 **Migraciones aplicadas en prod:** 0018 (RLS), 0019 (WhatsApp envio a acordar), 0020 (perfiles al registrarse),
@@ -29,6 +29,14 @@ Todas son manuales (fuera del journal de drizzle-kit); se aplican con node+postg
 - Acciones rapidas en la lista de pedidos: SI. "Pagada y entregada" en un paso (un solo WhatsApp al cliente).
 - Colecciones sin productos con stock: **ocultas** en los menus de la tienda (la URL directa sigue funcionando).
 - Banner "Explorar Ropa" → coleccion "Vestimenta para mujer" (`/collections/womens-clothing`).
+- Pedidos cancelados que estaban pagados: etiqueta **"Reembolso pendiente"** (lista, detalle admin y detalle del cliente) y
+  accion **"Marcar como reembolsado"** (`POST /api/admin/orders/[id]/mark-refunded` → `payment_status = 'refunded'`,
+  "Reembolsado"). Solo cambia `payment_status`: no dispara WhatsApp. Helper `needsRefund()` en `features/orders/utils/paymentStatus.ts`.
+- **Stripe eliminado del todo** (2026-10-04): rutas `create-checkout-session` y `webhook`, `CheckoutButton`, `src/lib/stripe`,
+  paquetes `stripe`/`@stripe/stripe-js` y env vars. El checkout es solo WhatsApp. La columna `orders.stripe_payment_intent_id`
+  sigue en la BD y en `schema.ts` (sin uso; borrarla requiere migracion). Las env vars STRIPE_* de Vercel ya sobran.
+- Codigo muerto `NewsletterForm` borrado.
+- Error intermitente de GraphQL en frio (`data-dgst` / "Visible collections check failed"): **se deja pendiente** (decision del dueño).
 - Flujo de trabajo: commit y push **directo a `main`**; aplicar migraciones cuando el codigo que las necesita ya esta listo.
 
 ## Reglas que salieron de la QA (respetarlas en codigo nuevo)
@@ -66,8 +74,7 @@ Todas son manuales (fuera del journal de drizzle-kit); se aplican con node+postg
 - Validar IOS-01 (boton WhatsApp tras pedir) en un iPhone fisico.
 - Probar "Pagada y entregada" con el primer pedido real (no se ejecuto en QA para no mandar WhatsApp).
 - Anexos sin hacer: SN-03 (aviso al cliente cuando el admin fija el envio), SN-09..11, IOS-04..09, MPC-09..11, CSA-5/8/9/10,
-  P0-05 (monitor OpenWA), P0-09 (Stripe dormido), P0-10 en reset-password/AccountClient, P2-05/P2-07.
-- `src/components/layouts/NewsletterForm.tsx` no se usa en ningun sitio (codigo muerto, en ingles): borrar si se confirma.
+  P0-05 (monitor OpenWA), P0-10 en reset-password/AccountClient, P2-05/P2-07.
 
 ## Lecciones operativas
 - `next build` con `next dev` corriendo en la misma carpeta rompe el `.next` del dev (500/404): parar el dev, compilar, relanzar `next dev -p 3001`.

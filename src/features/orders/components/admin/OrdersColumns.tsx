@@ -209,26 +209,26 @@ const OrdersColumns: ColumnDef<{
     ),
     cell: ({ row }) => {
       const order = row.original.node;
+      const info = getPaymentStatusInfo(
+        order.payment_status,
+        order.order_status,
+      );
 
       return (
-        <div
-          className={cn(
-            "font-medium capitalize px-5 py-1 flex items-center",
-            order.payment_status == "unpaid"
-              ? "text-red-500"
-              : "text-green-500",
-          )}
-        >
+        <div className="font-medium px-5 py-1 flex items-center">
           <Badge
             variant="outline"
             className={cn(
               "rounded-md px-2 py-1",
-              order.payment_status == "unpaid"
-                ? "text-red-500 border-red-500"
-                : "text-green-500 border-green-500",
+              info.className ??
+                (order.payment_status === "unpaid"
+                  ? "text-red-500 border-red-500"
+                  : order.payment_status === "refunded"
+                    ? "text-muted-foreground"
+                    : "text-green-500 border-green-500"),
             )}
           >
-            {getPaymentStatusInfo(order.payment_status).label}
+            {info.label}
           </Badge>
         </div>
       );

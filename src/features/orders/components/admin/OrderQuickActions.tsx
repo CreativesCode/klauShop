@@ -22,6 +22,7 @@ import {
   ORDER_STATUS_ACTIONS,
   getValidNextStatuses,
 } from "../../utils/orderStatus";
+import { needsRefund } from "../../utils/paymentStatus";
 import { formatOrderNumber } from "../../utils/whatsapp";
 
 type QuickAction = {
@@ -101,6 +102,15 @@ export function OrderQuickActions({
         run: () => post(`${base}/change-status`, { newStatus: step }),
       });
     }
+  }
+
+  if (needsRefund(status, paymentStatus)) {
+    actions.push({
+      key: "refunded",
+      label: "Marcar como reembolsado",
+      confirm: `Confirma que ya le devolviste el dinero al cliente de ${orderNumber}.`,
+      run: () => post(`${base}/mark-refunded`),
+    });
   }
 
   if (actions.length === 0) return null;

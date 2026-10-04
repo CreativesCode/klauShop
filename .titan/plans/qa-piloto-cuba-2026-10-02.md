@@ -22,7 +22,7 @@ Los datos QA se borraron tras cada prueba; la BD coincide con la linea base.
 | Fase 1 (6cac576, c875676) | P1-01..P1-17 (P1-16 solo aviso, decision del dueño). P1-10 venia de SN-05. 0022 y 0023 APLICADAS | — |
 | Fase 3 (20bc0bc) | P3-01..P3-08 | P3-05 parcial: el select del carrito logueado mantiene `description` (CartItemCard la muestra) y no hay store optimista. Catalogo offline (SW StaleWhileRevalidate) = 2o paso |
 | Fase 4 (2026-10-04) | P4-01..P4-07, P4-09; de P4-10: ADMIN-ORD-13/16/19/21 (AdminShell), INTEGRITY-12/13/14, CODE-21. SN-02 y SN-08 (lista) | — (P4-08 y ADMIN-CAT-08 hechos tras la decision del dueño en la Fase 5), errores 409/404 tipados en rutas admin |
-| Fase 5 (2026-10-04) | P5-01..P5-04 | Badge "Reembolso pendiente" en canceladas pagadas (decision del dueño) |
+| Fase 5 (2026-10-04) | P5-01..P5-04; "Reembolso pendiente" + "Marcar como reembolsado"; Stripe eliminado (= P0-09) | — |
 
 **Migraciones aplicadas en prod:** 0018 (RLS, despues del deploy), 0019 (texto WhatsApp envio a acordar), 0020 (perfiles
 al registrarse + backfill), 0021 (`orders.client_request_id`), 0022 (enlace admin → `/order/{id}`), 0023 (unaccent + `products.search_name`), 0024 (variante en `order_lines` + WhatsApp con variante), 0025 (`wa_color_name`: colores en español en el aviso).

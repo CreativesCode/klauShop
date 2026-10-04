@@ -13,7 +13,7 @@ Funciona para invitados (user_id null) y usuarios logueados.
 
 ## Precios en order_lines
 - `price` = precio unitario FINAL cobrado (con descuento, via `getDiscountedUnitPrice` en `src/features/orders/utils/pricing.ts`).
-- `list_price` = precio de lista al comprar (nullable: la ruta Stripe dormida no lo rellena); `discount` = % aplicado.
+- `list_price` = precio de lista al comprar (nullable en pedidos viejos); `discount` = % aplicado.
 - UI: componente `OrderLinePrice` (admin detalle, cliente detalle, OrdersList) y el mensaje de WhatsApp muestran los tres.
 - Migraciones manuales en `drizzle/00xx_*.sql` (el journal de drizzle-kit esta desfasado; no confiar en `db:generate`).
 
@@ -25,7 +25,9 @@ Fuente unica: `VALID_STATUS_TRANSITIONS` + `ORDER_STATUS_ACTIONS` (copy de boton
 - `change-status`: resto de transiciones; rechaza `paid` y `cancelled`.
 - `mark-paid`: consume reservas y resta stock (tolera legacy order_status=paid/payment unpaid).
 - `cancel`: libera reservas activas y repone stock de las consumidas. payment_status queda `paid` si lo estaba
-  (reembolso fuera de la app); el dashboard excluye canceladas de ingresos.
+  (reembolso fuera de la app); el dashboard excluye canceladas de ingresos. Cancelada + `paid` = "Reembolso pendiente";
+  `mark-refunded` la pasa a `payment_status = 'refunded'` ("Reembolsado"), sin WhatsApp.
+- `mark-paid` con `{ deliver: true }`: pagada y entregada en un solo UPDATE (un solo WhatsApp al cliente).
 - `update-shipping`: edita costo de envio. `create`: orden manual desde admin.
 - Etiquetas: `getOrderStatusLabel`, `getPaymentStatusInfo`, `getPaymentMethodLabel` — nunca mostrar el enum crudo.
 - Admin usa `html{font-size:14px}` desde `src/app/(admin)/layout.tsx` (UI mas densa); la tienda sigue en 16px.
@@ -47,9 +49,9 @@ Fuente unica: `VALID_STATUS_TRANSITIONS` + `ORDER_STATUS_ACTIONS` (copy de boton
 - Orden desde admin: costo fijo de la zona (no editable al crear). Totales en vistas: `getOrderTotals` (`orders/utils/pricing.ts`).
 - Variantes reales (skus/options) estan comentadas en el esquema: los colores/tallas/materiales son arrays JSON en `products`.
 
-## Stripe (dormido)
-`/api/create-checkout-session` + `/api/webhook` siguen en el codigo; el `CheckoutButton` de Stripe esta comentado
-en `UserCartSection.tsx`. No reactivar sin decision del usuario.
+## Stripe (eliminado 2026-10-04)
+Se borro todo el codigo de Stripe (rutas, boton, `lib/stripe`, paquetes y env vars). Checkout solo por WhatsApp.
+Queda la columna sin uso `orders.stripe_payment_intent_id`.
 
 Riesgos conocidos de este flujo: ver [riesgos-detectados-2026-09-24](../project/riesgos-detectados-2026-09-24.md).
 
