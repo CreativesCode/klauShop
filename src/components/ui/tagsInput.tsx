@@ -27,11 +27,12 @@ const TagsInput: FC<TagsInputProps> = ({
   };
 
   const addTag = () => {
-    if (input && !normalizedTags.includes(input)) {
+    const tag = input.trim();
+    if (tag && !normalizedTags.includes(tag)) {
       // Prevent adding duplicates and empty tags
-      setTags([...normalizedTags, input]);
-      setInput(""); // Clear input field after adding
+      setTags([...normalizedTags, tag]);
     }
+    setInput(""); // Clear input field after adding
   };
 
   const removeTag = (indexToRemove: number) => {
@@ -45,8 +46,9 @@ const TagsInput: FC<TagsInputProps> = ({
     }
   };
 
-  // Call onBlur when the input loses focus
+  // Phones often have no Enter key handy: leaving the field also adds what was typed
   const handleBlur = () => {
+    addTag();
     onBlur();
   };
 
@@ -58,9 +60,10 @@ const TagsInput: FC<TagsInputProps> = ({
           <button
             type="button"
             onClick={() => removeTag(index)}
-            className="text-white ml-2"
+            className="text-white ml-1 -mr-1 p-1.5"
+            aria-label={`Quitar ${tag}`}
           >
-            <Icons.close height={10} width={10} />
+            <Icons.close height={12} width={12} />
           </button>
         </Badge>
       ))}
@@ -75,8 +78,13 @@ const TagsInput: FC<TagsInputProps> = ({
         placeholder={placeholder || "Project Tag"}
         onBlur={handleBlur} // Notify React Hook Form on blur
       />
-      <button type="button" onClick={addTag}>
-        {/* Add Tag */}
+      <button
+        type="button"
+        onClick={addTag}
+        aria-label="Agregar"
+        className="h-9 w-9 shrink-0 flex items-center justify-center rounded-md border border-input text-muted-foreground"
+      >
+        <Icons.add className="h-4 w-4" />
       </button>
     </div>
   );

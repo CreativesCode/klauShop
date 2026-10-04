@@ -191,7 +191,9 @@ const ColorsInput: FC<ColorsInputProps> = ({ colors, setColors, onBlur }) => {
     }
   };
 
+  // Leaving the field adds a valid typed color (no Enter needed on phones)
   const handleBlur = () => {
+    addColor();
     onBlur();
   };
 
@@ -213,9 +215,10 @@ const ColorsInput: FC<ColorsInputProps> = ({ colors, setColors, onBlur }) => {
               <button
                 type="button"
                 onClick={() => removeColor(index)}
-                className="text-white ml-2"
+                className="text-white ml-1 -mr-1 p-1.5"
+                aria-label={`Quitar ${color}`}
               >
-                <Icons.close height={10} width={10} />
+                <Icons.close height={12} width={12} />
               </button>
             </Badge>
           </div>
@@ -243,7 +246,10 @@ const ColorsInput: FC<ColorsInputProps> = ({ colors, setColors, onBlur }) => {
               Paleta
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-96 p-4" align="start">
+          <PopoverContent
+            className="w-[min(24rem,calc(100vw-2rem))] p-4"
+            align="start"
+          >
             <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
               <h4 className="font-medium text-sm mb-3">Colores comunes</h4>
               {Object.entries(COMMON_COLORS).map(([category, colorList]) => (
@@ -251,14 +257,14 @@ const ColorsInput: FC<ColorsInputProps> = ({ colors, setColors, onBlur }) => {
                   <h5 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                     {category}
                   </h5>
-                  <div className="grid grid-cols-8 sm:grid-cols-10 gap-1.5">
+                  <div className="grid grid-cols-7 sm:grid-cols-10 gap-1.5">
                     {colorList.map((color) => (
                       <button
                         key={color}
                         type="button"
                         onClick={() => handleColorSelect(color)}
                         className={cn(
-                          "w-8 h-8 rounded border-2 transition-all hover:scale-110 cursor-pointer",
+                          "w-full aspect-square rounded border-2 transition-all hover:scale-110 cursor-pointer",
                           colors.includes(color)
                             ? "border-primary ring-2 ring-primary ring-offset-1"
                             : "border-gray-300 hover:border-gray-400",
