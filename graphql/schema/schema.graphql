@@ -291,6 +291,17 @@ type Mutation {
     atMost: Int! = 1
   ): ordersDeleteResponse!
 
+  """Deletes zero or more records from the `private_config` collection"""
+  deleteFromprivate_configCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: private_configFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): private_configDeleteResponse!
+
   """Deletes zero or more records from the `product_medias` collection"""
   deleteFromproduct_mediasCollection(
     """Restricts the mutation's impact to records matching the criteria"""
@@ -370,6 +381,9 @@ type Mutation {
   """Adds one or more `orders` records to the collection"""
   insertIntoordersCollection(objects: [ordersInsertInput!]!): ordersInsertResponse
 
+  """Adds one or more `private_config` records to the collection"""
+  insertIntoprivate_configCollection(objects: [private_configInsertInput!]!): private_configInsertResponse
+
   """Adds one or more `product_medias` records to the collection"""
   insertIntoproduct_mediasCollection(objects: [product_mediasInsertInput!]!): product_mediasInsertResponse
 
@@ -384,7 +398,7 @@ type Mutation {
 
   """Adds one or more `wishlist` records to the collection"""
   insertIntowishlistCollection(objects: [wishlistInsertInput!]!): wishlistInsertResponse
-  is_admin: Boolean
+  send_wa(p_phone: String!, p_message: String!): Opaque
 
   """Updates zero or more records in the `address` collection"""
   updateaddressCollection(
@@ -515,6 +529,22 @@ type Mutation {
     """
     atMost: Int! = 1
   ): ordersUpdateResponse!
+
+  """Updates zero or more records in the `private_config` collection"""
+  updateprivate_configCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: private_configUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: private_configFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): private_configUpdateResponse!
 
   """Updates zero or more records in the `product_medias` collection"""
   updateproduct_mediasCollection(
@@ -740,6 +770,7 @@ type Query {
     """Sort order to apply to the collection"""
     orderBy: [commentsOrderBy!]
   ): commentsConnection
+  immutable_unaccent(p_text: String!): String
 
   """A pagable collection of type `inventory_reservations`"""
   inventory_reservationsCollection(
@@ -766,6 +797,7 @@ type Query {
     """Sort order to apply to the collection"""
     orderBy: [inventory_reservationsOrderBy!]
   ): inventory_reservationsConnection
+  is_admin: Boolean
 
   """A pagable collection of type `medias`"""
   mediasCollection(
@@ -850,6 +882,32 @@ type Query {
     """Sort order to apply to the collection"""
     orderBy: [ordersOrderBy!]
   ): ordersConnection
+
+  """A pagable collection of type `private_config`"""
+  private_configCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """
+    Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
+    """
+    offset: Int
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: private_configFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [private_configOrderBy!]
+  ): private_configConnection
 
   """A pagable collection of type `product_medias`"""
   product_mediasCollection(
@@ -954,6 +1012,11 @@ type Query {
     """Sort order to apply to the collection"""
     orderBy: [shipping_zonesOrderBy!]
   ): shipping_zonesConnection
+  wa_admin_contacts: String
+  wa_admin_order_url(p_order_id: String!): String
+  wa_money(p_amount: BigFloat!): String
+  wa_order_number(p_order_id: String!): String
+  wa_phone_to_chat_id(p_phone: String!): String
 
   """A pagable collection of type `wishlist`"""
   wishlistCollection(
@@ -1084,7 +1147,9 @@ type address implements Node {
   state: String
   created_at: Datetime!
   updated_at: Datetime!
+  shipping_zone_id: String
   userProfile: profiles
+  shipping_zones: shipping_zones
 }
 
 type addressConnection {
@@ -1123,6 +1188,7 @@ input addressFilter {
   state: StringFilter
   created_at: DatetimeFilter
   updated_at: DatetimeFilter
+  shipping_zone_id: StringFilter
   nodeId: IDFilter
 
   """
@@ -1157,6 +1223,7 @@ input addressInsertInput {
   state: String
   created_at: Datetime
   updated_at: Datetime
+  shipping_zone_id: String
 }
 
 type addressInsertResponse {
@@ -1185,6 +1252,7 @@ input addressOrderBy {
   state: OrderByDirection
   created_at: OrderByDirection
   updated_at: OrderByDirection
+  shipping_zone_id: OrderByDirection
 }
 
 input addressUpdateInput {
@@ -1205,6 +1273,7 @@ input addressUpdateInput {
   state: String
   created_at: Datetime
   updated_at: Datetime
+  shipping_zone_id: String
 }
 
 type addressUpdateResponse {
@@ -1978,7 +2047,10 @@ type orders implements Node {
   phone: String
   zone: String
   shipping_cost: BigFloat
+  shipping_zone_id: String
+  client_request_id: String
   profiles: profiles
+  shipping_zones: shipping_zones
   inventory_reservationsCollection(
     """Query the first `n` records in the collection"""
     first: Int
@@ -2063,6 +2135,8 @@ input ordersFilter {
   phone: StringFilter
   zone: StringFilter
   shipping_cost: BigFloatFilter
+  shipping_zone_id: StringFilter
+  client_request_id: StringFilter
   nodeId: IDFilter
 
   """
@@ -2096,6 +2170,8 @@ input ordersInsertInput {
   phone: String
   zone: String
   shipping_cost: BigFloat
+  shipping_zone_id: String
+  client_request_id: String
 }
 
 type ordersInsertResponse {
@@ -2122,6 +2198,8 @@ input ordersOrderBy {
   phone: OrderByDirection
   zone: OrderByDirection
   shipping_cost: OrderByDirection
+  shipping_zone_id: OrderByDirection
+  client_request_id: OrderByDirection
 }
 
 input ordersUpdateInput {
@@ -2141,6 +2219,8 @@ input ordersUpdateInput {
   phone: String
   zone: String
   shipping_cost: BigFloat
+  shipping_zone_id: String
+  client_request_id: String
 }
 
 type ordersUpdateResponse {
@@ -2149,6 +2229,81 @@ type ordersUpdateResponse {
 
   """Array of records impacted by the mutation"""
   records: [orders!]!
+}
+
+type private_config implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  key: String!
+  value: String!
+}
+
+type private_configConnection {
+  edges: [private_configEdge!]!
+  pageInfo: PageInfo!
+}
+
+type private_configDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [private_config!]!
+}
+
+type private_configEdge {
+  cursor: String!
+  node: private_config!
+}
+
+input private_configFilter {
+  key: StringFilter
+  value: StringFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [private_configFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [private_configFilter!]
+
+  """Negates a filter"""
+  not: private_configFilter
+}
+
+input private_configInsertInput {
+  key: String
+  value: String
+}
+
+type private_configInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [private_config!]!
+}
+
+input private_configOrderBy {
+  key: OrderByDirection
+  value: OrderByDirection
+}
+
+input private_configUpdateInput {
+  key: String
+  value: String
+}
+
+type private_configUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [private_config!]!
 }
 
 type product_medias implements Node {
@@ -2261,6 +2416,7 @@ type products implements Node {
   materials: JSON
   show_in_slider: Boolean
   discount: BigFloat
+  search_name: String
   collections: collections
   medias: medias
   inventory_reservationsCollection(
@@ -2443,6 +2599,7 @@ input productsFilter {
   featured_image_id: StringFilter
   show_in_slider: BooleanFilter
   discount: BigFloatFilter
+  search_name: StringFilter
   nodeId: IDFilter
 
   """
@@ -2506,6 +2663,7 @@ input productsOrderBy {
   featured_image_id: OrderByDirection
   show_in_slider: OrderByDirection
   discount: OrderByDirection
+  search_name: OrderByDirection
 }
 
 input productsUpdateInput {
@@ -2547,6 +2705,7 @@ type profiles implements Node {
   is_admin: Boolean
   email: String
   created_at: Datetime!
+  phone: String
   commentsCollection(
     """Query the first `n` records in the collection"""
     first: Int
@@ -2645,6 +2804,7 @@ input profilesFilter {
   is_admin: BooleanFilter
   email: StringFilter
   created_at: DatetimeFilter
+  phone: StringFilter
   nodeId: IDFilter
 
   """
@@ -2667,6 +2827,7 @@ input profilesInsertInput {
   is_admin: Boolean
   email: String
   created_at: Datetime
+  phone: String
 }
 
 type profilesInsertResponse {
@@ -2683,6 +2844,7 @@ input profilesOrderBy {
   is_admin: OrderByDirection
   email: OrderByDirection
   created_at: OrderByDirection
+  phone: OrderByDirection
 }
 
 input profilesUpdateInput {
@@ -2691,6 +2853,7 @@ input profilesUpdateInput {
   is_admin: Boolean
   email: String
   created_at: Datetime
+  phone: String
 }
 
 type profilesUpdateResponse {
@@ -2710,6 +2873,54 @@ type shipping_zones implements Node {
   is_active: Boolean!
   created_at: Datetime!
   updated_at: Datetime!
+  ordersCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """
+    Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
+    """
+    offset: Int
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: ordersFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [ordersOrderBy!]
+  ): ordersConnection
+  addressCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """
+    Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
+    """
+    offset: Int
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: addressFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [addressOrderBy!]
+  ): addressConnection
 }
 
 type shipping_zonesConnection {
