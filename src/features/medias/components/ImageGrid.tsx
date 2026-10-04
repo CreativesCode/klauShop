@@ -35,7 +35,7 @@ function ImagesGrid({
   return (
     <div
       className={cn(
-        "grid max-w-[1200px] mx-auto gap-x-3 gap-y-5 grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8",
+        "grid max-w-[1200px] mx-auto gap-x-3 gap-y-5 grid-cols-[repeat(auto-fill,120px)] justify-center",
         containerClassName,
       )}
     >

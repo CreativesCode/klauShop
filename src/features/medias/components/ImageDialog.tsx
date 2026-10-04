@@ -63,9 +63,10 @@ function ImageDialog({
           </div>
         </DialogTrigger>
 
-        <DialogContent className="max-w-[1080px] min-h-full md:min-h-[480px]">
+        {/* Fits the phone screen and scrolls: the close button and the upload tile stay reachable */}
+        <DialogContent className="max-w-[1080px] max-h-[90dvh] overflow-y-auto grid-cols-1 md:min-h-[480px]">
           <DialogHeader>
-            <DialogTitle className="mb-5">Image Gallery</DialogTitle>
+            <DialogTitle className="mb-5">Galería de imágenes</DialogTitle>
             <Suspense
               fallback={
                 <div className="h-64 w-full bg-muted animate-pulse rounded-md" />
