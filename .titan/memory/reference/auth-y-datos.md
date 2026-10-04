@@ -21,3 +21,10 @@
   Tras cambiar queries → `npm run codegen`. pg_graphql limita a 30 filas por defecto; se subio a 1000 con `db:apply-graphql-limit`.
 - **Escrituras** con logica (ordenes, stock): Drizzle en route handlers/actions, con transacciones.
 - Server actions en dos sitios: `src/_actions/*` (legacy de Hiyori) y `src/features/*/actions.ts` (nuevo).
+
+## Clientes con service role (leccion 2026-10-04)
+- Supabase toma el rol de la cabecera `Authorization`, no de `apikey`. Un cliente "service role" que solo manda `apikey`
+  corre como **anon**. `src/lib/urql-service.ts` y `scripts/fetchGraphQLSchema.js` mandan `Authorization: Bearer <service role>`.
+- Desde 0018, anon no puede leer orders/order_lines/profiles/address: cualquier lectura de esas tablas va por Drizzle
+  o por `getServiceClient()` (y solo desde paginas protegidas o filtrando por el usuario).
+

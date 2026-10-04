@@ -34,3 +34,10 @@ Lo que si esta bien: integridad de stock del checkout (riesgos #3/#4 de 2026-09-
 - P0-06 HECHO: `0021_orders_client_request_id.sql` APLICADA en prod 2026-10-04 (columna opcional + indice unico).
   El codigo con `client_request_id` en `schema.ts` exige 0021 aplicada (Drizzle lee/inserta todas las columnas).
 - Leccion: en las pruebas con Playwright, el clic fantasma de Radix Select solo aparece con `tap()`, no con `click()`.
+
+## Estado 2026-10-04 (tarde) — en `main`, desplegado en Vercel
+- `fix/pilot-qa-p0` fusionada en `main` (fast-forward) y pusheada. Migraciones APLICADAS en prod: 0019, 0020, 0021 y 0018
+  (esta despues del deploy). Verificado: anon recibe 401 en orders/order_lines/profiles/address y GraphQL no expone
+  ordersCollection; productos y zonas siguen publicos; los 3 usuarios tienen perfil.
+- Incidente breve tras 0018: `/admin/orders` dio 404 en prod porque `urql-service.ts` solo mandaba `apiKey` y el gateway
+  lo trataba como anon. Arreglado mandando `Authorization: Bearer <service role>` (commit cbb7aa5).
