@@ -12,6 +12,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
+// Admin data must always be fresh (no Data Cache snapshot when navigating)
+export const dynamic = "force-dynamic";
+
 type AdminCollectionsPageProps = {
   searchParams: {
     [key: string]: string | string[] | undefined;

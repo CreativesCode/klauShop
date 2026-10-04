@@ -3,6 +3,7 @@ import {
   getOrderStatusLabel,
   isValidStatusTransition,
 } from "@/features/orders/utils/orderStatus";
+import { revalidateStorefront } from "@/lib/revalidateStorefront";
 import db from "@/lib/supabase/db";
 import { OrderStatus, orders } from "@/lib/supabase/schema";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
@@ -66,6 +67,9 @@ export async function POST(
 
       return updatedOrder;
     });
+
+    // Stock changed: product pages must not show the cached quantity
+    revalidateStorefront();
 
     return NextResponse.json({
       success: true,

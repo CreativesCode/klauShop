@@ -264,20 +264,20 @@ Para BD: migracion Drizzle en `drizzle/` + `drizzle/rls_policies.sql`. Despues d
 
 ### Fase 2 — Refresco y datos obsoletos
 
-- [ ] **P2-01 · Ficha de producto, menu y footer cacheados 1 ano (Data Cache de Next); ninguna mutacion revalida** · Sev ALTA · Esf M
+- [x] **P2-01 · (HECHO 2026-10-04: `/shop/[slug]` con revalidate=60 + `revalidateStorefront()` en acciones de producto/coleccion, mark-paid y cancel. Verificado en dev: BD 100→150 visible a los 60 s; edicion admin → al instante) Ficha de producto, menu y footer cacheados 1 ano (Data Cache de Next); ninguna mutacion revalida** · Sev ALTA · Esf M
   `[GUEST-06, PERF-01, CODE-03, ADMIN-CAT-05]`
   - **Donde**: `src/lib/urql-service.ts:11-27` y `src/lib/urql.ts:14-24` (fetchOptions solo con cabeceras). `src/app/(store)/shop/[slug]/page.tsx` (sin `dynamic`/`revalidate`; `notFound()` por stock usa el valor cacheado). Layout (store): CategoriesSubNav, MainFooter, SideMenuServer. Hay 0 `revalidatePath/Tag` en `src/`.
   - **Evidencia**: dev siguio en 100 CUP con la BD en 150/120/130. Prod siguio en 120 con la BD en 130. Un producto que paso por stock 0 da **404 en prod incluso tras reponerlo**. El title y el og muestran el precio viejo (links compartidos por WhatsApp).
   - **Fix**: en `makeServiceClient`/`makeClient`, `fetchOptions: { headers, next: { revalidate: 60, tags: ['catalog'] } }` (o `cache:'no-store'` para datos de usuario y pedidos). `revalidateTag('catalog')` en create/update/delete de producto y coleccion, en mark-paid, en cancel y en las ediciones de stock. Minimo inmediato: `export const dynamic = 'force-dynamic'` en `shop/[slug]/page.tsx`. Tras el deploy, **redeploy o purga de la Data Cache de Vercel**.
   - **Verificar**: `UPDATE products set price=… where id='<QA>'` (o desde el admin) → curl de la ficha muestra el nuevo precio en <=60 s (o al instante si se edito desde el admin). Stock 0 → 404, reponer → 200.
 
-- [ ] **P2-02 · `/api/shipping-zones` es estatico desde el build** · Sev ALTA · Esf S
+- [x] **P2-02 · (HECHO 2026-10-04: `/api/shipping-zones` force-dynamic) `/api/shipping-zones` es estatico desde el build** · Sev ALTA · Esf S
   `[GUEST-07, PERF-02, CODE-04]`
   - **Donde**: `src/app/api/shipping-zones/route.ts:6` (GET sin request: ○ Static). El CRUD admin no revalida.
   - **Fix**: `export const revalidate = 60` + `revalidatePath('/api/shipping-zones')` en POST/PATCH/DELETE admin + `Cache-Control: public, s-maxage=60, stale-while-revalidate=600`. Alternativa: `dynamic='force-dynamic'` (payload de ~0.5 KB).
   - **Verificar**: `next build` muestra `ƒ` o ISR. Crear una zona QA activa → aparece en <=60 s en prod (`curl -I` → Age < 60).
 
-- [ ] **P2-03 · La lista admin de pedidos, al navegar en cliente, muestra un snapshot viejo (8 en vez de 62)** · Sev ALTA · Esf S
+- [x] **P2-03 · (HECHO 2026-10-04: force-dynamic en admin/orders, admin/collections y [collectionId]) La lista admin de pedidos, al navegar en cliente, muestra un snapshot viejo (8 en vez de 62)** · Sev ALTA · Esf S
   `[ADMIN-ORD-18]`
   - **Donde**: `src/app/(admin)/admin/orders/page.tsx:33` (sin `dynamic`; `cookies()` solo se ejecuta en layouts que no se re-renderizan al navegar). Igual en `admin/collections/page.tsx` y `[collectionId]/page.tsx`.
   - **Fix**: `export const dynamic = 'force-dynamic'` (como `admin/products/page.tsx:17-18`). Sale tambien de P0-02 si se cambia a Drizzle o service. Purgar `.next/cache/fetch-cache` y la Data Cache de Vercel.

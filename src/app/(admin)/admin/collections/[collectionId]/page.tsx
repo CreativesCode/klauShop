@@ -6,6 +6,9 @@ import { notFound } from "next/navigation";
 import { CollectionForm } from "@/features/collections";
 import { Suspense } from "react";
 
+// Admin data must always be fresh (no Data Cache snapshot when navigating)
+export const dynamic = "force-dynamic";
+
 type EditCollectionPageProps = {
   params: {
     collectionId: string;

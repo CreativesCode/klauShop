@@ -3,6 +3,9 @@ import { shippingZones } from "@/lib/supabase/schema";
 import { asc, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+// A GET without request is prerendered at build time: zones would stay frozen until the next deploy
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const zones = await db

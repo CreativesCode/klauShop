@@ -1,6 +1,7 @@
 "use server";
 
 import db from "@/lib/supabase/db";
+import { revalidateStorefront } from "@/lib/revalidateStorefront";
 import { requireAdmin } from "@/lib/supabase/requireAdmin";
 import {
   InsertCollection,
@@ -28,6 +29,7 @@ export const createCollectionAction = async (
     throw new Error("Error al crear la colección.");
   }
 
+  revalidateStorefront();
   return createdCollection;
 };
 
@@ -51,6 +53,7 @@ export const updateCollectionAction = async (
     throw new Error("No se encontró la colección para actualizar.");
   }
 
+  revalidateStorefront();
   return updatedCollection;
 };
 
@@ -92,5 +95,6 @@ export const deleteCollectionAction = async (collectionId: string) => {
     throw new Error("No se encontró la colección para eliminar.");
   }
 
+  revalidateStorefront();
   return deletedCollection;
 };

@@ -23,6 +23,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
+// ISR: cached HTML is fast on slow networks; price/stock refresh within 60s,
+// and right away after admin changes (revalidateStorefront)
+export const revalidate = 60;
+
 type Props = {
   params: {
     slug: string;

@@ -4,6 +4,7 @@ import {
   isValidStatusTransition,
   SHIPPING_REQUIRED_MESSAGE,
 } from "@/features/orders/utils/orderStatus";
+import { revalidateStorefront } from "@/lib/revalidateStorefront";
 import db from "@/lib/supabase/db";
 import {
   OrderStatus,
@@ -98,6 +99,9 @@ export async function POST(
 
       return updatedOrder;
     });
+
+    // Stock changed: product pages must not show the cached quantity
+    revalidateStorefront();
 
     return NextResponse.json({
       success: true,

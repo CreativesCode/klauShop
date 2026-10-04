@@ -1,6 +1,7 @@
 "use server";
 
 import db from "@/lib/supabase/db";
+import { revalidateStorefront } from "@/lib/revalidateStorefront";
 import { requireAdmin } from "@/lib/supabase/requireAdmin";
 import {
   InsertProducts,
@@ -60,6 +61,7 @@ export const createProductAction = async (
     }
   }
 
+  revalidateStorefront();
   return data;
 };
 
@@ -124,6 +126,7 @@ export const updateProductAction = async (
     }
   }
 
+  revalidateStorefront();
   return insertedProduct;
 };
 
@@ -169,5 +172,6 @@ export const deleteProductAction = async (productId: string) => {
     .where(eq(products.id, productId))
     .returning();
 
+  revalidateStorefront();
   return deletedProduct;
 };
