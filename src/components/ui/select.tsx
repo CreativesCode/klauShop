@@ -111,12 +111,24 @@ const SelectLabel = React.forwardRef<
 ));
 SelectLabel.displayName = SelectPrimitive.Label.displayName;
 
+// Radix Select 2.0 selects on pointerup and closes; on touch screens the browser then fires a
+// click on whatever was under the option (checkboxes, buttons, inputs). Cancelling touchend
+// suppresses that synthetic click. Native listener: the option is already unmounted when
+// touchend arrives, so a React onTouchEnd would never run.
+const preventTouchClickThrough = (event: TouchEvent) => event.preventDefault();
+
 const SelectItem = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
 >(({ className, children, ...props }, ref) => (
   <SelectPrimitive.Item
-    ref={ref}
+    ref={(node) => {
+      node?.addEventListener("touchend", preventTouchClickThrough, {
+        passive: false,
+      });
+      if (typeof ref === "function") ref(node);
+      else if (ref) ref.current = node;
+    }}
     className={cn(
       "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className,
