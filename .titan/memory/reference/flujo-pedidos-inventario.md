@@ -38,6 +38,10 @@ Fuente unica: `VALID_STATUS_TRANSITIONS` + `ORDER_STATUS_ACTIONS` (copy de boton
 ## Envios / zonas (desde 2026-09-24, migracion 0017)
 - `orders.shipping_zone_id` y `address.shipping_zone_id` (FK nullable, ON DELETE SET NULL); `zone` queda como nombre-foto.
 - NULL = zona "Otro" → `shipping_cost` NULL = "Por definir"; el admin lo fija con `update-shipping`.
+- Desde 2026-10-03 (opcion A del dueño): "Recoger en tienda" = `zone` "Recogida en tienda" + `shipping_cost` 0
+  (`PICKUP_ZONE_NAME`, misma cadena en la funcion SQL de 0019). "Otra zona — acordar envio por WhatsApp" = NULL
+  (texto opcional; vacio → "Por acordar"). `change-status` → pending_payment y `mark-paid` rechazan si el envio es NULL
+  (`SHIPPING_REQUIRED_MESSAGE`). Etiquetas en vistas: `formatShipping` / `formatOrderTotal` (`orders/utils/pricing.ts`).
 - Resolucion unica: `matchShippingZone` (id gana, fallback por nombre normalizado) en `src/features/shipping/utils/`;
   servidor: `resolveShippingZone` (solo zonas activas). UI: `ShippingZoneSelect` + `useShippingZones` de `@/features/shipping`.
 - Orden desde admin: costo fijo de la zona (no editable al crear). Totales en vistas: `getOrderTotals` (`orders/utils/pricing.ts`).

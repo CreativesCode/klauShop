@@ -1,0 +1,121 @@
+{"persona":"guest-mobile-buyer","type":"product","id":"qaguestmob1product00001","label":"QA Producto Invitado Movil"}
+{"persona":"guest-mobile-buyer","type":"product","id":"qaguestmob1product00002","label":"QA Producto Redondeo Invitado"}
+{"persona":"registered-customer","type":"auth_user","id":"01f871bb-f954-4d4c-873d-b2be98d61948","label":"QA Cliente Registrado Uno <qa.registered-customer.1@klaushop.com>"}
+{"persona":"registered-customer","type":"auth_user","id":"cd76085e-1a9b-4f89-a553-7945b0ac3833","label":"QA Cliente Registrado Dos <qa.registered-customer.2@klaushop.com>"}
+{"persona":"admin-orders","type":"product","id":"qaadminorders0product001","label":"QA Producto Admin Pedidos (stock 30, 500 CUP -10%)"}
+{"persona":"admin-orders","type":"product","id":"qaadminorders0product002","label":"QA Producto Admin Pedidos B (stock 10, 250 CUP)"}
+{"persona":"integrity-api","type":"product","id":"qaintegrityp1stock1","label":"QA Integridad Stock 1","ts":"2026-10-02T22:31:45.685Z"}
+{"persona":"integrity-api","type":"product","id":"qaintegrityp2stock2","label":"QA Integridad Stock 2 Colores","ts":"2026-10-02T22:31:47.863Z"}
+{"persona":"integrity-api","type":"product","id":"qaintegrityp3disc","label":"QA Integridad Descuento","ts":"2026-10-02T22:31:49.346Z"}
+{"persona":"integrity-api","type":"shipping_zone","id":"qaintegrityzoneoff","label":"QA Zona Inactiva","ts":"2026-10-02T22:31:50.718Z"}
+{"persona":"integrity-api","type":"order","id":"t7xl0okdlqfqze5gpmzdqxi6","label":"QA Race (stock1)","ts":"2026-10-02T22:32:37.092Z"}
+{"persona":"integrity-api","type":"order","id":"gxo9f4og9hvi3gwk9pj7y0ul","label":"QA Race2 (stock2 colores)","ts":"2026-10-02T22:33:15.883Z"}
+{"persona":"integrity-api","type":"order","id":"rxvjs9neqbwjpvuszwo188p8","label":"QA Race2 (stock2 colores)","ts":"2026-10-02T22:33:15.885Z"}
+{"persona":"integrity-api","type":"order","id":"q6vqjn2typasuyjbcllfof9a","label":"QA Latencia Simple","ts":"2026-10-02T22:33:28.170Z"}
+{"persona":"admin-orders","type":"order","id":"ygbg3rvu1aroxvz4bhs1unnt","label":"KS-UNNT QA Admin Pedido 1 (admin, Placetas)"}
+{"persona":"admin-orders","type":"order","id":"n08mtkx07l88pp4crzvuug1y","label":"KS-UG1Y QA Admin Pedido 1 DUPLICADO (doble click Crear orden)"}
+{"persona":"integrity-api","type":"order","id":"qkokvsdm3z87yqm6afs8ncpx","label":"QA tamper: tampered price/discount/shipping/amount","ts":"2026-10-02T22:36:54.778Z"}
+{"persona":"integrity-api","type":"order","id":"bzn3mml1kqy7bo4dae9vxbty","label":"QA tamper: inactive zone id + its name","ts":"2026-10-02T22:36:59.121Z"}
+{"persona":"integrity-api","type":"order","id":"dbvbsgrihp4wepv8hu82vsnd","label":"QA tamper: bogus zone id + name Placetas (case/space)","ts":"2026-10-02T22:37:02.743Z"}
+{"persona":"integrity-api","type":"order","id":"zq0am9qn6fu0rsrjzar7uzby","label":"QA tamper: Placetas id + name Encrucijada","ts":"2026-10-02T22:37:07.911Z"}
+{"persona":"integrity-api","type":"order","id":"f8np64vkmuz05etphcxb7e4h","label":"QA tamper: XSS + markdown","ts":"2026-10-02T22:37:11.150Z"}
+{"persona":"integrity-api","type":"order","id":"bazjx40rcf7g2dps81lqvpkm","label":"QA Replay Idempotencia","ts":"2026-10-02T22:37:16.420Z"}
+{"persona":"integrity-api","type":"order","id":"ak5l23idiejorwlgsu2ul08d","label":"QA Replay Idempotencia","ts":"2026-10-02T22:37:16.421Z"}
+{"persona":"admin-orders","type":"order","id":"x43kf5l9gzxkh248o3j6tn64","label":"KS-TN64 QA Admin Pedido 2 Otro (zona Otro, envio por definir)"}
+{"persona":"admin-orders","type":"order","id":"pm7347zwdlq2pjd1okh8b1zu","label":"KS-B1ZU QA Admin Pedido 3 (Encrucijada)"}
+{"persona":"admin-orders","type":"order","id":"tvjqkzu54ie6keuqnqfyzpzk","label":"KS-ZPZK QA Admin Pedido 4 (2 productos, Santa Clara Dentro)"}
+{"persona":"integrity-api","type":"auth_user","id":"9db5f36b-163b-4827-b655-1e8c2cf335fc","label":"QA Integrity 1 (qa.integrity-api.1@klaushop.com)","ts":"2026-10-02T22:43:12.032Z"}
+{"persona":"integrity-api","type":"auth_user","id":"2e7ed8b8-79c8-4960-964f-3f423e943c1a","label":"QA Integrity 2 (qa.integrity-api.2@klaushop.com)","ts":"2026-10-02T22:43:12.431Z"}
+{"persona":"admin-orders","type":"order","id":"r6b48lqx90e9fpshzd1sh7js","label":"KS-H7JS QA Admin Invitado Tienda (checkout invitado movil, Calabazar)"}
+{"persona":"registered-customer","type":"profile","id":"01f871bb-f954-4d4c-873d-b2be98d61948","label":"QA Cliente Registrado Uno (fila profiles creada a mano para desbloquear pruebas)"}
+{"persona":"registered-customer","type":"profile","id":"cd76085e-1a9b-4f89-a553-7945b0ac3833","label":"QA Cliente Registrado Dos (fila profiles creada a mano para desbloquear pruebas)"}
+{"persona":"iphone-safari","type":"product","id":"qaiphonesafariprod0001","label":"QA Producto iPhone Safari (stock 20, 800 CUP)","ts":"2026-10-02"}
+{"persona":"shipping-negotiated","type":"product","id":"qashipnegprod0001","label":"QA Producto Envio Negociado (stock 20, 500 CUP)","ts":"2026-10-02"}
+{"persona":"admin-catalog","type":"media","id":"b5urkd3ddhqime1gd6676e5x","label":"QA_small_3.jpg","state":"created","at":"2026-10-02T22:53:09.253Z"}
+{"persona":"admin-catalog","type":"media","id":"oo69odoqe0kc09kiz2i3p81y","label":"QA_small_2.jpg","state":"created","at":"2026-10-02T22:53:09.254Z"}
+{"persona":"performance-connectivity","type":"product","id":"qaperfconn0product0001","label":"QA Perf Cache Producto","note":"slug qa-perf-cache-producto; used to test Next data cache staleness"}
+{"persona":"integrity-api","type":"profile","id":"2e7ed8b8-79c8-4960-964f-3f423e943c1a","label":"QA Integrity 2 profile (insertado a mano para probar IDOR/escalada)","ts":"2026-10-02T22:54:59.403Z"}
+{"persona":"iphone-safari","type":"order","id":"iylz9hxgjn6pexd5dr7jnjx7","label":"KS-NJX7 QA iPhone Safari iPhone13 guest (Placetas)","ts":"2026-10-02"}
+{"persona":"shipping-negotiated","type":"order","id":"xy9dtvx3uqg7s7f9w7ztfbjh","label":"KS-FBJH QA Envio Negociado Invitado 1 (guest iPhone, zona Otro)","ts":"2026-10-02"}
+{"persona":"code-audit-refresh","type":"product","id":"qacodeaudit0product001","label":"QA Producto Frescura (slug qa-code-audit-frescura, 100 CUP stock 5)"}
+{"persona":"iphone-safari","type":"order","id":"aoe57h77pu59tku352i8mvya","label":"KS-MVYA QA iPhone Safari iPhoneSE guest (Placetas)","ts":"2026-10-02"}
+{"persona":"shipping-negotiated","type":"order","id":"jcmzhv02ppbtxy15q09t9pzu","label":"KS-9PZU QA Envio Negociado Invitado 2 (guest chromium movil, zona Otro)","ts":"2026-10-02"}
+{"persona":"registered-customer","type":"order","id":"wv1bfe4jskd93mync3hod09g","label":"KS-D09G QA Cliente Registrado 1 (direccion guardada QA Casa)"}
+{"persona":"registered-customer","type":"address","id":"bckafxx93xpjc5dcge15zd3z","label":"QA Casa (user1)"}
+{"persona":"iphone-safari","type":"auth_user","id":"5bb37ef1-c7ac-42b5-bcf1-ddbcd7efc437","label":"QA iPhone Safari 1 (qa.iphone-safari.1@klaushop.com)","ts":"2026-10-02"}
+{"persona":"code-audit-refresh","type":"order","id":"w28ckd62u1lq1a8a4dlo3x96","label":"KS-3X96 QA Code Audit Invitado (checkout invitado, zona libre)"}
+{"persona":"shipping-negotiated","type":"order","id":"z3yjmoxf7oy81gwawfk113rx","label":"KS-13RX QA Envio Negociado Admin 1 (orden manual admin, zona Otro: Recoge en tienda)","ts":"2026-10-02"}
+{"persona":"shipping-negotiated","type":"order","id":"tcjg0g25ljcton2oogzokn2u","label":"KS-KN2U QA Envio Negociado Admin 2 (orden manual admin, zona Otro)","ts":"2026-10-02"}
+{"persona":"performance-connectivity","type":"order","id":"e7xyzff52ofmuejupfukxmwp","label":"QA Perf Respuesta Perdida (lego-250 x1, cancelled by persona to release reservation)","state":"cancelled"}
+{"persona":"performance-connectivity","type":"order","id":"x0azgmd0vn1vfkfeccfzq10k","label":"QA Perf Respuesta Perdida (lego-250 x1, cancelled by persona to release reservation)","state":"cancelled"}
+{"persona":"performance-connectivity","type":"order","id":"dan5o11sjjfgssjkygsb5bsi","label":"QA Perf Respuesta Perdida (lego-250 x1, cancelled by persona to release reservation)","state":"cancelled"}
+{"persona":"mobile-product-create","type":"media","id":"ud59wufuqvhq1osak1rzc7q1","label":"QA_mpc_2.webp","ts":"2026-10-02T23:41:26.608Z"}
+{"persona":"mobile-product-create","type":"media","id":"qh12ffx6ukny6ec3ytpcdawz","label":"QA_mpc_3.webp","ts":"2026-10-02T23:42:18.734Z"}
+{"persona":"controls-static-audit","type":"product","id":"emf8xwd57fzcdpaorfxsbqww","label":"QA Controles iPhone13 1 (slug qa-controles-iphone13-1)","ts":"2026-10-02T23:43:47.428Z"}
+{"persona":"code-audit-refresh","type":"auth_user","id":"498e0c00-55a4-4c49-80d8-bcc8a6cdd93c","label":"QA Code Audit Uno <qa.code-audit-refresh.1@klaushop.com>"}
+{"persona":"mobile-product-create","type":"product","id":"qfo2g4jpaid4esmqcll240iu","label":"QA Movil iphone13 tap r1","ts":"2026-10-02T23:45:42.789Z"}
+{"persona":"shipping-negotiated","type":"auth_user","id":"6fb100c7-eba1-4959-9864-7c61e6f97349","label":"QA Envio Negociado Cliente 1 (qa.shipping-negotiated.1@klaushop.com)","ts":"2026-10-02"}
+{"persona":"shipping-negotiated","type":"profile","id":"6fb100c7-eba1-4959-9864-7c61e6f97349","label":"QA Envio Negociado Cliente 1 (fila profiles creada a mano; signup via admin API no la crea)","ts":"2026-10-02"}
+{"persona":"mobile-product-create","type":"product","id":"btkb2xx3h00ug1l6c6bkfhgl","label":"QA Movil iphonese tap r1","ts":"2026-10-02T23:57:07.816Z"}
+{"persona":"guest-mobile-buyer","type":"order","id":"kk49vqjmjcuaqb34jjf3njbb","label":"QA Invitado Movil A (duplicado por respuesta perdida, 1/2)"}
+{"persona":"guest-mobile-buyer","type":"order","id":"iqkmnzfbmy6i082unzj6zuvj","label":"QA Invitado Movil A (KS-ZUVJ, 2/2)"}
+{"persona":"guest-mobile-buyer","type":"order","id":"noaz9h9mn28sa5vagozl7jsi","label":"QA Invitado Movil C (KS-7JSI, doble toque, zona Otro QA Camajuani)"}
+{"persona":"guest-mobile-buyer","type":"order","id":"fqirudyfcvduwud57lkv3gfs","label":"QA Invitado Movil B (duplicado por respuesta perdida, 1/2)"}
+{"persona":"guest-mobile-buyer","type":"order","id":"nemxurzcmbq8q4hvm6yyrvq2","label":"QA Invitado Movil B (KS-RVQ2, 2/2)"}
+{"persona":"shipping-negotiated","type":"address","id":"rod34mwc5tx7ozfvx60sh43n","label":"QA Casa (direccion del cliente QA Envio Negociado Cliente 1, zona Otro)","ts":"2026-10-02"}
+{"persona":"shipping-negotiated","type":"order","id":"lh9x6k0l43pbj47vruq85908","label":"KS-5908 QA Envio Negociado Cliente 1 (registrado iPhone, direccion zona Otro)","ts":"2026-10-02"}
+{"persona":"skeptic-integrity01","type":"auth_user","id":"9dbd5579-e1a0-4840-9b15-2dbd1eac484c","label":"QA Skeptic Integrity 01 (qa.skeptic-integrity01.1@klaushop.com)","ts":"2026-10-03T00:04:41.508Z"}
+{"persona":"controls-static-audit","type":"product","id":"og90d6viknzuulogwv7l3fes","label":"QA Controles iPhoneSE 2 (slug qa-controles-iphonese-2)","ts":"2026-10-03T00:04:42.980Z"}
+{"persona":"shipping-negotiated","type":"order","id":"zjgd4i58nzpw555m4hoz1jx4","label":"KS-1JX4 QA Envio Negociado Cliente 1 run 2 (registrado, zona Otro)","ts":"2026-10-02"}
+{"persona":"mobile-product-create","type":"product","id":"qd1jgu8gz4v4w4qb7k4otf0q","label":"QA Movil pixel5 tap r1","ts":"2026-10-03T00:07:16.518Z"}
+{"persona":"admin-catalog","type":"collection","id":"qaAdminCatalogColl01","label":"QA Coleccion Catalogo","state":"created via SQL (UI form blocked by request loop)"}
+{"persona":"admin-catalog","type":"media","id":"t2x53oqhj6zlj4gg7on5bwhp","label":"QA_small_1.jpg","state":"created"}
+{"persona":"admin-catalog","type":"media","id":"qhu6ieo2lphlb5wp4eoqci2f","label":"QA_realistic_phone_photo.webp","state":"created"}
+{"persona":"admin-catalog","type":"media","id":"ey7iqla6tknblrcmb84ret4s","label":"QA_big_phone_photo.webp","state":"created"}
+{"persona":"iphone-safari","type":"media","id":"olwp90c1usm9oxr41ih7zrxn","label":"QA-iphone-foto (media subida desde /admin/medias en WebKit iPhone 13)","ts":"2026-10-02"}
+{"persona":"mobile-product-create","type":"product","id":"cruleuub9lsqn5m8hbveyig8","label":"QA Movil iphone13 click r2","ts":"2026-10-03T00:18:45.518Z"}
+{"persona":"admin-orders","type":"order","id":"nafduil37mcsa1avw66fud5p","label":"KS-UD5P QA Admin Pedido 5 Movil (admin movil)"}
+{"persona":"admin-orders","type":"order","id":"nzwc9wwh1d76ov6d22s6nwe0","label":"KS-NWE0 QA Admin Pedido 5 Movil DUPLICADO (doble click)"}
+{"persona":"registered-customer","type":"order","id":"b4zog2sm7kjhm0pt83hy7yen","label":"KS-7YEN QA Cliente Registrado 1 (checkout red lenta, reintento tras corte)"}
+{"persona":"registered-customer","type":"wishlist","id":"user cd76085e/qaguestmob1product00002","label":"QA wishlist item user2"}
+{"persona":"admin-catalog","type":"product","id":"hz0dqs97nae7scqd1vccbq8i","label":"QA Producto Catalogo","state":"created","at":"2026-10-03T00:28:41.422Z"}
+{"persona":"skeptic-integrity05","type":"order","id":"cf1owt0j7l2rp3dhx0zghg68","label":"QA Skeptic Idempotencia (+1 inventory_reservation, product qaintegrityp3disc)"}
+{"persona":"skeptic-integrity05","type":"order","id":"p4m39oh9d4zyuh4w1zl3tfak","label":"QA Skeptic Idempotencia 2 (+1 inventory_reservation, product qaintegrityp3disc)"}
+{"persona":"skeptic-integrity05","type":"order","id":"i5a66pip6x888v2shyg6a2ba","label":"QA Skeptic Idempotencia 3 (+1 inventory_reservation, product qaintegrityp3disc)"}
+{"persona":"skeptic-integrity-06","type":"whatsapp_message_attempt","id":"openwa-send-text-5353077035","label":"QA skeptic INTEGRITY-06 prueba de envio (failed 500, not delivered)"}
+{"persona":"skeptic-integrity-07","type":"order","id":"pf6fm65w6avjd7pw53dwcrbp","label":"QA INTEGRITY-07 Stripe huerfano (amount -260 cad, line qty -2)"}
+{"persona":"skeptic-integrity-07","type":"order_line","id":"jsoe5ngoxs7rzajtig6g8rxn","label":"QA INTEGRITY-07 line qty -2 of qacodeaudit0product001"}
+{"persona":"skeptic-integrity-07","type":"order","id":"at4hxove4ndyc6mu45vchte5","label":"QA INTEGRITY-07 Stripe huerfano (amount 195 cad, no lines)"}
+{"persona":"skeptic-integrity-07","type":"order","id":"jx7m1co7rxkxe13wg9wsw53o","label":"QA Skeptic INTEGRITY-07 orphan order via /api/create-checkout-session (amount 0, cad, no lines, no name/phone)"}
+{"persona":"registered-customer","type":"cart_item","id":"carts where user_id=01f871bb-f954-4d4c-873d-b2be98d61948","label":"QA carrito user1 (1x QA Producto Redondeo Invitado)"}
+{"persona":"skeptic-integrity08","type":"order","id":"n230aqh1az3h2kzag7ai7ub6","label":"QA Skeptic Perf 0","ts":"2026-10-03T00:35:49.050Z"}
+{"persona":"skeptic-integrity08","type":"order","id":"onrlr2nxjswe3zzqx1ief4ku","label":"QA Skeptic Perf 1","ts":"2026-10-03T00:35:58.713Z"}
+{"persona":"skeptic-integrity08","type":"order","id":"ikag8ii7fppgr04qcffvsecq","label":"QA Skeptic Perf 2","ts":"2026-10-03T00:36:13.669Z"}
+{"persona":"admin-orders","type":"order","id":"u1dxxen78rnbunqm38vxh2pf","label":"KS-H2PF QA Admin Variantes Mismo Producto (checkout API, 2 variantes)"}
+{"type":"order_edit_restored","id":"u1dxxen78rnbunqm38vxh2pf","label":"QA order name patched by anon and restored (skeptic CODE-02)"}
+{"type":"product","id":"qaskepticcode03prod01","label":"QA Skeptic Frescura","by":"skeptic-CODE-03"}
+{"type":"auth_user","id":"cbed9f07-e401-4208-9626-48bb3f0dce14","label":"qa.skeptic-code06.1@klaushop.com","by":"skeptic-code06"}
+{"persona":"skeptic-code05","type":"order","id":"igtyr907963n1f4k0z13hoeh","label":"KS-HOEH QA Skeptic CODE05 Invitado (1st)"}
+{"persona":"skeptic-code05","type":"order","id":"dp840n59qsc5e32d4pzowske","label":"KS-WSKE QA Skeptic CODE05 Invitado (duplicate)"}
+{"persona":"skeptic-code05","type":"order","id":"a2jbbab3bs91stzxe599vkg1","label":"KS-VKG1 QA Skeptic CODE05 run1 (guest, QA Producto Frescura)"}
+{"persona":"skeptic-code13","type":"auth_user","id":"1e8f9728-f963-4380-be3a-85177a99439e","label":"qa.skeptic13.1@klaushop.com"}
+{"type":"auth_user","id":"1c9405b7-959f-40f7-ab5d-18feb19b863d","label":"qa.skeptic18.1@klaushop.com","by":"skeptic-code18"}
+{"persona":"skeptic-code17","type":"product","id":"qaskepticcode17prod01","label":"QA Skeptic CODE-17 Stock","ts":"2026-10-03T00:58:29.938Z"}
+{"type":"product","id":"qaskepticperf01prod01","label":"QA Skeptic PERF-01 Cache","by":"skeptic-PERF-01"}
+{"type":"product","id":"qaskeptic2perf01prod","label":"QA Skeptic2 PERF-01"}
+{"persona":"skeptic-perf02","type":"shipping_zone","id":"qaskepticperf02zone","label":"QA Skeptic PERF02 Zona (now is_active=false)"}
+{"persona":"skeptic-reg01","type":"auth_user","id":"f3163c8e-c911-4b65-b2ff-4d3af746e79b","label":"QA Skeptic REG01 (qa.skeptic-reg01.1@klaushop.com)","ts":"2026-10-03T01:15:05.401Z"}
+{"persona":"skeptic-reg02","type":"auth_user","id":"068da568-ea9a-47e7-a35d-39b886e02932","label":"qa.skeptic-reg02.1@klaushop.com"}
+{"persona":"skeptic-reg04","type":"auth_user","id":"baeb8b04-801f-4de1-9802-b6ef8079afa9","label":"QA Skeptic REG04 <qa.skeptic-reg04.1@klaushop.com>"}
+{"persona":"skeptic-REG-05","type":"whatsapp_message_attempt","id":"openwa-direct-x2","label":"QA verificacion REG-05 (prueba directa OpenWA) to +5353077035, both returned 500, nothing persisted in DB"}
+{"persona":"skeptic-reg13","type":"wishlist_row","id":"cd76085e-1a9b-4f89-a553-7945b0ac3833:qaguestmob1product00002","label":"QA wishlist row (qa.registered-customer.2 -> QA Producto Redondeo Invitado)"}
+{"persona":"mobile-product-create","type":"cart_line","id":"gf5q93vvu29ect7g0d6bc1ah","label":"QA cart line admin -> qa-movil-iphone13-tap-r1 (deleted at end of run)","ts":"2026-10-03T01:36:04.523Z"}
+{"persona":"skeptic-ord08","type":"order_state_change","id":"ikag8ii7fppgr04qcffvsecq","label":"existing QA order confirmed pending_confirmation->pending_payment (WA to +5353077035)"}
+{"persona":"skeptic-ord08","type":"order_state_change","id":"onrlr2nxjswe3zzqx1ief4ku","label":"existing QA order confirmed pending_confirmation->pending_payment (WA to +5353077035)"}
+{"persona":"skeptic-ord08","type":"order_state_change","id":"n230aqh1az3h2kzag7ai7ub6","label":"existing QA order confirmed pending_confirmation->pending_payment (WA to +5353077035)"}
+{"persona":"skeptic-cat05","type":"product","id":"qaskepticcat05prod001","label":"QA Skeptic Cat05 Refresco (slug qa-skeptic-cat05-refresco)","ts":"2026-10-02"}
+{"type":"order","id":"qufnvw41a54m2quoebehlmi0","label":"QA Skeptic GUEST01 (replay 1)","by":"skeptic-guest01"}
+{"type":"order","id":"gsofu59ts3ou679ppsda8ehe","label":"QA Skeptic GUEST01 (replay 2, duplicate)","by":"skeptic-guest01"}
+{"persona":"skeptic-GUEST-02","type":"whatsapp_message_attempt","id":"openwa-direct-x2","label":"QA skeptic GUEST-02 prueba 0/1 to +5353077035 (both returned 500, not delivered)"}
+{"type":"product","id":"qaskepticguest06prod","label":"QA Skeptic GUEST-06","by":"skeptic-guest06"}
+{"persona":"skeptic-guest03","type":"order","id":"nyrgubw3pxz5ibjlva1o5guu","label":"KS-5GUU QA Skeptic GUEST03 (1x QA Producto Redondeo Invitado, pending_confirmation, phone +5353077035)"}
