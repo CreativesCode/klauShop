@@ -1,6 +1,6 @@
 import { getProductAdditionalImages } from "@/_actions/products";
 import AdminShell from "@/components/admin/AdminShell";
-import { ProductForm } from "@/features/products";
+import { ProductForm } from "@/features/products/admin";
 import db from "@/lib/supabase/db";
 import { products } from "@/lib/supabase/schema";
 import { eq } from "drizzle-orm";

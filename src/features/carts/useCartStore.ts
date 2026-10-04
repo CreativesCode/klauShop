@@ -72,9 +72,26 @@ const useCartStore = create<CartStore>(
         }),
       removeAllProducts: () => set(() => ({ cart: {} })),
     }),
-    { name: "cart", storage: "cookies" },
+    // localStorage only: the old cookie copy travelled (unused) in every request
+    { name: "cart", storage: "localStorage" },
   ),
 );
+
+// Expire the "cart" cookies written by the old cookie storage. They had no path, so the
+// browser scoped them to each page's folder ("/", "/shop", "/collections"...).
+if (typeof document !== "undefined" && document.cookie.includes("cart=")) {
+  const folders = new Set(["/"]);
+  const parts = window.location.pathname.split("/").filter(Boolean);
+  for (let i = 1; i <= parts.length; i++) {
+    folders.add("/" + parts.slice(0, i).join("/"));
+  }
+  ["/shop", "/collections", "/orders", "/setting", "/sign-in"].forEach((p) =>
+    folders.add(p),
+  );
+  folders.forEach((path) => {
+    document.cookie = `cart=; max-age=0; path=${path}`;
+  });
+}
 
 // El `cartKey` se construye como:
 // `${productId}-${color||"none"}-${size||"none"}-${material||"none"}`

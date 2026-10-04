@@ -206,7 +206,7 @@ export function ProfileClient() {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 pb-4">
                   <Avatar className="h-24 w-24">
                     <AvatarImage
-                      src={resolvedAvatarForPreview || "/avatars/01.png"}
+                      src={resolvedAvatarForPreview || undefined}
                       alt={getNameInitials(displayName)}
                     />
                     <AvatarFallback className="text-lg">

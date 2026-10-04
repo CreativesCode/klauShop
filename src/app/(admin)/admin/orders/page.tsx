@@ -1,7 +1,7 @@
 import AdminShell from "@/components/admin/AdminShell";
 import { buttonVariants } from "@/components/ui/button";
 import { DataTableSkeleton } from "@/features/cms";
-import { OrdersColumns, OrdersDataTable } from "@/features/orders";
+import { OrdersColumns, OrdersDataTable } from "@/features/orders/admin";
 import { gql } from "@/gql";
 import { getServiceClient } from "@/lib/urql-service";
 import { cn } from "@/lib/utils";

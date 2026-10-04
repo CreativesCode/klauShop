@@ -1,5 +1,5 @@
 import AdminShell from "@/components/admin/AdminShell";
-import { CollectionForm } from "@/features/collections";
+import { CollectionForm } from "@/features/collections/admin";
 import { Suspense } from "react";
 
 type Props = {};

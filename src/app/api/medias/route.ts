@@ -54,6 +54,8 @@ export async function POST(request: NextRequest) {
           Key: "public/" + key,
           Body: Buffer.from(await file.arrayBuffer()),
           ContentType: file.type,
+          // Keys are unique per upload (never overwritten): safe to cache forever
+          CacheControl: "public, max-age=31536000, immutable",
         };
 
         await uploadImage(params);

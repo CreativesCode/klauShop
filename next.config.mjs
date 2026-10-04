@@ -4,6 +4,8 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
+    // Media keys are immutable (a new upload gets a new key): keep optimized images 30 days
+    minimumCacheTTL: 2592000,
     remotePatterns: [
       {
         protocol: "https",

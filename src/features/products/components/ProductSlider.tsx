@@ -14,7 +14,7 @@ import ProductCardSkeleton from "./ProductCardSkeleton";
 export const ProductSliderQuery = gql(/* GraphQL */ `
   query ProductSliderQuery {
     products: productsCollection(
-      filter: { show_in_slider: { eq: true } }
+      filter: { show_in_slider: { eq: true }, stock: { gt: 0 } }
       first: 20
       orderBy: [{ created_at: DescNullsLast }]
     ) {

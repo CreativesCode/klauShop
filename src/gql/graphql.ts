@@ -2714,7 +2714,6 @@ export type CollectionRouteQueryQuery = {
               __typename?: "products";
               id: string;
               name: string;
-              description?: string | null;
               rating: any;
               slug: string;
               badge?: string | null;
@@ -2913,7 +2912,6 @@ export type LandingRouteQueryQuery = {
         __typename?: "products";
         id: string;
         name: string;
-        description?: string | null;
         rating: any;
         slug: string;
         badge?: string | null;
@@ -2962,7 +2960,6 @@ export type LandingRouteQueryQuery = {
         __typename?: "products";
         id: string;
         name: string;
-        description?: string | null;
         rating: any;
         slug: string;
         badge?: string | null;
@@ -3114,7 +3111,6 @@ export type ProductDetailPageQueryQuery = {
         __typename?: "products";
         id: string;
         name: string;
-        description?: string | null;
         rating: any;
         slug: string;
         badge?: string | null;
@@ -3693,7 +3689,6 @@ export type ProductCardFragmentFragment = {
   __typename?: "products";
   id: string;
   name: string;
-  description?: string | null;
   rating: any;
   slug: string;
   badge?: string | null;
@@ -3780,7 +3775,6 @@ export type ProductSliderQueryQuery = {
         __typename?: "products";
         id: string;
         name: string;
-        description?: string | null;
         rating: any;
         slug: string;
         badge?: string | null;
@@ -3837,7 +3831,6 @@ export type RecomendationProductsQueryQuery = {
         __typename?: "products";
         id: string;
         name: string;
-        description?: string | null;
         rating: any;
         slug: string;
         badge?: string | null;
@@ -3897,7 +3890,6 @@ export type WishlistProductsQueryQuery = {
           __typename?: "products";
           id: string;
           name: string;
-          description?: string | null;
           rating: any;
           slug: string;
           badge?: string | null;
@@ -4004,7 +3996,6 @@ export type SearchQuery = {
         __typename?: "products";
         id: string;
         name: string;
-        description?: string | null;
         rating: any;
         slug: string;
         badge?: string | null;
@@ -4725,7 +4716,6 @@ export const ProductCardFragmentFragmentDoc = {
         selections: [
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
-          { kind: "Field", name: { kind: "Name", value: "description" } },
           { kind: "Field", name: { kind: "Name", value: "rating" } },
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "badge" } },
@@ -6006,7 +5996,6 @@ export const CollectionRouteQueryDocument = {
         selections: [
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
-          { kind: "Field", name: { kind: "Name", value: "description" } },
           { kind: "Field", name: { kind: "Name", value: "rating" } },
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "badge" } },
@@ -6705,6 +6694,20 @@ export const LandingRouteQueryDocument = {
                         ],
                       },
                     },
+                    {
+                      kind: "ObjectField",
+                      name: { kind: "Name", value: "stock" },
+                      value: {
+                        kind: "ObjectValue",
+                        fields: [
+                          {
+                            kind: "ObjectField",
+                            name: { kind: "Name", value: "gt" },
+                            value: { kind: "IntValue", value: "0" },
+                          },
+                        ],
+                      },
+                    },
                   ],
                 },
               },
@@ -6789,6 +6792,20 @@ export const LandingRouteQueryDocument = {
                             kind: "ObjectField",
                             name: { kind: "Name", value: "eq" },
                             value: { kind: "BooleanValue", value: true },
+                          },
+                        ],
+                      },
+                    },
+                    {
+                      kind: "ObjectField",
+                      name: { kind: "Name", value: "stock" },
+                      value: {
+                        kind: "ObjectValue",
+                        fields: [
+                          {
+                            kind: "ObjectField",
+                            name: { kind: "Name", value: "gt" },
+                            value: { kind: "IntValue", value: "0" },
                           },
                         ],
                       },
@@ -7081,7 +7098,6 @@ export const LandingRouteQueryDocument = {
         selections: [
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
-          { kind: "Field", name: { kind: "Name", value: "description" } },
           { kind: "Field", name: { kind: "Name", value: "rating" } },
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "badge" } },
@@ -7611,7 +7627,6 @@ export const ProductDetailPageQueryDocument = {
         selections: [
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
-          { kind: "Field", name: { kind: "Name", value: "description" } },
           { kind: "Field", name: { kind: "Name", value: "rating" } },
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "badge" } },
@@ -9648,6 +9663,20 @@ export const ProductSliderQueryDocument = {
                         ],
                       },
                     },
+                    {
+                      kind: "ObjectField",
+                      name: { kind: "Name", value: "stock" },
+                      value: {
+                        kind: "ObjectValue",
+                        fields: [
+                          {
+                            kind: "ObjectField",
+                            name: { kind: "Name", value: "gt" },
+                            value: { kind: "IntValue", value: "0" },
+                          },
+                        ],
+                      },
+                    },
                   ],
                 },
               },
@@ -9726,7 +9755,6 @@ export const ProductSliderQueryDocument = {
         selections: [
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
-          { kind: "Field", name: { kind: "Name", value: "description" } },
           { kind: "Field", name: { kind: "Name", value: "rating" } },
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "badge" } },
@@ -9881,6 +9909,29 @@ export const RecomendationProductsQueryDocument = {
                   name: { kind: "Name", value: "first" },
                 },
               },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "filter" },
+                value: {
+                  kind: "ObjectValue",
+                  fields: [
+                    {
+                      kind: "ObjectField",
+                      name: { kind: "Name", value: "stock" },
+                      value: {
+                        kind: "ObjectValue",
+                        fields: [
+                          {
+                            kind: "ObjectField",
+                            name: { kind: "Name", value: "gt" },
+                            value: { kind: "IntValue", value: "0" },
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
@@ -9932,7 +9983,6 @@ export const RecomendationProductsQueryDocument = {
         selections: [
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
-          { kind: "Field", name: { kind: "Name", value: "description" } },
           { kind: "Field", name: { kind: "Name", value: "rating" } },
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "badge" } },
@@ -10165,7 +10215,6 @@ export const WishlistProductsQueryDocument = {
         selections: [
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
-          { kind: "Field", name: { kind: "Name", value: "description" } },
           { kind: "Field", name: { kind: "Name", value: "rating" } },
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "badge" } },
@@ -10547,6 +10596,25 @@ export const SearchDocument = {
                               },
                             ],
                           },
+                          {
+                            kind: "ObjectValue",
+                            fields: [
+                              {
+                                kind: "ObjectField",
+                                name: { kind: "Name", value: "stock" },
+                                value: {
+                                  kind: "ObjectValue",
+                                  fields: [
+                                    {
+                                      kind: "ObjectField",
+                                      name: { kind: "Name", value: "gt" },
+                                      value: { kind: "IntValue", value: "0" },
+                                    },
+                                  ],
+                                },
+                              },
+                            ],
+                          },
                         ],
                       },
                     },
@@ -10645,7 +10713,6 @@ export const SearchDocument = {
         selections: [
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
-          { kind: "Field", name: { kind: "Name", value: "description" } },
           { kind: "Field", name: { kind: "Name", value: "rating" } },
           { kind: "Field", name: { kind: "Name", value: "slug" } },
           { kind: "Field", name: { kind: "Name", value: "badge" } },

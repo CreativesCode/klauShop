@@ -1,5 +1,5 @@
 import AdminShell from "@/components/admin/AdminShell";
-import { AdminUserForm } from "@/features/users";
+import { AdminUserForm } from "@/features/users/admin";
 import React from "react";
 
 type Props = {};

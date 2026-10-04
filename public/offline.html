@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sin conexión · Klau's Shop</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        background: #fff8ee;
+        color: #1f1f1f;
+        text-align: center;
+        padding: 16px;
+      }
+      main { max-width: 360px; }
+      h1 { font-size: 1.4rem; margin: 0 0 0.5rem; }
+      p { line-height: 1.5; color: #555; }
+      .actions { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+      a, button {
+        display: block;
+        padding: 14px;
+        border-radius: 999px;
+        font-size: 1rem;
+        text-decoration: none;
+        border: 1px solid #1f1f1f;
+        background: #1f1f1f;
+        color: #fff;
+        cursor: pointer;
+      }
+      a.secondary { background: transparent; color: #1f1f1f; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Sin conexión</h1>
+      <p>
+        No hay internet en este momento. Tu carrito sigue guardado en este
+        teléfono.
+      </p>
+      <div class="actions">
+        <button type="button" onclick="location.reload()">Reintentar</button>
+        <a class="secondary" href="/cart">Ver mi carrito</a>
+      </div>
+    </main>
+  </body>
+</html>

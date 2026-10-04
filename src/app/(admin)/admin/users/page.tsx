@@ -1,12 +1,11 @@
 import AdminShell from "@/components/admin/AdminShell";
 import ErrorToaster from "@/components/layouts/ErrorToaster";
+import { getCurrentUser, listUsers } from "@/features/users";
 import {
   AdminUserNav,
   UsersColumns,
   UsersDataTable,
-  getCurrentUser,
-  listUsers,
-} from "@/features/users";
+} from "@/features/users/admin";
 
 type AdminUsersPageProps = {
   searchParams: {

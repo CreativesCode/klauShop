@@ -5,7 +5,7 @@ import {
   ExportProductsButton,
   ProductsColumns,
   ProductsDataTable,
-} from "@/features/products";
+} from "@/features/products/admin";
 import { gql } from "@/gql";
 import { getServiceClient } from "@/lib/urql-service";
 import { cn } from "@/lib/utils";

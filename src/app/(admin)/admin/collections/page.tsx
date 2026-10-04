@@ -4,7 +4,7 @@ import { DataTableSkeleton } from "@/features/cms";
 import {
   CollectionsColumns,
   CollectionsDataTable,
-} from "@/features/collections";
+} from "@/features/collections/admin";
 import { gql } from "@/gql";
 import { getClient } from "@/lib/urql";
 import { cn } from "@/lib/utils";

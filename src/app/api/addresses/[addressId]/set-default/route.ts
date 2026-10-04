@@ -66,7 +66,8 @@ export async function POST(
     return NextResponse.json(
       {
         error: "Error al establecer dirección predeterminada",
-        message: error.message,
+        // Never send raw database errors to the customer
+        message: "Inténtalo de nuevo en unos segundos.",
       },
       { status: 500 },
     );

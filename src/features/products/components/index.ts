@@ -18,11 +18,3 @@ export { SizeSelector } from "./SizeSelector";
 export { ShareProductButton } from "./ShareProductButton";
 export { default as WishlistProducts } from "./WishlistProducts";
 export { default as WishlistProductsSkeleton } from "./WishlistProductsSkeleton";
-export * from "./admin/ProductForm";
-export { default as ProductForm } from "./admin/ProductForm";
-export {
-  ProductColumnFragment,
-  default as ProductsColumns,
-} from "./admin/ProductsColumns";
-export { default as ProductsDataTable } from "./admin/ProductsDataTable";
-export { ExportProductsButton } from "./admin/ExportProductsButton";

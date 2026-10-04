@@ -32,7 +32,8 @@ export async function GET() {
     return NextResponse.json(
       {
         error: "Error al obtener las direcciones",
-        message: error.message,
+        // Never send raw database errors to the customer
+        message: "Inténtalo de nuevo en unos segundos.",
       },
       { status: 500 },
     );
@@ -119,7 +120,8 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error: "Error al crear la dirección",
-        message: error.message,
+        // Never send raw database errors to the customer
+        message: "Inténtalo de nuevo en unos segundos.",
       },
       { status: 500 },
     );

@@ -7,7 +7,7 @@ import { gql } from "@/gql";
 import { SearchQuery, SearchQueryVariables } from "@/gql/graphql";
 import { useQuery } from "@urql/next";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import SearchProductsGridSkeleton from "./SearchProductsGridSkeleton";
 
 const ProductSearch = gql(/* GraphQL */ `
@@ -26,6 +26,7 @@ const ProductSearch = gql(/* GraphQL */ `
           { search_name: { ilike: $search } }
           { price: { gte: $lower, lte: $upper } }
           { collection_id: { in: $collections } }
+          { stock: { gt: 0 } }
         ]
       }
       first: $first
@@ -56,98 +57,34 @@ const SearchResultPage = ({
   onLoadMore: (cursor: string) => void;
   isLastPage: boolean;
 }) => {
-  const MAX_AUTOFILL_PAGES = 20;
   // The query variable holds the normalized term; show what the customer typed
   const searchParams = useSearchParams();
 
-  const variablesKey = useMemo(() => {
-    // We intentionally exclude `after` because this component manages it
-    // internally to "autofill" in-stock products.
-    const { after: _after, ...rest } = variables as any;
-    return JSON.stringify(rest);
-  }, [variables]);
-
-  const [after, setAfter] = useState<SearchQueryVariables["after"]>(
-    variables.after,
-  );
-  const [accEdges, setAccEdges] = useState<
-    NonNullable<SearchQuery["productsCollection"]>["edges"]
-  >([]);
-  const [pageInfo, setPageInfo] = useState<
-    NonNullable<SearchQuery["productsCollection"]>["pageInfo"] | null
-  >(null);
-
-  const autoFillPagesCountRef = useRef(0);
-  const lastProcessedCursorRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    // Reset when search/filter params change (new "page" context)
-    setAfter(variables.after);
-    setAccEdges([]);
-    setPageInfo(null);
-    autoFillPagesCountRef.current = 0;
-    lastProcessedCursorRef.current = null;
-  }, [variablesKey, variables.after]);
-
-  const queryVariables = useMemo(
-    () => ({
-      ...variables,
-      after,
-    }),
-    [variables, after],
-  );
-
-  const [result] = useQuery<SearchQuery, SearchQueryVariables>({
+  // Out-of-stock products are filtered on the server: one request per page
+  const [result, reexecuteQuery] = useQuery<SearchQuery, SearchQueryVariables>({
     query: ProductSearch,
-    variables: queryVariables,
+    variables,
   });
 
   const { data, fetching, error } = result;
-
   const products = data?.productsCollection;
-  const targetCount = variables.first ?? 0;
+  const edges = useMemo(() => products?.edges ?? [], [products]);
+  const pageInfo = products?.pageInfo ?? null;
+  const isOffline = !!error?.networkError;
 
+  const retry = useCallback(
+    () => reexecuteQuery({ requestPolicy: "network-only" }),
+    [reexecuteQuery],
+  );
+
+  // Flaky connections: retry by itself as soon as the browser is back online
   useEffect(() => {
-    if (!products) return;
+    if (!isOffline) return;
+    window.addEventListener("online", retry);
+    return () => window.removeEventListener("online", retry);
+  }, [isOffline, retry]);
 
-    const cursor = products.pageInfo?.endCursor ?? null;
-    if (cursor && lastProcessedCursorRef.current === cursor) return;
-    lastProcessedCursorRef.current = cursor;
-
-    const incomingInStock = (products.edges ?? []).filter(
-      ({ node }) => (node.stock ?? 0) > 0,
-    );
-
-    let nextCount = accEdges.length;
-    setAccEdges((prev) => {
-      if (incomingInStock.length === 0) return prev;
-      const seen = new Set(prev.map((e) => e.node.id));
-      const next = [...prev];
-      for (const e of incomingInStock) {
-        if (!seen.has(e.node.id)) next.push(e);
-      }
-      nextCount = next.length;
-      return next;
-    });
-
-    setPageInfo(products.pageInfo);
-
-    // Autocomplete: if we filtered out-of-stock items, keep fetching
-    // subsequent cursor pages until we fill `first` (or run out).
-    if (
-      targetCount > 0 &&
-      nextCount < targetCount &&
-      products.pageInfo.hasNextPage &&
-      products.pageInfo.endCursor &&
-      autoFillPagesCountRef.current < MAX_AUTOFILL_PAGES
-    ) {
-      autoFillPagesCountRef.current += 1;
-      setAfter(products.pageInfo.endCursor);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [products]);
-
-  const inStockEdges = accEdges.slice(0, Math.max(0, targetCount));
+  const inStockEdges = edges;
 
   const productIds = useMemo(
     () => inStockEdges.map(({ node }) => node.id).filter(Boolean),
@@ -162,6 +99,8 @@ const SearchResultPage = ({
 
   useEffect(() => {
     if (productIds.length === 0) return;
+    // Hover images are useless on touch screens: save the request and the bytes
+    if (!window.matchMedia("(hover: hover)").matches) return;
 
     const controller = new AbortController();
 
@@ -198,19 +137,25 @@ const SearchResultPage = ({
 
   const shouldShowError =
     !!error &&
+    !isOffline &&
     !error.graphQLErrors?.every((e) =>
       e.message.toLowerCase().includes("product_medias"),
     );
 
-  const isAutoFilling =
-    fetching &&
-    targetCount > 0 &&
-    inStockEdges.length < targetCount &&
-    (pageInfo?.hasNextPage ?? false);
-
   return (
     <div>
-      {shouldShowError && <p>Oh no... {error.message}</p>}
+      {shouldShowError && (
+        <p>No se pudieron cargar los productos. Inténtalo de nuevo.</p>
+      )}
+
+      {isOffline && (
+        <div className="w-full flex flex-col items-center gap-2 py-5">
+          <p className="text-sm text-muted-foreground">Sin conexión.</p>
+          <Button variant="outline" onClick={retry} disabled={fetching}>
+            Reintentar
+          </Button>
+        </div>
+      )}
 
       {fetching && inStockEdges.length === 0 && <SearchProductsGridSkeleton />}
 
@@ -233,7 +178,7 @@ const SearchResultPage = ({
             ))}
           </section>
 
-          {isLastPage && !isAutoFilling && pageInfo?.hasNextPage && (
+          {isLastPage && pageInfo?.hasNextPage && (
             <div className="w-full flex justify-center items-center mt-3">
               <Button
                 onClick={() => {

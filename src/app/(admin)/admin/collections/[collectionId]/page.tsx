@@ -3,7 +3,7 @@ import { gql } from "@/gql";
 import { getClient } from "@/lib/urql";
 
 import { notFound } from "next/navigation";
-import { CollectionForm } from "@/features/collections";
+import { CollectionForm } from "@/features/collections/admin";
 import { Suspense } from "react";
 
 // Admin data must always be fresh (no Data Cache snapshot when navigating)

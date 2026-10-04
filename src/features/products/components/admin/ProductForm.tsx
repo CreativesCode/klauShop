@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { createProductAction, updateProductAction } from "@/_actions/products";
 import { Icons } from "@/components/layouts/icons";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -15,7 +16,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import {
   Select,
   SelectContent,
@@ -44,6 +44,13 @@ import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { gql } from "urql";
 import { z } from "zod";
 import { DeleteProductDialog } from "./DeleteProductDialog";
+
+// react-quill touches `document` on import: load it only in the browser
+const RichTextEditor = dynamic(
+  () =>
+    import("@/components/ui/rich-text-editor").then((m) => m.RichTextEditor),
+  { ssr: false },
+);
 
 type ProductsFormProps = {
   product?: SelectProducts;

@@ -58,6 +58,7 @@ function CollectionBanner({
         alt={featuredImage.alt}
         width={1440}
         height={500}
+        sizes="100vw"
         className="absolute inset-0 object-center object-cover w-full h-full opacity-40"
       />
 

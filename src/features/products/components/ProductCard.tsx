@@ -30,7 +30,6 @@ export const ProductCardFragment = gql(/* GraphQL */ `
   fragment ProductCardFragment on products {
     id
     name
-    description
     rating
     slug
     badge
@@ -136,6 +135,8 @@ export function ProductCard({
             alt={featuredImage.alt}
             width={400}
             height={400}
+            // 2 columns on phones/tablets, 4 on desktop
+            sizes={"(max-width: 1024px) 50vw, 25vw"}
             className={cn(
               "aspect-[1/1] w-full object-cover rounded-t-lg object-center transition-all duration-500",
               hasMultipleImages &&
@@ -149,7 +150,9 @@ export function ProductCard({
               alt={secondImage.alt || featuredImage.alt}
               width={400}
               height={400}
-              className="aspect-[1/1] w-full object-cover rounded-t-lg object-center absolute inset-0 opacity-0 group-hover:opacity-100 group-hover:scale-[1.02] transition-all duration-500"
+              sizes={"(max-width: 1024px) 50vw, 25vw"}
+              // Hidden (and so never downloaded, it is lazy) on touch screens without hover
+              className="hidden [@media(hover:hover)]:block aspect-[1/1] w-full object-cover rounded-t-lg object-center absolute inset-0 opacity-0 group-hover:opacity-100 group-hover:scale-[1.02] transition-all duration-500"
             />
           )}
         </Link>

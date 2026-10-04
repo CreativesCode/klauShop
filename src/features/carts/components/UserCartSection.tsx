@@ -53,9 +53,9 @@ function UserCartSection({ user }: UserCartSectionProps) {
   const [cart, setCart] = useState<CartItemWithProduct[]>([]);
   const [fetching, setFetching] = useState(true);
 
+  // The skeleton only shows on the first load; +/- refresh in place
   const loadCart = async () => {
     try {
-      setFetching(true);
       const items = await getCartItems(user.id);
       setCart(items as any);
     } catch (error) {
@@ -124,7 +124,7 @@ function UserCartSection({ user }: UserCartSectionProps) {
 
       if (quantity < 8) {
         await updateCartItemQuantity(cartItemId, quantity + 1);
-        await loadCart();
+        window.dispatchEvent(new Event("cart-updated"));
       } else {
         toast({ title: "Product Limit is reached." });
       }
@@ -144,7 +144,7 @@ function UserCartSection({ user }: UserCartSectionProps) {
       setIsLoading(true);
       try {
         await updateCartItemQuantity(cartItemId, quantity - 1);
-        await loadCart();
+        window.dispatchEvent(new Event("cart-updated"));
       } catch (error) {
         toast({ title: "Error updating quantity" });
       } finally {
@@ -159,7 +159,7 @@ function UserCartSection({ user }: UserCartSectionProps) {
     setIsLoading(true);
     try {
       await deleteCartItem(cartItemId);
-      await loadCart();
+      window.dispatchEvent(new Event("cart-updated"));
       toast({ title: "Removed a Product." });
     } catch (error) {
       toast({ title: "Error removing product" });

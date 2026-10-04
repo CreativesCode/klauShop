@@ -64,6 +64,9 @@ function ProductImageShowcase({ data }: ProductImageShowcaseProps) {
             className="w-full h-auto object-cover aspect-square mb-5"
             width={1024}
             height={1024}
+            // LCP image of the product page: load it first, at the rendered width
+            priority
+            sizes="(max-width: 768px) 100vw, 672px"
           />
         )}
       </div>

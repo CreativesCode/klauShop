@@ -9,6 +9,7 @@ import {
 } from "@urql/next";
 
 import { cacheExchange } from "@urql/exchange-graphcache";
+import { retryExchange } from "@urql/exchange-retry";
 import { useMemo } from "react";
 import { env } from "../env.mjs";
 import { useAuth } from "./AuthProvider";
@@ -35,6 +36,13 @@ export default function Provider({ children }: React.PropsWithChildren) {
           },
         }),
         ssr,
+        // Cuban mobile networks drop requests: retry network errors only (never GraphQL errors)
+        retryExchange({
+          initialDelayMs: 1000,
+          maxDelayMs: 8000,
+          maxNumberAttempts: 3,
+          retryIf: (error) => !!error?.networkError,
+        }),
         fetchExchange,
       ],
       fetchOptions: () => {

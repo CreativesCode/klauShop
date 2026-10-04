@@ -69,6 +69,19 @@ and not
 
 `import {AwesomeComponent} from "@/features/awesome-feature/components/AwesomeComponent`
 
+### Exception: admin entry point (`@/features/x/admin`)
+
+Barrels are not tree-shaken in this app: anything re-exported from `index.ts` ends up in the
+bundle of every page that imports the feature. Admin-only code (data tables, forms, charts,
+the rich text editor, xlsx export) therefore lives behind a second entry point:
+
+`import { ProductForm } from "@/features/products/admin"`
+
+`products`, `orders`, `collections` and `users` have an `admin.ts`. Only `src/app/(admin)` and
+other admin components import it; store code must never import it nor re-export admin
+components from `index.ts`. This cut the store first-load JS from ~615 kB to ~260 kB
+(pilot QA P3-01).
+
 This can also be configured in the ESLint configuration to disallow the later import by the following rule:
 
 ```js

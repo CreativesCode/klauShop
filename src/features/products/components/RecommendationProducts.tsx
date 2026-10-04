@@ -11,7 +11,10 @@ export type RecommendationProductsProps =
 
 const RecomendationProductsQuery = gql(/* GraphQL */ `
   query RecomendationProductsQuery($first: Int!) {
-    recommendations: productsCollection(first: $first) {
+    recommendations: productsCollection(
+      first: $first
+      filter: { stock: { gt: 0 } }
+    ) {
       edges {
         node {
           id

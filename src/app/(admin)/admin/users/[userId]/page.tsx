@@ -1,5 +1,6 @@
 import AdminShell from "@/components/admin/AdminShell";
-import { getUser, UpdateUserForm } from "@/features/users";
+import { getUser } from "@/features/users";
+import { UpdateUserForm } from "@/features/users/admin";
 import { notFound } from "next/navigation";
 
 type UpdateUserPageProps = { params: { userId: string } };

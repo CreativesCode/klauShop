@@ -46,7 +46,7 @@ function UserNav() {
               <Avatar className="h-8 w-8 focus:ring-0 border-0">
                 {/* TODO: UPDATE AVATOR IMAGE & NAME */}
                 <AvatarImage
-                  src={avatarUrl || "/avatars/01.png"}
+                  src={avatarUrl || undefined}
                   alt={getNameInitials(displayName)}
                 />
                 <AvatarFallback className="text-accent border border-primary bg-primary-200">

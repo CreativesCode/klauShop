@@ -100,7 +100,8 @@ export async function PATCH(
     return NextResponse.json(
       {
         error: "Error al actualizar la dirección",
-        message: error.message,
+        // Never send raw database errors to the customer
+        message: "Inténtalo de nuevo en unos segundos.",
       },
       { status: 500 },
     );
@@ -174,7 +175,8 @@ export async function DELETE(
     return NextResponse.json(
       {
         error: "Error al eliminar la dirección",
-        message: error.message,
+        // Never send raw database errors to the customer
+        message: "Inténtalo de nuevo en unos segundos.",
       },
       { status: 500 },
     );

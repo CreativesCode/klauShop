@@ -28,7 +28,7 @@ export const dynamic = "force-dynamic";
 const LandingRouteQuery = gql(/* GraphQL */ `
   query LandingRouteQuery($user_id: UUID) {
     products: productsCollection(
-      filter: { featured: { eq: true } }
+      filter: { featured: { eq: true }, stock: { gt: 0 } }
       first: 4
       orderBy: [{ created_at: DescNullsLast }]
     ) {
@@ -41,7 +41,7 @@ const LandingRouteQuery = gql(/* GraphQL */ `
     }
 
     sliderProducts: productsCollection(
-      filter: { show_in_slider: { eq: true } }
+      filter: { show_in_slider: { eq: true }, stock: { gt: 0 } }
       first: 20
       orderBy: [{ created_at: DescNullsLast }]
     ) {
@@ -420,6 +420,7 @@ function BannerCollectionCard({
           src={imageSrc}
           alt=""
           fill
+          sizes="(max-width: 768px) 100vw, 66vw"
           className="object-cover object-center"
         />
       </div>
