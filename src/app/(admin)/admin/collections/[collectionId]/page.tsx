@@ -4,6 +4,7 @@ import { getClient } from "@/lib/urql";
 
 import { notFound } from "next/navigation";
 import { CollectionForm } from "@/features/collections";
+import { Suspense } from "react";
 
 type EditCollectionPageProps = {
   params: {
@@ -35,11 +36,16 @@ async function EditCollectionPage({
 
   return (
     <AdminShell
-      heading="Add Collection"
-      description="Input the field below, after that press add Collections."
+      heading="Editar Colección"
+      description="Modifique los campos y presione el botón para guardar la colección."
     >
       <div className="">
-        <CollectionForm collection={data.collectionsCollection.edges[0].node} />
+        {/* CollectionForm suspends on its urql query; without a boundary it refetched in a loop */}
+        <Suspense>
+          <CollectionForm
+            collection={data.collectionsCollection.edges[0].node}
+          />
+        </Suspense>
       </div>
     </AdminShell>
   );
