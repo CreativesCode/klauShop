@@ -26,11 +26,9 @@ export const keytoUrl = (key?: string) => {
     : "https://hiyori-backpack.s3.us-west-2.amazonaws.com/public/bathroom-planning.jpg";
 };
 
+// Same format as product cards and WhatsApp messages: "200.00 CUP"
 export function formatPrice(price: number | string) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "CUP",
-  }).format(Number(price));
+  return `${Number(price || 0).toFixed(2)} CUP`;
 }
 
 export function formatDate(date: Date) {

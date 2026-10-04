@@ -1,5 +1,7 @@
 "use client";
+import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 import { User } from "@supabase/auth-helpers-nextjs";
 import { useState } from "react";
 import {
@@ -12,7 +14,19 @@ import useCartStore from "../useCartStore";
 
 function useCartActions(user: User | null, productId: string) {
   const { toast } = useToast();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+
+  // One tap from the toast to the cart (the usual next step)
+  const toastAdded = () =>
+    toast({
+      title: "Producto agregado al carrito.",
+      action: (
+        <ToastAction altText="Ver carrito" onClick={() => router.push("/cart")}>
+          Ver carrito
+        </ToastAction>
+      ),
+    });
   const addProductStorage = useCartStore((s) => s.addProductToCart);
 
   const authAddOrUpdateProduct = async (
@@ -69,7 +83,7 @@ function useCartActions(user: User | null, productId: string) {
         });
       }
 
-      toast({ title: "Producto agregado al carrito." });
+      toastAdded();
 
       // Refrescar el carrito (se hará mediante el componente padre)
       window.dispatchEvent(new Event("cart-updated"));
@@ -92,7 +106,7 @@ function useCartActions(user: User | null, productId: string) {
     material?: string | null,
   ) => {
     addProductStorage(productId, quantity, color, size, material);
-    toast({ title: "Producto agregado al carrito." });
+    toastAdded();
   };
 
   const addProductToCart = (

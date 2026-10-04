@@ -1,4 +1,5 @@
 import { gql } from "@/gql";
+import { filterVisibleCollections } from "@/features/collections/server/visibleCollections";
 import { getServiceClient } from "@/lib/urql-service";
 import { SideMenu } from "./SideMenu";
 import type { Collection } from "./SideMenuCollections";
@@ -23,7 +24,7 @@ const SideMenuCollectionsQuery = gql(/* GraphQL */ `
 export default async function SideMenuServer() {
   const { data } = await getServiceClient().query(SideMenuCollectionsQuery, {});
 
-  const collections: Collection[] =
+  const collections: Collection[] = await filterVisibleCollections(
     data?.collectionsCollection?.edges?.map((edge) => ({
       id: edge.node.id,
       label: edge.node.label,
@@ -31,7 +32,8 @@ export default async function SideMenuServer() {
       title: edge.node.title,
       parent_id: edge.node.parent_id,
       order: edge.node.order,
-    })) || [];
+    })) || [],
+  );
 
   return <SideMenu collections={collections} />;
 }

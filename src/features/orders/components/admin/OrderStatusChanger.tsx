@@ -54,7 +54,7 @@ export default function OrderStatusChanger({
   }, [currentStatus, paymentStatus]);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [actionType, setActionType] = useState<
-    "change" | "mark-paid" | "cancel"
+    "change" | "mark-paid" | "mark-paid-deliver" | "cancel"
   >("change");
   const { toast } = useToast();
   const router = useRouter();
@@ -93,6 +93,13 @@ export default function OrderStatusChanger({
   };
   const CurrentIcon = currentStatusInfo.icon;
 
+  // Pickup / delivered on the spot: paid and delivered in one step (one WhatsApp to the customer)
+  const handlePaidAndDelivered = () => {
+    setSelectedStatus("delivered");
+    setActionType("mark-paid-deliver");
+    setShowConfirmDialog(true);
+  };
+
   const handleStatusChange = async (status: OrderStatus) => {
     setSelectedStatus(status);
 
@@ -116,7 +123,15 @@ export default function OrderStatusChanger({
       let response;
       let successMessage = "";
 
-      if (actionType === "mark-paid") {
+      if (actionType === "mark-paid-deliver") {
+        response = await fetch(`/api/admin/orders/${orderId}/mark-paid`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ deliver: true }),
+        });
+        successMessage =
+          "Orden pagada y entregada. El stock ha sido descontado.";
+      } else if (actionType === "mark-paid") {
         // Usar endpoint de mark-paid (descuenta stock y sincroniza payment_status)
         response = await fetch(`/api/admin/orders/${orderId}/mark-paid`, {
           method: "POST",
@@ -157,7 +172,8 @@ export default function OrderStatusChanger({
       });
 
       setStatus(selectedStatus);
-      if (actionType === "mark-paid") setPayment("paid");
+      if (actionType === "mark-paid" || actionType === "mark-paid-deliver")
+        setPayment("paid");
       setShowConfirmDialog(false);
       setSelectedStatus(null);
       startRefresh(() => router.refresh());
@@ -246,6 +262,25 @@ export default function OrderStatusChanger({
                     </Button>
                   );
                 })}
+                {availableStatuses.includes("paid") && (
+                  <Button
+                    onClick={handlePaidAndDelivered}
+                    disabled={isBusy || shippingPending}
+                    variant="outline"
+                    className="w-full justify-start gap-2 h-auto py-3 border-emerald-300 bg-emerald-50 hover:bg-emerald-100"
+                  >
+                    <div className="flex flex-col items-start flex-1">
+                      <span className="font-medium text-emerald-700">
+                        Pagada y entregada
+                      </span>
+                      <span className="text-xs text-muted-foreground whitespace-normal text-left">
+                        {shippingPending
+                          ? "Primero define el costo de envío (junto al total)"
+                          : "Cobrado y entregado en el momento (p. ej. recogida en tienda)"}
+                      </span>
+                    </div>
+                  </Button>
+                )}
               </div>
             </div>
           ) : (
@@ -261,9 +296,11 @@ export default function OrderStatusChanger({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {selectedStatus && selectedStatus !== "pending_confirmation"
-                ? `¿${ORDER_STATUS_ACTIONS[selectedStatus].label}?`
-                : "¿Cambiar estado de la orden?"}
+              {actionType === "mark-paid-deliver"
+                ? "¿Marcar como pagada y entregada?"
+                : selectedStatus && selectedStatus !== "pending_confirmation"
+                  ? `¿${ORDER_STATUS_ACTIONS[selectedStatus].label}?`
+                  : "¿Cambiar estado de la orden?"}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {selectedStatus && (
@@ -277,7 +314,8 @@ export default function OrderStatusChanger({
                   .
                   <br />
                   <br />
-                  {actionType === "mark-paid" && (
+                  {(actionType === "mark-paid" ||
+                    actionType === "mark-paid-deliver") && (
                     <>
                       Se descontará el stock de los productos. Esta acción no se
                       puede deshacer.

@@ -10,6 +10,7 @@ import {
 } from "@/features/products";
 import { getCurrentUser } from "@/features/users/actions";
 import { DocumentType, gql } from "@/gql";
+import { filterVisibleCollections } from "@/features/collections/server/visibleCollections";
 import { getServiceClient } from "@/lib/urql-service";
 import { cn, keytoUrl } from "@/lib/utils";
 import Image from "next/image";
@@ -135,6 +136,16 @@ export default async function Home({
 
   if (data === null) return notFound();
 
+  // Only collections with products in stock (empty ones are hidden in every store menu)
+  const collectionCards = (
+    await filterVisibleCollections(
+      data.collectionScrollCards.edges.map((edge) => ({
+        id: edge.node.id,
+        edge,
+      })),
+    )
+  ).map(({ edge }) => edge);
+
   const sliderInStock = (data.sliderProducts?.edges ?? []).filter(
     ({ node }) => (node.stock ?? 0) > 0,
   );
@@ -188,9 +199,7 @@ export default async function Home({
 
       <Shell className="max-w-screen-2xl mx-auto">
         {data.products && data.products.edges ? (
-          <ProductSubCollectionsCircles
-            collections={data.collectionScrollCards.edges}
-          />
+          <ProductSubCollectionsCircles collections={collectionCards} />
         ) : null}
 
         {sliderInStock.length > 0 ? (
@@ -207,7 +216,7 @@ export default async function Home({
           title="Esenciales."
           description="Simplifica tu día a día con nuestro armario cápsula. Prendas versátiles de alta calidad que combinan entre sí sin esfuerzo, permitiéndote vestirte con elegancia y consciencia en minutos."
           ctatext="Explorar Ropa"
-          collectionHref="/collections/cupboard"
+          collectionHref="/collections/womens-clothing"
           imageLeft={false}
         />
 

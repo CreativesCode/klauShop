@@ -120,8 +120,8 @@ export function SideMenu({ collections }: SideMenuProps) {
           <SheetFooter className="flex-col items-start gap-4 pt-6 border-t border-primary-200 mt-auto">
             <div className="text-sm text-primary-800">
               <p className="text-center">
-                &copy; {new Date().getFullYear()} {siteConfig.name} by
-                CreativeCode. All rights reserved.
+                &copy; {new Date().getFullYear()} {siteConfig.name}. Todos los
+                derechos reservados.
               </p>
             </div>
           </SheetFooter>

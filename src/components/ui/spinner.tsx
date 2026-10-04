@@ -29,7 +29,7 @@ function Spinner({ className, ...props }: SpinnerProps) {
           fill="currentFill"
         />
       </svg>
-      <span className="sr-only">Loading...</span>
+      <span className="sr-only">Cargando...</span>
     </div>
   );
 }

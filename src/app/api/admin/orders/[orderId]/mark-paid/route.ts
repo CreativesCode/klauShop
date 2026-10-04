@@ -15,6 +15,11 @@ import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { and, eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { z } from "zod";
+
+// deliver: paid and handed over in one step (pickup / delivered on the spot).
+// One UPDATE straight to "delivered" so the customer gets a single WhatsApp, not one per step.
+const markPaidSchema = z.object({ deliver: z.boolean().optional() });
 
 export async function POST(
   request: Request,
@@ -36,6 +41,12 @@ export async function POST(
     if (!user.app_metadata?.isAdmin) {
       return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
+
+    // Old callers send no body: plain "mark as paid"
+    const parsedBody = markPaidSchema.safeParse(
+      await request.json().catch(() => ({})),
+    );
+    const deliver = parsedBody.success ? !!parsedBody.data.deliver : false;
 
     // Realizar operación en transacción
     const result = await db.transaction(async (tx) => {
@@ -91,7 +102,7 @@ export async function POST(
       const [updatedOrder] = await tx
         .update(orders)
         .set({
-          order_status: "paid",
+          order_status: deliver ? "delivered" : "paid",
           payment_status: "paid",
         })
         .where(eq(orders.id, orderId))
@@ -106,7 +117,9 @@ export async function POST(
     return NextResponse.json({
       success: true,
       order: result,
-      message: "Orden marcada como pagada y stock descontado",
+      message: deliver
+        ? "Orden pagada y entregada; stock descontado"
+        : "Orden marcada como pagada y stock descontado",
     });
   } catch (error: any) {
     console.error("Error marking order as paid:", error);

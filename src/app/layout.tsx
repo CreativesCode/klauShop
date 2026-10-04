@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={sora.variable}>
+    <html lang="es" className={sora.variable}>
       <CustomProvider>
         <body className={sora.className}>
           {children}

@@ -59,7 +59,7 @@ function OAuthLoginButtons() {
           <Spinner className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
         )}
         <Icons.google className="w-4 h-4 mr-5" />
-        Sign in with Google
+        Continuar con Google
       </Button>
 
       <Button onClick={signWithGithub} disabled={isLoading}>
@@ -67,7 +67,7 @@ function OAuthLoginButtons() {
           <Spinner className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
         )}
         <Icons.gitHub className="w-4 h-4 mr-5" />
-        Sign in with Github
+        Continuar con GitHub
       </Button>
     </div>
   );

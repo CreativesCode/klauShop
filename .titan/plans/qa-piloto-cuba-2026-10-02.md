@@ -1,6 +1,6 @@
 # QA-PILOTO-CUBA: Plan de correccion pre-piloto
 
-> **Estado**: EN EJECUCION — Fases 0 a 4 en `main` y desplegadas (2026-10-04). Siguiente: Fase 5 (copy). Ver "Estado de ejecucion".
+> **Estado**: FASES 0-5 EJECUTADAS (2026-10-04), en `main` y desplegadas. Quedan pendientes menores y anexos (ver "Estado de ejecucion").
 > **Fecha**: 2026-10-02
 > **Proyecto**: Klau's Shop
 > **Evidencia**: `.titan/qa/2026-10-02-piloto-cuba.md` · Datos QA creados: `.titan/qa/2026-10-02-datos-qa-ledger.jsonl`
@@ -21,11 +21,11 @@ Los datos QA se borraron tras cada prueba; la BD coincide con la linea base.
 | Fase 2 (refresco) | P2-01, P2-02, P2-03, P2-04, P2-06 | P2-05 (no reproducido), P2-07 |
 | Fase 1 (6cac576, c875676) | P1-01..P1-17 (P1-16 solo aviso, decision del dueño). P1-10 venia de SN-05. 0022 y 0023 APLICADAS | — |
 | Fase 3 (20bc0bc) | P3-01..P3-08 | P3-05 parcial: el select del carrito logueado mantiene `description` (CartItemCard la muestra) y no hay store optimista. Catalogo offline (SW StaleWhileRevalidate) = 2o paso |
-| Fase 4 (2026-10-04) | P4-01..P4-07, P4-09; de P4-10: ADMIN-ORD-13/16/19/21 (AdminShell), INTEGRITY-12/13/14, CODE-21. SN-02 y SN-08 (lista) | P4-08 (acciones rapidas: **decision del dueño**; solo se renombro "Ver orden"), ADMIN-CAT-07/08 (colecciones vacias: decision), errores 409/404 tipados en rutas admin |
-| Fase 5 | — | todo |
+| Fase 4 (2026-10-04) | P4-01..P4-07, P4-09; de P4-10: ADMIN-ORD-13/16/19/21 (AdminShell), INTEGRITY-12/13/14, CODE-21. SN-02 y SN-08 (lista) | — (P4-08 y ADMIN-CAT-08 hechos tras la decision del dueño en la Fase 5), errores 409/404 tipados en rutas admin |
+| Fase 5 (2026-10-04) | P5-01..P5-04 | Badge "Reembolso pendiente" en canceladas pagadas (decision del dueño) |
 
 **Migraciones aplicadas en prod:** 0018 (RLS, despues del deploy), 0019 (texto WhatsApp envio a acordar), 0020 (perfiles
-al registrarse + backfill), 0021 (`orders.client_request_id`), 0022 (enlace admin → `/order/{id}`), 0023 (unaccent + `products.search_name`), 0024 (variante en `order_lines` + WhatsApp con variante).
+al registrarse + backfill), 0021 (`orders.client_request_id`), 0022 (enlace admin → `/order/{id}`), 0023 (unaccent + `products.search_name`), 0024 (variante en `order_lines` + WhatsApp con variante), 0025 (`wa_color_name`: colores en español en el aviso).
 
 **Incidente:** tras aplicar 0018, `/admin/orders` dio 404 unos minutos: `urql-service.ts` solo enviaba `apiKey` y el
 gateway lo trataba como anon. Arreglado con `Authorization: Bearer <service role>` (cbb7aa5).
@@ -486,6 +486,19 @@ Para BD: migracion Drizzle en `drizzle/` + `drizzle/rls_policies.sql`. Despues d
   - `[CODE-21]` console.log de sesion y datos: quitarlos (SigninForm:56, checkout 52/60-63/185, promote-user:52) y/o `compiler.removeConsole` excepto error/warn.
 
 ### Fase 5 — Pulido y copy
+
+> **Ejecucion 2026-10-04.** Decisiones del dueño aplicadas antes: **P4-08** (acciones rapidas en el menu de cada pedido: confirmar,
+> marcar pagada, "Pagada y entregada" y siguiente paso; "Pagada y entregada" = `mark-paid` con `{deliver:true}`, un solo UPDATE →
+> un solo WhatsApp) y **ADMIN-CAT-08** (colecciones sin productos con stock ocultas en menu, submenu, footer y home:
+> `features/collections/server/visibleCollections.ts`; hoy solo "Pareos").
+> - P5-01: `lang="es"`, 404 en español (`src/app/not-found.tsx`), footer "Todos los derechos reservados", stock de tarjetas, toasts
+>   del carrito y favoritos, error del carrito invitado con "Reintentar", "Sin resultados" en 6 tablas, OAuth "Continuar con…",
+>   BadgeSelectField, placeholders, pago "Sin pagar" (antes "Pendiente"), `/setting/newsletter` borrada.
+> - P5-02: enlaces `api.whatsapp.com/send` (sin la redireccion de wa.me que rompia emojis).
+> - P5-03: toast "Producto agregado" con "Ver carrito"; zonas de Santa Clara primero; colores hex → nombre en español en el
+>   WhatsApp (`src/lib/colorName.ts` + `wa_color_name()` de 0025, misma paleta, 7/7 casos iguales); `formatPrice` = "200.00 CUP".
+> - P5-04: banner "Explorar Ropa" → `/collections/womens-clothing`.
+> Verificado en dev con un admin QA temporal (borrado, 0 pedidos). No ejecutado de punta a punta: "Pagada y entregada" (requiere un pedido real).
 
 - [ ] **P5-01 · Textos en ingles y `<html lang="en">`** · Sev BAJA · Esf S
   `[GUEST-12, REG-14, ADMIN-ORD-20, ADMIN-CAT-09, PERF-12, CODE-19]`

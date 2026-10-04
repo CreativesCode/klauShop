@@ -174,7 +174,7 @@ export function ProfileClient() {
       <div>
         <h3 className="text-lg font-medium">Perfil</h3>
         <p className="text-sm text-muted-foreground">
-          Actualiza tu nombre y tu avatar (se guardan en Supabase Auth).
+          Actualiza tu nombre y tu foto de perfil.
         </p>
       </div>
 

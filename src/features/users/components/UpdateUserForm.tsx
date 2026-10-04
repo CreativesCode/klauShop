@@ -96,7 +96,7 @@ function UpdateUserForm({ user }: AdminUserFormProps) {
               <Input
                 defaultValue={user?.email || ""}
                 aria-invalid={!!form.formState.errors.email}
-                placeholder="Type Product slug."
+                placeholder="correo@ejemplo.com"
                 {...register("email")}
               />
             </FormControl>

@@ -34,29 +34,29 @@ function BadgeSelectField({ name, label }: BadgeSelectFieldProps) {
       name="badge"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Badge</FormLabel>
+          <FormLabel>Etiqueta destacada</FormLabel>
           <Select
             onValueChange={field.onChange}
             defaultValue={field.value || undefined}
           >
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder="Add a badge for the Product" />
+                <SelectValue placeholder="Sin etiqueta" />
               </SelectTrigger>
             </FormControl>
 
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Badge</SelectLabel>
-                <SelectItem value="new_product">New Product</SelectItem>
-                <SelectItem value="best_sale">Best Sale</SelectItem>
-                <SelectItem value="featured">featured</SelectItem>
+                <SelectLabel>Etiqueta</SelectLabel>
+                <SelectItem value="new_product">Nuevo</SelectItem>
+                <SelectItem value="best_sale">Mejor venta</SelectItem>
+                <SelectItem value="featured">Destacado</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
 
           <FormDescription>
-            Select a Badge if you want the Product card attached a badge.
+            Opcional: aparece en la esquina de la tarjeta del producto.
           </FormDescription>
           <FormMessage />
         </FormItem>

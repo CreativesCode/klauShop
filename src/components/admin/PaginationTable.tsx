@@ -91,7 +91,7 @@ export function PaginationTable<TData, TValue>({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+                Sin resultados.
               </TableCell>
             </TableRow>
           )}

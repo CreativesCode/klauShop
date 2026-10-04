@@ -12,7 +12,7 @@ const PAYMENT_STATUS_INFO: Record<PaymentStatus, PaymentStatusInfo> = {
     badgeVariant: "default",
   },
   unpaid: {
-    label: "Pendiente",
+    label: "Sin pagar",
     badgeVariant: "secondary",
   },
   no_payment_required: {

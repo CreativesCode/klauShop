@@ -2,6 +2,7 @@ import { siteConfig } from "@/config/site";
 import { isPickupZone } from "@/features/shipping/utils/matchShippingZone";
 import { CustomerData } from "@/lib/supabase/schema";
 import type { CustomerInfoInput } from "../validations";
+import { colorName } from "@/lib/colorName";
 
 type OrderItem = {
   name: string;
@@ -54,7 +55,12 @@ export function generateWhatsAppMessage(data: WhatsAppMessageData): string {
   // Items
   message += `*Productos:*\n`;
   items.forEach((item) => {
-    const variant = [item.color, item.size, item.material]
+    // Colors are stored as hex: the message shows their Spanish name
+    const variant = [
+      item.color && colorName(item.color),
+      item.size,
+      item.material,
+    ]
       .filter(Boolean)
       .join(", ");
     const variantText = variant ? ` (${variant})` : "";
@@ -112,7 +118,8 @@ export function generateWhatsAppUrl(
 ): string {
   const phone = (phoneNumber || siteConfig.whatsappPhone).replace(/\D/g, "");
   const encodedMessage = encodeURIComponent(message);
-  return `https://wa.me/${phone}?text=${encodedMessage}`;
+  // api.whatsapp.com instead of wa.me: the wa.me redirect breaks 4-byte emojis ("�")
+  return `https://api.whatsapp.com/send?phone=${phone}&text=${encodedMessage}`;
 }
 
 /**

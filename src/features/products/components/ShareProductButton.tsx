@@ -66,7 +66,8 @@ ${discountText}${descriptionText}
     const encodedMessage = encodeURIComponent(message);
 
     // Abrir WhatsApp
-    const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+    // api.whatsapp.com: the wa.me redirect breaks emojis
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedMessage}`;
     window.open(whatsappUrl, "_blank");
   };
 

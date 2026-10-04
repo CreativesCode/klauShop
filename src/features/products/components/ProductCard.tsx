@@ -230,15 +230,13 @@ export function ProductCard({
 
             <div className="text-[10px] sm:text-xs md:text-sm whitespace-nowrap flex-shrink-0">
               {product.stock === 0 ? (
-                <span className="text-red-500 font-semibold">Out of Stock</span>
+                <span className="text-red-500 font-semibold">Agotado</span>
               ) : product.stock && product.stock < 5 ? (
                 <span className="text-yellow-600 font-semibold">
-                  Low Stock ({product.stock} left)
+                  ¡Quedan {product.stock}!
                 </span>
               ) : (
-                <span className="text-green-600">
-                  In Stock ({product.stock})
-                </span>
+                <span className="text-green-600">En stock</span>
               )}
             </div>
           </div>

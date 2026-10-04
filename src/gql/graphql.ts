@@ -3535,6 +3535,32 @@ export type CreateCollectionMutationMutation = {
   } | null;
 };
 
+export type VisibleCollectionsQueryQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type VisibleCollectionsQueryQuery = {
+  __typename?: "Query";
+  productsCollection?: {
+    __typename?: "productsConnection";
+    edges: Array<{
+      __typename?: "productsEdge";
+      node: { __typename?: "products"; collection_id?: string | null };
+    }>;
+  } | null;
+  collectionsCollection?: {
+    __typename?: "collectionsConnection";
+    edges: Array<{
+      __typename?: "collectionsEdge";
+      node: {
+        __typename?: "collections";
+        id: string;
+        parent_id?: string | null;
+      };
+    }>;
+  } | null;
+};
+
 export type ProductCommentsSectionFragmentFragment = {
   __typename?: "comments";
   id: string;
@@ -9353,6 +9379,127 @@ export const CreateCollectionMutationDocument = {
 } as unknown as DocumentNode<
   CreateCollectionMutationMutation,
   CreateCollectionMutationMutationVariables
+>;
+export const VisibleCollectionsQueryDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "VisibleCollectionsQuery" },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "productsCollection" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "filter" },
+                value: {
+                  kind: "ObjectValue",
+                  fields: [
+                    {
+                      kind: "ObjectField",
+                      name: { kind: "Name", value: "stock" },
+                      value: {
+                        kind: "ObjectValue",
+                        fields: [
+                          {
+                            kind: "ObjectField",
+                            name: { kind: "Name", value: "gt" },
+                            value: { kind: "IntValue", value: "0" },
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "first" },
+                value: { kind: "IntValue", value: "1000" },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "edges" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "node" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "collection_id" },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "collectionsCollection" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "first" },
+                value: { kind: "IntValue", value: "1000" },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "edges" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "node" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "parent_id" },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  VisibleCollectionsQueryQuery,
+  VisibleCollectionsQueryQueryVariables
 >;
 export const FetchMediaQueryDocument = {
   kind: "Document",

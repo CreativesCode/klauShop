@@ -69,6 +69,8 @@ const documents = {
     types.UpdateCollectionMutationDocument,
   "\n  mutation CreateCollectionMutation(\n    $id: String\n    $slug: String\n    $label: String\n    $description: String\n    $title: String\n    $featuredImageId: String\n    $parentId: String\n    $showInHome: Boolean\n  ) {\n    insertIntocollectionsCollection(\n      objects: {\n        id: $id\n        slug: $slug\n        featured_image_id: $featuredImageId\n        label: $label\n        description: $description\n        title: $title\n        parent_id: $parentId\n        show_in_home: $showInHome\n      }\n    ) {\n      affectedCount\n      records {\n        __typename\n      }\n    }\n  }\n":
     types.CreateCollectionMutationDocument,
+  "\n  query VisibleCollectionsQuery {\n    productsCollection(filter: { stock: { gt: 0 } }, first: 1000) {\n      edges {\n        node {\n          collection_id\n        }\n      }\n    }\n    collectionsCollection(first: 1000) {\n      edges {\n        node {\n          id\n          parent_id\n        }\n      }\n    }\n  }\n":
+    types.VisibleCollectionsQueryDocument,
   "\n  fragment ProductCommentsSectionFragment on comments {\n    id\n    comment\n    profile {\n      name\n    }\n  }\n":
     types.ProductCommentsSectionFragmentFragmentDoc,
   "\n  fragment ImageGridFragment on medias {\n    id\n    key\n    alt\n  }\n":
@@ -289,6 +291,12 @@ export function gql(
 export function gql(
   source: "\n  mutation CreateCollectionMutation(\n    $id: String\n    $slug: String\n    $label: String\n    $description: String\n    $title: String\n    $featuredImageId: String\n    $parentId: String\n    $showInHome: Boolean\n  ) {\n    insertIntocollectionsCollection(\n      objects: {\n        id: $id\n        slug: $slug\n        featured_image_id: $featuredImageId\n        label: $label\n        description: $description\n        title: $title\n        parent_id: $parentId\n        show_in_home: $showInHome\n      }\n    ) {\n      affectedCount\n      records {\n        __typename\n      }\n    }\n  }\n",
 ): (typeof documents)["\n  mutation CreateCollectionMutation(\n    $id: String\n    $slug: String\n    $label: String\n    $description: String\n    $title: String\n    $featuredImageId: String\n    $parentId: String\n    $showInHome: Boolean\n  ) {\n    insertIntocollectionsCollection(\n      objects: {\n        id: $id\n        slug: $slug\n        featured_image_id: $featuredImageId\n        label: $label\n        description: $description\n        title: $title\n        parent_id: $parentId\n        show_in_home: $showInHome\n      }\n    ) {\n      affectedCount\n      records {\n        __typename\n      }\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(
+  source: "\n  query VisibleCollectionsQuery {\n    productsCollection(filter: { stock: { gt: 0 } }, first: 1000) {\n      edges {\n        node {\n          collection_id\n        }\n      }\n    }\n    collectionsCollection(first: 1000) {\n      edges {\n        node {\n          id\n          parent_id\n        }\n      }\n    }\n  }\n",
+): (typeof documents)["\n  query VisibleCollectionsQuery {\n    productsCollection(filter: { stock: { gt: 0 } }, first: 1000) {\n      edges {\n        node {\n          collection_id\n        }\n      }\n    }\n    collectionsCollection(first: 1000) {\n      edges {\n        node {\n          id\n          parent_id\n        }\n      }\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

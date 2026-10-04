@@ -60,7 +60,11 @@ function UserCartSection({ user }: UserCartSectionProps) {
       setCart(items as any);
     } catch (error) {
       console.error("Error loading cart:", error);
-      toast({ title: "Error loading cart" });
+      toast({
+        title: "No se pudo cargar el carrito",
+        description: "Revisa tu conexión y recarga la página.",
+        variant: "destructive",
+      });
     } finally {
       setFetching(false);
     }
@@ -126,7 +130,7 @@ function UserCartSection({ user }: UserCartSectionProps) {
         await updateCartItemQuantity(cartItemId, quantity + 1);
         window.dispatchEvent(new Event("cart-updated"));
       } else {
-        toast({ title: "Product Limit is reached." });
+        toast({ title: "Has alcanzado el máximo por producto." });
       }
     } catch (error) {
       toast({
@@ -146,12 +150,15 @@ function UserCartSection({ user }: UserCartSectionProps) {
         await updateCartItemQuantity(cartItemId, quantity - 1);
         window.dispatchEvent(new Event("cart-updated"));
       } catch (error) {
-        toast({ title: "Error updating quantity" });
+        toast({
+          title: "No se pudo cambiar la cantidad",
+          variant: "destructive",
+        });
       } finally {
         setIsLoading(false);
       }
     } else {
-      toast({ title: "Minimum is reached." });
+      toast({ title: "La cantidad mínima es 1." });
     }
   };
 
@@ -160,9 +167,12 @@ function UserCartSection({ user }: UserCartSectionProps) {
     try {
       await deleteCartItem(cartItemId);
       window.dispatchEvent(new Event("cart-updated"));
-      toast({ title: "Removed a Product." });
+      toast({ title: "Producto eliminado." });
     } catch (error) {
-      toast({ title: "Error removing product" });
+      toast({
+        title: "No se pudo eliminar el producto",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }

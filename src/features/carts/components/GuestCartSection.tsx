@@ -36,7 +36,7 @@ function GuestCartSection() {
     [cartItems],
   );
 
-  const [{ data, fetching, error }, _] = useQuery({
+  const [{ data, fetching, error }, reexecuteQuery] = useQuery({
     query: FetchGuestCartQuery,
     variables: {
       cartItems: productIds,
@@ -56,7 +56,21 @@ function GuestCartSection() {
     [cartItems],
   );
   if (fetching && productIds.length > 0) return LoadingCartSection();
-  if (error) return <div>Error</div>;
+  if (error)
+    return (
+      <div className="flex flex-col items-center gap-3 py-12 text-center">
+        <p className="text-muted-foreground">
+          No pudimos cargar tu carrito. Revisa tu conexión.
+        </p>
+        <button
+          type="button"
+          className="underline font-medium"
+          onClick={() => reexecuteQuery({ requestPolicy: "network-only" })}
+        >
+          Reintentar
+        </button>
+      </div>
+    );
 
   // Si no hay productos en el carrito, mostrar EmptyCart
   if (Object.keys(cartItems).length === 0) {

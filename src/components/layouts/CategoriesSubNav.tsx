@@ -1,4 +1,5 @@
 import { gql } from "@/gql";
+import { filterVisibleCollections } from "@/features/collections/server/visibleCollections";
 import { getServiceClient } from "@/lib/urql-service";
 import CategoriesSubNavClient from "./CategoriesSubNavClient";
 
@@ -26,7 +27,7 @@ export default async function CategoriesSubNav() {
     return null;
   }
 
-  const collections = data.collectionsCollection.edges.map((edge) => ({
+  const allCollections = data.collectionsCollection.edges.map((edge) => ({
     id: edge.node.id,
     label: edge.node.label,
     slug: edge.node.slug,
@@ -34,6 +35,8 @@ export default async function CategoriesSubNav() {
     parent_id: edge.node.parent_id,
     order: edge.node.order,
   }));
+
+  const collections = await filterVisibleCollections(allCollections);
 
   return <CategoriesSubNavClient categories={collections} />;
 }

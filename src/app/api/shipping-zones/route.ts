@@ -1,6 +1,6 @@
 import db from "@/lib/supabase/db";
 import { shippingZones } from "@/lib/supabase/schema";
-import { asc, eq } from "drizzle-orm";
+import { asc, eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 // A GET without request is prerendered at build time: zones would stay frozen until the next deploy
@@ -16,7 +16,11 @@ export async function GET() {
       })
       .from(shippingZones)
       .where(eq(shippingZones.isActive, true))
-      .orderBy(asc(shippingZones.name));
+      // Santa Clara (where most customers are) first, then alphabetical
+      .orderBy(
+        sql`case when ${shippingZones.name} ilike 'santa clara%' then 0 else 1 end`,
+        asc(shippingZones.name),
+      );
 
     return NextResponse.json({ zones }, { status: 200 });
   } catch (error) {

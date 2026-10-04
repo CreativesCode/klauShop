@@ -12,13 +12,13 @@ Evidencia: `.titan/qa/` (2026-10-02-piloto-cuba.md, capturas 2026-10-04-*.png). 
 | 1 Friccion de venta | Hecha (P1-01..P1-17). P1-16 = solo aviso en admin |
 | 2 Refresco / datos obsoletos | Hecha. Pendientes: P2-05 (no reproducido), P2-07 |
 | 3 Rendimiento / datos / offline | Hecha. Parcial: P3-05 (ver abajo) |
-| 4 Admin | Hecha. Pendientes: P4-08 (acciones rapidas, decision del dueño), ADMIN-CAT-07/08 (colecciones vacias en el menu: decision) |
-| 5 Pulido y copy | **Siguiente** |
+| 4 Admin | Hecha (P4-08 y colecciones vacias hechos tras la decision del dueño) |
+| 5 Pulido y copy | Hecha. Pendiente: badge "Reembolso pendiente" (decision del dueño) |
 | Anexos (envios SN, iPhone IOS, admin movil MPC/CSA) | Hechos los altos. Pendientes: SN-02/03/08/09-11, IOS-04..09, MPC-09..11, CSA-5/8/9/10 |
 
 **Migraciones aplicadas en prod:** 0018 (RLS), 0019 (WhatsApp envio a acordar), 0020 (perfiles al registrarse),
 0021 (`orders.client_request_id`), 0022 (enlace admin → `/order/{id}`), 0023 (unaccent + `products.search_name`),
-0024 (variante en `order_lines`; el aviso de nuevo pedido la muestra).
+0024 (variante en `order_lines`; el aviso de nuevo pedido la muestra), 0025 (`wa_color_name`: colores en español).
 Todas son manuales (fuera del journal de drizzle-kit); se aplican con node+postgres (ver `reference/acceso-bd-sin-mcp.md`).
 
 ## Decisiones del dueño
@@ -26,6 +26,9 @@ Todas son manuales (fuera del journal de drizzle-kit); se aplican con node+postg
 - Envios: "Recoger en tienda" (costo 0) y "Otra zona — acordar por WhatsApp" (costo NULL). Confirmar o marcar pagada **exige** costo de envio.
 - Reservas de pedidos viejos: **solo aviso en el admin** ("Hace N dias" en pendientes > 48 h), sin caducidad automatica.
 - Direcciones con telefono raro corregidas a `+53 53077035` (autorizado).
+- Acciones rapidas en la lista de pedidos: SI. "Pagada y entregada" en un paso (un solo WhatsApp al cliente).
+- Colecciones sin productos con stock: **ocultas** en los menus de la tienda (la URL directa sigue funcionando).
+- Banner "Explorar Ropa" → coleccion "Vestimenta para mujer" (`/collections/womens-clothing`).
 - Flujo de trabajo: commit y push **directo a `main`**; aplicar migraciones cuando el codigo que las necesita ya esta listo.
 
 ## Reglas que salieron de la QA (respetarlas en codigo nuevo)
@@ -39,10 +42,16 @@ Todas son manuales (fuera del journal de drizzle-kit); se aplican con node+postg
 - Login/registro: volver con `?redirect=` (helper `src/lib/safeRedirect.ts`, solo rutas internas).
 - Busqueda: filtra por `products.search_name` (sin tildes); normalizar el termino con `features/search/utils/normalizeSearchTerm.ts`.
 - Catalogo: filtrar `stock > 0` en la consulta GraphQL, no en el cliente.
+- Lecturas por pg_graphql (`getServiceClient`), no Drizzle, sobre todo en layouts y paginas estaticas: una consulta Drizzle en el
+  layout (pool `max: 1`) hizo que el build agotara el tiempo en `/about-us`.
 - La variante de cada linea vive en `order_lines` (color/size/material): no deducirla de las reservas.
 - Server actions: los errores de negocio se **devuelven** (`{ error }`), no se lanzan: Next oculta el mensaje en produccion.
 - Texto libre del cliente (nombre, direccion, notas): pasa por `stripUnsafeChars` (`src/lib/safeText.ts`) en los schemas Zod.
 - Envio: solo editable en pending_confirmation/pending_payment (API y UI).
+- Colores: se guardan en hex; para mostrarlos al cliente usar `colorName()` (`src/lib/colorName.ts`) y en SQL `wa_color_name()`
+  (misma paleta en los dos: cambiarlos juntos).
+- Precios: `formatPrice()` → "200.00 CUP" (mismo formato que tarjetas y WhatsApp). Enlaces WhatsApp: `api.whatsapp.com/send`, no `wa.me`.
+- Cada cambio de `order_status` dispara un WhatsApp al cliente: para saltar varios pasos usar un solo UPDATE (ver mark-paid `deliver`).
 
 ## Pendiente conocido (decidido dejarlo para despues)
 - P3-05 parcial: el select del carrito logueado sigue trayendo `description` (la tarjeta del carrito la muestra);
@@ -51,7 +60,14 @@ Todas son manuales (fuera del journal de drizzle-kit); se aplican con node+postg
 - `data-dgst` intermitente en la 1a peticion a `/shop` tras un deploy (visto 1 vez en prod y 1 en local; no se reproduce en 15+ intentos).
   Hipotesis: fallo de red puntual de GraphQL durante el SSR de componentes cliente con urql `suspense` → Next pasa a render
   en cliente y la pagina se ve bien. `retryExchange` ya reintenta. Si vuelve: mirar los logs de la funcion en Vercel.
+  2026-10-04: mismo patron visto 1 vez con `next start` local: la 1a consulta GraphQL del servidor recien arrancado fallo
+  (el menu mostro "Pareos" por el respaldo de `filterVisibleCollections`). No se repitio en 3 arranques en frio. Ahora se
+  registra como "Visible collections check failed: <motivo>" en los logs: buscar eso en Vercel para ver la causa.
 - Validar IOS-01 (boton WhatsApp tras pedir) en un iPhone fisico.
+- Probar "Pagada y entregada" con el primer pedido real (no se ejecuto en QA para no mandar WhatsApp).
+- Anexos sin hacer: SN-03 (aviso al cliente cuando el admin fija el envio), SN-09..11, IOS-04..09, MPC-09..11, CSA-5/8/9/10,
+  P0-05 (monitor OpenWA), P0-09 (Stripe dormido), P0-10 en reset-password/AccountClient, P2-05/P2-07.
+- `src/components/layouts/NewsletterForm.tsx` no se usa en ningun sitio (codigo muerto, en ingles): borrar si se confirma.
 
 ## Lecciones operativas
 - `next build` con `next dev` corriendo en la misma carpeta rompe el `.next` del dev (500/404): parar el dev, compilar, relanzar `next dev -p 3001`.
@@ -68,4 +84,4 @@ Todas son manuales (fuera del journal de drizzle-kit); se aplican con node+postg
 ## Historial resumido
 - 2026-10-02: QA y plan. 2026-10-03: P0-01..P0-04 + borrado de datos QA (BD = baseline).
 - 2026-10-04: Fase 0 en main (incidente tras 0018: `/admin/orders` 404 porque `urql-service.ts` no mandaba Bearer; arreglado en cbb7aa5),
-  Fase 2, Fase 1 (6cac576), P1-15 (c875676/77b1d26), Fase 3 (20bc0bc), Fase 4 (ver git log).
+  Fase 2, Fase 1 (6cac576), P1-15 (c875676/77b1d26), Fase 3 (20bc0bc), Fase 4 (2b04b7e), Fase 5 (ver git log).

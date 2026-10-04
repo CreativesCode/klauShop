@@ -1,5 +1,6 @@
 import { siteConfig } from "@/config/site";
 import { gql } from "@/gql";
+import { filterVisibleCollections } from "@/features/collections/server/visibleCollections";
 import { getServiceClient } from "@/lib/urql-service";
 import { NavItemWithOptionalChildren } from "@/types";
 import Link from "next/link";
@@ -28,14 +29,15 @@ async function MainFooter({}: Props) {
   // Obtener todas las categorías
   const { data } = await getServiceClient().query(FooterCategoriesQuery, {});
 
-  const allCategories =
+  const allCategories = await filterVisibleCollections(
     data?.collectionsCollection?.edges.map((edge) => ({
       id: edge.node.id,
       label: edge.node.label,
       slug: edge.node.slug,
       parent_id: edge.node.parent_id,
       order: edge.node.order,
-    })) || [];
+    })) || [],
+  );
 
   const rootCategories =
     allCategories
@@ -181,8 +183,8 @@ async function MainFooter({}: Props) {
         <div className="flex gap-x-5 justify-center items-center mt-4">
           <div className="text-sm text-primary-800">
             <p className="text-center">
-              &copy; {new Date().getFullYear()} {siteConfig.name} by
-              CreativeCode. All rights reserved.
+              &copy; {new Date().getFullYear()} {siteConfig.name}. Todos los
+              derechos reservados.
             </p>
           </div>
         </div>

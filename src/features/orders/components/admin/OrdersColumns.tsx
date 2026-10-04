@@ -20,6 +20,7 @@ import { getPaymentStatusInfo } from "../../utils/paymentStatus";
 import { formatOrderTotal, getOrderTotals } from "../../utils/pricing";
 import { formatOrderNumber } from "../../utils/whatsapp";
 import { DeleteOrderDialog } from "./DeleteOrderDialog";
+import { OrderQuickActions } from "./OrderQuickActions";
 
 export const OrderColumnsFragment = gql(/* GraphQL */ `
   fragment OrderColumnsFragment on orders {
@@ -251,6 +252,17 @@ const OrdersColumns: ColumnDef<{
             <DropdownMenuItem asChild>
               <Link href={`/admin/orders/${order.id}`}>Ver orden</Link>
             </DropdownMenuItem>
+            <OrderQuickActions
+              orderId={order.id}
+              status={
+                (order.order_status || "pending_confirmation") as OrderStatus
+              }
+              paymentStatus={order.payment_status}
+              shippingPending={
+                order.shipping_cost === null ||
+                order.shipping_cost === undefined
+              }
+            />
             <DeleteOrderDialog orderId={order.id} variant="dropdown" />
           </DropdownMenuContent>
         </DropdownMenu>
