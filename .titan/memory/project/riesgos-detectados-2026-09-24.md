@@ -1,6 +1,8 @@
 # Riesgos detectados en el analisis inicial (2026-09-24)
 
-Detectados leyendo el codigo al instalar Titan Factory. NO corregidos todavia — esperan decision del usuario.
+Detectados leyendo el codigo al instalar Titan Factory.
+> **SUPERADO PARCIALMENTE (2026-10-04):** el estado vigente esta en [qa-piloto-cuba-2026-10-02.md](qa-piloto-cuba-2026-10-02.md)
+> y en el plan `.titan/plans/qa-piloto-cuba-2026-10-02.md`. Ya resueltos: stock por producto en tx (#3, #4), middleware (#5).
 
 ## Alta prioridad (afectan dinero o stock)
 1. ~~**Descuento no aplicado en el servidor.**~~ **RESUELTO 2026-09-24:** helper `getDiscountedUnitPrice`

@@ -11,9 +11,9 @@
 
 - [negocio-klaushop.md](project/negocio-klaushop.md) — Que vende, mercado (Cuba/CUP), checkout WhatsApp, origen fork de Hiyori
 - [decision-no-golden-path.md](project/decision-no-golden-path.md) — 2026-09-24: TF solo como capa de agente; no migrar el stack
-- [riesgos-detectados-2026-09-24.md](project/riesgos-detectados-2026-09-24.md) — Bugs/riesgos pendientes: RLS off en shipping_zones/reservas (CRITICO), envios por nombre y costo del cliente, stock por variante/fuera de tx, middleware
+- [riesgos-detectados-2026-09-24.md](project/riesgos-detectados-2026-09-24.md) — Analisis inicial; SUPERADO en gran parte por qa-piloto-cuba (ver esa entrada)
 - [2026-10-02-dual-agent-tooling.md](project/2026-10-02-dual-agent-tooling.md) — Claude Code + Codex en el repo (copiado de lensspace), memoria en .titan/, skills tf-, MCP Supabase OAuth
-- [qa-piloto-cuba-2026-10-02.md](project/qa-piloto-cuba-2026-10-02.md) — QA pre-piloto: 71 items (3 criticos), bloqueantes seguridad/profiles/OpenWA/idempotencia/cache; plan en .titan/plans/
+- [qa-piloto-cuba-2026-10-02.md](project/qa-piloto-cuba-2026-10-02.md) — QA pre-piloto y su ejecucion: Fase 0 y 2 desplegadas en main, migraciones 0018-0021 aplicadas; pendientes Fases 1/3/4/5
 
 ## feedback/ — Correcciones y preferencias
 
@@ -23,8 +23,8 @@
 ## reference/ — Donde encontrar cosas
 
 - [flujo-pedidos-inventario.md](reference/flujo-pedidos-inventario.md) — Transiciones de estado (fuente unica), endpoints admin, reservas/stock, precios de lineas
-- [whatsapp-openwa.md](reference/whatsapp-openwa.md) — Avisos auto por WhatsApp (0014-0016 aplicadas): trigger orders -> pg_net -> OpenWA, private_config, telefono admin
+- [whatsapp-openwa.md](reference/whatsapp-openwa.md) — Avisos auto por WhatsApp (0014-0016, 0019 aplicadas): trigger orders -> pg_net -> OpenWA; 500 en pg_net pero los mensajes llegan
 - [acceso-bd-sin-mcp.md](reference/acceso-bd-sin-mcp.md) — Consultar/aplicar SQL con node+postgres y DATABASE_URL (es produccion) cuando el MCP falla
-- [auth-y-datos.md](reference/auth-y-datos.md) — Admin via app_metadata.isAdmin, clientes Supabase, GraphQL (lecturas) vs Drizzle (escrituras)
+- [auth-y-datos.md](reference/auth-y-datos.md) — Admin via app_metadata.isAdmin, requireAdmin en actions, middleware de sesion, service role con Bearer, RLS 0018
 - [subida-imagenes.md](reference/subida-imagenes.md) — Limite 4.5MB de Vercel, recorte/compresion en cliente, estados por archivo, /api/medias solo admin
 - [modales-slots-paralelos.md](reference/modales-slots-paralelos.md) — Cerrar modales @slot con router.back(); push+refresh re-renderiza el slot viejo -> 404

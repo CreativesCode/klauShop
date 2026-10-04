@@ -6,6 +6,10 @@ produccion y probadas** (el mensaje llega al cliente). Codigo app (profiles.phon
 - `0015_whatsapp_admin_contacts.sql` — contactos de admins en vez de "responde", link admin, drop `wa_order_url`.
 - `0016_whatsapp_polite_contacts.sql` — redaccion mas amable de la linea de contacto.
 Cambios nuevos = migracion nueva (0017...), no editar una ya aplicada.
+- `0019_whatsapp_shipping_to_agree.sql` (APLICADA 2026-10-04) — aviso de nuevo pedido: "Total: X + envio" si el envio es NULL,
+  "recogida en tienda (sin costo)" si zona = "Recogida en tienda"; a los admins "Envio: POR ACORDAR".
+- 2026-10-03: `net._http_response` muestra 500 en todos los envios pero **los mensajes llegan** (confirmado por el dueño).
+  No tomar los 500 como prueba de fallo; aparcado.
 
 ## Arquitectura (decision del usuario: "lo mas rapido y con menos carga en nuestros servidores")
 Trigger en `orders` -> `public.send_wa()` -> `net.http_post` (pg_net, async tras COMMIT) -> OpenWA `send-text`.

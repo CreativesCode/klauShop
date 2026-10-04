@@ -3,12 +3,17 @@
 ## Quien es admin
 - Fuente de verdad: `user.app_metadata.isAdmin` (Supabase Auth). La columna `profiles.is_admin` existe pero NO se usa.
 - Se otorga con `POST /api/users/promote-user` (usa service role → `auth.admin.updateUserById`).
-- Guards: `src/app/(admin)/layout.tsx` (`isAdmin` de `@/features/users/actions`) + cada route handler admin
-  vuelve a comprobar `app_metadata.isAdmin`. Mantener ese doble chequeo en endpoints nuevos.
+- Guards: layouts admin (`isAdmin` puro de `@/features/users/utils`) + cada route handler admin vuelve a comprobar
+  `app_metadata.isAdmin`. **Server actions**: llamar `requireAdmin()` (`src/lib/supabase/requireAdmin.ts`) en la primera
+  linea: son endpoints POST publicos (2026-10-04). No exportar funciones sincronas desde un modulo `"use server"`.
+- `is_admin()` en SQL lee el JWT (`app_metadata.isAdmin`) desde 0018; `profiles.is_admin` no da permisos.
 
 ## Proteccion de rutas de cliente
-- `src/app/middleware.ts` **no se ejecuta**: Next.js solo reconoce `middleware.ts` en la raiz o en `src/`.
+- Desde 2026-10-04 `src/middleware.ts` solo **refresca la sesion** (se salta a invitados sin cookie `sb-*`). El viejo
+  `src/app/middleware.ts` (que no se ejecutaba) se borro.
 - La proteccion real la hace cada pagina con `redirect()` (orders, setting/*). `/cart` y `/wish-list` soportan invitado.
+- `server.ts` ignora escrituras de cookies dentro de Server Components (antes: 500 con la sesion caducada).
+- Perfiles: trigger en `auth.users` (0020) + `ensureProfile()` en checkout y direcciones.
 
 ## Clientes Supabase
 - Server: `createClient({ cookieStore, isAdmin })` en `src/lib/supabase/server.ts`. Con `isAdmin: true` usa service role

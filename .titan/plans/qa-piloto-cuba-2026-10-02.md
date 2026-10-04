@@ -1,9 +1,31 @@
 # QA-PILOTO-CUBA: Plan de correccion pre-piloto
 
-> **Estado**: PENDIENTE (esperando aprobacion del usuario por fases)
+> **Estado**: EN EJECUCION — Fase 0 y Fase 2 casi completas, desplegadas en `main` (2026-10-04). Ver "Estado de ejecucion".
 > **Fecha**: 2026-10-02
 > **Proyecto**: Klau's Shop
 > **Evidencia**: `.titan/qa/2026-10-02-piloto-cuba.md` · Datos QA creados: `.titan/qa/2026-10-02-datos-qa-ledger.jsonl`
+
+---
+
+## Estado de ejecucion (actualizado 2026-10-04)
+
+Todo en `main`, desplegado en Vercel y verificado (dev :3001 contra la BD de prod, mas comprobaciones en produccion).
+Los datos QA se borraron tras cada prueba; la BD coincide con la linea base.
+
+| Bloque | Hecho | Pendiente |
+|---|---|---|
+| Fase 0 (bloqueantes) | P0-01, P0-02, P0-03, P0-04, P0-06, P0-07, P0-08, P0-11, P0-13 | P0-05 (OpenWA da 500 pero los mensajes llegan: aparcado por el dueño), P0-09 (Stripe dormido crea pedidos), P0-10 (password en URL antes de hidratar), P0-12 |
+| Envios (anexo A) | SN-01, SN-04, SN-05 (opcion A), SN-07 | SN-02, SN-03, SN-08, SN-09/10/11 |
+| iPhone (anexo B) | IOS-01 (falta probar en iPhone fisico), IOS-02, IOS-03 | IOS-04..09 (bajos) |
+| Admin movil (anexo C) | MPC-01..08, CSA-1..7 | MPC-09/10/11, CSA-8..10 (bajos/medios) |
+| Fase 2 (refresco) | P2-01, P2-02, P2-03, P2-04, P2-06 | P2-05 (no reproducido), P2-07 |
+| Fase 1, 3, 4, 5 | — | todo |
+
+**Migraciones aplicadas en prod:** 0018 (RLS, despues del deploy), 0019 (texto WhatsApp envio a acordar), 0020 (perfiles
+al registrarse + backfill), 0021 (`orders.client_request_id`).
+
+**Incidente:** tras aplicar 0018, `/admin/orders` dio 404 unos minutos: `urql-service.ts` solo enviaba `apiKey` y el
+gateway lo trataba como anon. Arreglado con `Authorization: Bearer <service role>` (cbb7aa5).
 
 ---
 

@@ -41,3 +41,11 @@ Lo que si esta bien: integridad de stock del checkout (riesgos #3/#4 de 2026-09-
   ordersCollection; productos y zonas siguen publicos; los 3 usuarios tienen perfil.
 - Incidente breve tras 0018: `/admin/orders` dio 404 en prod porque `urql-service.ts` solo mandaba `apiKey` y el gateway
   lo trataba como anon. Arreglado mandando `Authorization: Bearer <service role>` (commit cbb7aa5).
+
+## Estado 2026-10-04 (cierre de la jornada)
+- Fase 2 desplegada: ficha de producto con ISR 60 s + `revalidateStorefront()` (src/lib/revalidateStorefront.ts) en acciones de
+  producto/coleccion, mark-paid y cancel; admin lists y `/api/shipping-zones` dinamicos; estado admin optimista;
+  `RefreshOnFocus` en los pedidos del cliente. Verificado en prod: zonas MISS/age 0 y 6/6 fichas con el precio de la BD.
+- Regla nueva: cualquier mutacion que cambie precio, stock o colecciones debe llamar `revalidateStorefront()`.
+- Siguiente sugerido: Fase 1 (friccion de venta: total antes de confirmar, validacion de telefono), luego Fase 3 (bundle
+  de admin en la tienda, ~300 KB). Resumen por bloques en "Estado de ejecucion" del plan.
