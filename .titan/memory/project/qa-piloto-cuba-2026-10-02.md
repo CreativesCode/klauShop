@@ -12,12 +12,13 @@ Evidencia: `.titan/qa/` (2026-10-02-piloto-cuba.md, capturas 2026-10-04-*.png). 
 | 1 Friccion de venta | Hecha (P1-01..P1-17). P1-16 = solo aviso en admin |
 | 2 Refresco / datos obsoletos | Hecha. Pendientes: P2-05 (no reproducido), P2-07 |
 | 3 Rendimiento / datos / offline | Hecha. Parcial: P3-05 (ver abajo) |
-| 4 Admin | **Siguiente** |
-| 5 Pulido y copy | Pendiente |
+| 4 Admin | Hecha. Pendientes: P4-08 (acciones rapidas, decision del dueño), ADMIN-CAT-07/08 (colecciones vacias en el menu: decision) |
+| 5 Pulido y copy | **Siguiente** |
 | Anexos (envios SN, iPhone IOS, admin movil MPC/CSA) | Hechos los altos. Pendientes: SN-02/03/08/09-11, IOS-04..09, MPC-09..11, CSA-5/8/9/10 |
 
 **Migraciones aplicadas en prod:** 0018 (RLS), 0019 (WhatsApp envio a acordar), 0020 (perfiles al registrarse),
-0021 (`orders.client_request_id`), 0022 (enlace admin → `/order/{id}`), 0023 (unaccent + `products.search_name`).
+0021 (`orders.client_request_id`), 0022 (enlace admin → `/order/{id}`), 0023 (unaccent + `products.search_name`),
+0024 (variante en `order_lines`; el aviso de nuevo pedido la muestra).
 Todas son manuales (fuera del journal de drizzle-kit); se aplican con node+postgres (ver `reference/acceso-bd-sin-mcp.md`).
 
 ## Decisiones del dueño
@@ -38,6 +39,10 @@ Todas son manuales (fuera del journal de drizzle-kit); se aplican con node+postg
 - Login/registro: volver con `?redirect=` (helper `src/lib/safeRedirect.ts`, solo rutas internas).
 - Busqueda: filtra por `products.search_name` (sin tildes); normalizar el termino con `features/search/utils/normalizeSearchTerm.ts`.
 - Catalogo: filtrar `stock > 0` en la consulta GraphQL, no en el cliente.
+- La variante de cada linea vive en `order_lines` (color/size/material): no deducirla de las reservas.
+- Server actions: los errores de negocio se **devuelven** (`{ error }`), no se lanzan: Next oculta el mensaje en produccion.
+- Texto libre del cliente (nombre, direccion, notas): pasa por `stripUnsafeChars` (`src/lib/safeText.ts`) en los schemas Zod.
+- Envio: solo editable en pending_confirmation/pending_payment (API y UI).
 
 ## Pendiente conocido (decidido dejarlo para despues)
 - P3-05 parcial: el select del carrito logueado sigue trayendo `description` (la tarjeta del carrito la muestra);
@@ -61,4 +66,4 @@ Todas son manuales (fuera del journal de drizzle-kit); se aplican con node+postg
 ## Historial resumido
 - 2026-10-02: QA y plan. 2026-10-03: P0-01..P0-04 + borrado de datos QA (BD = baseline).
 - 2026-10-04: Fase 0 en main (incidente tras 0018: `/admin/orders` 404 porque `urql-service.ts` no mandaba Bearer; arreglado en cbb7aa5),
-  Fase 2, Fase 1 (6cac576), P1-15 (c875676/77b1d26), Fase 3 (20bc0bc).
+  Fase 2, Fase 1 (6cac576), P1-15 (c875676/77b1d26), Fase 3 (20bc0bc), Fase 4 (ver git log).

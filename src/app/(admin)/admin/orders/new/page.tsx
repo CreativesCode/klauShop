@@ -2,8 +2,8 @@ import AdminShell from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import AdminOrderCreateForm from "@/features/orders/components/admin/AdminOrderCreateForm";
 import db from "@/lib/supabase/db";
-import { products } from "@/lib/supabase/schema";
-import { asc } from "drizzle-orm";
+import { inventoryReservations, products } from "@/lib/supabase/schema";
+import { and, asc, eq, sql } from "drizzle-orm";
 import Link from "next/link";
 
 export default async function AdminNewOrderPage() {
@@ -17,8 +17,18 @@ export default async function AdminNewOrderPage() {
       colors: products.colors,
       sizes: products.sizes,
       materials: products.materials,
+      // Same rule as the checkout: physical stock minus active reservations
+      reserved: sql<number>`coalesce(sum(${inventoryReservations.quantity}), 0)::int`,
     })
     .from(products)
+    .leftJoin(
+      inventoryReservations,
+      and(
+        eq(inventoryReservations.productId, products.id),
+        eq(inventoryReservations.status, "active"),
+      ),
+    )
+    .groupBy(products.id)
     .orderBy(asc(products.name));
 
   return (
@@ -32,7 +42,12 @@ export default async function AdminNewOrderPage() {
         </Link>
       </div>
 
-      <AdminOrderCreateForm products={productsData} />
+      <AdminOrderCreateForm
+        products={productsData.map(({ reserved, ...p }) => ({
+          ...p,
+          available: Math.max(0, (p.stock ?? 0) - Number(reserved)),
+        }))}
+      />
     </AdminShell>
   );
 }

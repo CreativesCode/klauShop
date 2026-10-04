@@ -18,6 +18,14 @@ type InsertProductMedias = {
   priority?: number | null;
 };
 
+const SLUG_TAKEN = "Ese slug ya existe. Usa otro (o genéralo de nuevo desde el nombre).";
+
+// Unique violation on products.slug (postgres-js error, sometimes wrapped by drizzle)
+function isUniqueViolation(error: unknown): boolean {
+  const e = error as { code?: string; cause?: { code?: string } } | null;
+  return e?.code === "23505" || e?.cause?.code === "23505";
+}
+
 export const createProductAction = async (
   product: InsertProducts,
   additionalImages?: string[],
@@ -44,7 +52,14 @@ export const createProductAction = async (
   };
 
   createInsertSchema(products).parse(cleanedProduct);
-  const data = await db.insert(products).values(cleanedProduct).returning();
+  let data;
+  try {
+    data = await db.insert(products).values(cleanedProduct).returning();
+  } catch (error) {
+    // Returned, not thrown: Next hides server action error messages in production
+    if (isUniqueViolation(error)) return { error: SLUG_TAKEN };
+    throw error;
+  }
 
   // Guardar imágenes adicionales si existen
   if (data[0] && additionalImages && additionalImages.length > 0) {
@@ -69,6 +84,8 @@ export const updateProductAction = async (
   productId: string,
   product: InsertProducts,
   additionalImages?: string[],
+  // Stock shown when the form was opened: a sale marked as paid meanwhile must not be overwritten
+  originalStock?: number | null,
 ) => {
   await requireAdmin();
 
@@ -97,11 +114,43 @@ export const updateProductAction = async (
   ) as InsertProducts;
 
   createInsertSchema(products).parse(updateData);
-  const insertedProduct = await db
-    .update(products)
-    .set(updateData)
-    .where(eq(products.id, productId))
-    .returning();
+
+  // Thrown inside the tx to roll it back; returned (not thrown) because Next hides
+  // server action error messages in production
+  class StockChangedError extends Error {}
+
+  let insertedProduct;
+  try {
+    insertedProduct = await db.transaction(async (tx) => {
+      if (originalStock !== undefined) {
+        if (updateData.stock === originalStock) {
+          // Stock not edited: keep whatever the DB has now (mark-paid may have changed it)
+          delete updateData.stock;
+        } else {
+          const [current] = await tx
+            .select({ stock: products.stock })
+            .from(products)
+            .where(eq(products.id, productId))
+            .for("update");
+          if (current && current.stock !== originalStock) {
+            throw new StockChangedError(
+              `El stock cambió mientras editabas (ahora hay ${current.stock ?? 0}). Recarga la página y vuelve a intentarlo.`,
+            );
+          }
+        }
+      }
+
+      return tx
+        .update(products)
+        .set(updateData)
+        .where(eq(products.id, productId))
+        .returning();
+    });
+  } catch (error) {
+    if (error instanceof StockChangedError) return { error: error.message };
+    if (isUniqueViolation(error)) return { error: SLUG_TAKEN };
+    throw error;
+  }
 
   // Actualizar imágenes adicionales: eliminar todas las existentes y crear las nuevas
   if (insertedProduct[0] && additionalImages !== undefined) {

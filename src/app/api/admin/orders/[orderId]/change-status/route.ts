@@ -9,6 +9,19 @@ import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { z } from "zod";
+
+const changeStatusSchema = z.object({
+  newStatus: z.enum([
+    "pending_confirmation",
+    "pending_payment",
+    "paid",
+    "processing",
+    "shipped",
+    "delivered",
+    "cancelled",
+  ]),
+});
 
 export async function POST(
   request: Request,
@@ -16,15 +29,6 @@ export async function POST(
 ) {
   try {
     const { orderId } = params;
-    const body = await request.json();
-    const { newStatus } = body as { newStatus: OrderStatus };
-
-    if (!newStatus) {
-      return NextResponse.json(
-        { error: "El nuevo estado es requerido" },
-        { status: 400 },
-      );
-    }
 
     // Verificar que el usuario sea admin
     const supabase = createRouteHandlerClient({ cookies });
@@ -39,6 +43,18 @@ export async function POST(
     if (!user.app_metadata?.isAdmin) {
       return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
+
+    // Auth first: anonymous callers learn nothing about the expected body
+    const parsed = changeStatusSchema.safeParse(
+      await request.json().catch(() => null),
+    );
+    if (parsed.success === false) {
+      return NextResponse.json(
+        { error: "El nuevo estado es requerido" },
+        { status: 400 },
+      );
+    }
+    const newStatus = parsed.data.newStatus as OrderStatus;
 
     // "paid" no debe setearse por cambio de estado: requiere consumir reservas y descontar stock.
     if (newStatus === "paid") {

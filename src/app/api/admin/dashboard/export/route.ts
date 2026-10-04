@@ -9,14 +9,31 @@ import {
   startOfDay,
   startOfMonth,
 } from "date-fns";
+import { getOrderStatusLabel } from "@/features/orders/utils/orderStatus";
+import {
+  getPaymentMethodLabel,
+  getPaymentStatusInfo,
+} from "@/features/orders/utils/paymentStatus";
+import { formatOrderNumber } from "@/features/orders/utils/whatsapp";
 import { and, desc, gte, lt } from "drizzle-orm";
 import { cookies } from "next/headers";
 
 function csvEscape(value: unknown) {
-  const s = value === null || value === undefined ? "" : String(value);
+  let s = value === null || value === undefined ? "" : String(value);
+  // A cell starting with = + - @ is run as a formula by Excel (names and notes come from customers)
+  if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
   const escaped = s.replace(/"/g, '""');
   return `"${escaped}"`;
 }
+
+const havanaDate = new Intl.DateTimeFormat("es-CU", {
+  timeZone: "America/Havana",
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+});
 
 export async function GET(request: Request) {
   // Verificar que el usuario sea admin
@@ -75,34 +92,36 @@ export async function GET(request: Request) {
     .orderBy(desc(orders.createdAt));
 
   const header = [
-    "id",
-    "created_at",
-    "order_status",
-    "payment_status",
-    "payment_method",
-    "amount",
-    "currency",
-    "shipping_cost",
-    "name",
-    "phone",
-    "zone",
+    "Pedido",
+    "Fecha (La Habana)",
+    "Estado",
+    "Pago",
+    "Método de pago",
+    "Total",
+    "Moneda",
+    "Envío",
+    "Cliente",
+    "Teléfono",
+    "Zona",
+    "ID",
   ];
 
   const csvLines = [
     header.map(csvEscape).join(","),
     ...rows.map((r) =>
       [
-        r.id,
-        r.createdAt,
-        r.order_status,
-        r.payment_status,
-        r.payment_method,
+        formatOrderNumber(r.id),
+        r.createdAt ? havanaDate.format(new Date(r.createdAt)) : "",
+        r.order_status ? getOrderStatusLabel(r.order_status) : "",
+        getPaymentStatusInfo(r.payment_status).label,
+        r.payment_method ? getPaymentMethodLabel(r.payment_method) : "",
         r.amount,
-        r.currency,
-        r.shipping_cost,
+        (r.currency || "").toUpperCase(),
+        r.shipping_cost ?? "Por acordar",
         r.name,
         r.phone,
         r.zone,
+        r.id,
       ]
         .map(csvEscape)
         .join(","),

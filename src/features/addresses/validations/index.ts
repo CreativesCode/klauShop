@@ -1,4 +1,5 @@
 import { phoneSchema } from "@/lib/phone";
+import { stripUnsafeChars } from "@/lib/safeText";
 import { z } from "zod";
 
 // Esquema de validación para crear/actualizar dirección
@@ -10,7 +11,8 @@ export const addressSchema = z.object({
   recipientName: z
     .string()
     .min(2, "El nombre del destinatario debe tener al menos 2 caracteres")
-    .max(100, "El nombre es demasiado largo"),
+    .max(100, "El nombre es demasiado largo")
+    .transform(stripUnsafeChars),
   phone: phoneSchema,
   zone: z
     .string()
@@ -21,11 +23,13 @@ export const addressSchema = z.object({
   fullAddress: z
     .string()
     .max(500, "La dirección es demasiado larga")
+    .transform(stripUnsafeChars)
     .optional()
     .nullable(),
   notes: z
     .string()
     .max(1000, "Las notas son demasiado largas")
+    .transform(stripUnsafeChars)
     .optional()
     .nullable(),
   isDefault: z.boolean().optional().default(false),

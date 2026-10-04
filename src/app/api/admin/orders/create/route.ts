@@ -117,6 +117,9 @@ export async function POST(request: Request) {
           ).toFixed(2),
           listPrice: product?.price || "0",
           discount: product?.discount || "0.00",
+          color: item.color || null,
+          size: item.size || null,
+          material: item.material || null,
         };
       });
 

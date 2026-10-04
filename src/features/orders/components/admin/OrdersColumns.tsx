@@ -17,6 +17,7 @@ import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { getOrderStatusInfo } from "../../utils/orderStatus";
 import { getPaymentStatusInfo } from "../../utils/paymentStatus";
+import { formatOrderTotal, getOrderTotals } from "../../utils/pricing";
 import { formatOrderNumber } from "../../utils/whatsapp";
 import { DeleteOrderDialog } from "./DeleteOrderDialog";
 
@@ -26,16 +27,21 @@ export const OrderColumnsFragment = gql(/* GraphQL */ `
     order_status
     payment_status
     created_at
-    order_linesCollection {
-      edges {
-        node {
-          id
-          product_id
-        }
-      }
-    }
+    name
+    phone
+    zone
+    amount
+    shipping_cost
   }
 `);
+
+const dateFormatter = new Intl.DateTimeFormat("es-CU", {
+  timeZone: "America/Havana",
+  day: "2-digit",
+  month: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+});
 
 // Pending orders keep stock reserved: flag the old ones so the admin can follow up or cancel
 const STALE_PENDING_HOURS = 48;
@@ -68,6 +74,71 @@ const OrdersColumns: ColumnDef<{
         <Link href={`/admin/orders/${order.id}`} className="font-medium">
           {formatOrderNumber(order.id)}
         </Link>
+      );
+    },
+  },
+  {
+    accessorFn: (row) => row.node.name || "",
+    accessorKey: "customer",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Cliente" />
+    ),
+    cell: ({ row }) => {
+      const order = row.original.node;
+      return (
+        <div className="min-w-0">
+          <div className="font-medium truncate max-w-[180px]">
+            {order.name || "—"}
+          </div>
+          {order.phone && (
+            <a
+              href={`tel:${order.phone.replace(/\s/g, "")}`}
+              className="text-xs text-muted-foreground"
+            >
+              {order.phone}
+            </a>
+          )}
+        </div>
+      );
+    },
+  },
+  {
+    accessorFn: (row) => Number(row.node.amount || 0),
+    accessorKey: "amount",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Total" />
+    ),
+    cell: ({ row }) => {
+      const { total, shippingCost } = getOrderTotals(row.original.node);
+      return (
+        <div className="whitespace-nowrap">
+          <div className="font-medium">
+            {formatOrderTotal(total, shippingCost)}
+          </div>
+          {shippingCost === null && (
+            <Badge
+              variant="outline"
+              className="mt-1 rounded-md px-1.5 py-0 text-[11px] text-amber-700 border-amber-500"
+            >
+              Envío por acordar
+            </Badge>
+          )}
+        </div>
+      );
+    },
+  },
+  {
+    accessorFn: (row) => row.node.created_at || "",
+    accessorKey: "created_at",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Fecha" />
+    ),
+    cell: ({ row }) => {
+      const createdAt = row.original.node.created_at;
+      return (
+        <span className="whitespace-nowrap text-sm text-muted-foreground">
+          {createdAt ? dateFormatter.format(new Date(createdAt)) : "—"}
+        </span>
       );
     },
   },
@@ -164,7 +235,7 @@ const OrdersColumns: ColumnDef<{
   },
   {
     id: "actions",
-    header: () => <div className="text-center capitalize">Acc</div>,
+    header: () => <div className="text-center">Acciones</div>,
     cell: ({ row }) => {
       const order = row.original.node;
 
@@ -178,7 +249,7 @@ const OrdersColumns: ColumnDef<{
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
             <DropdownMenuItem asChild>
-              <Link href={`/admin/orders/${order.id}`}>Editar Ordenes</Link>
+              <Link href={`/admin/orders/${order.id}`}>Ver orden</Link>
             </DropdownMenuItem>
             <DeleteOrderDialog orderId={order.id} variant="dropdown" />
           </DropdownMenuContent>

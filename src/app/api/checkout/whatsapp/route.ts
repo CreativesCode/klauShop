@@ -80,6 +80,9 @@ async function findReplayedOrder(clientRequestId: string) {
       price: orderLines.price,
       listPrice: orderLines.listPrice,
       discount: orderLines.discount,
+      color: orderLines.color,
+      size: orderLines.size,
+      material: orderLines.material,
       name: products.name,
     })
     .from(orderLines)
@@ -92,6 +95,9 @@ async function findReplayedOrder(clientRequestId: string) {
     price: Number(line.price),
     listPrice: Number(line.listPrice || line.price),
     discount: Number(line.discount || 0),
+    color: line.color,
+    size: line.size,
+    material: line.material,
   }));
 
   return buildOrderResponse(
@@ -136,19 +142,11 @@ export async function POST(request: Request) {
       const productIds = cartItems.map((item) => item.productId);
       const uniqueProductIds = [...new Set(productIds)]; // IDs únicos
 
-      console.log("🔍 Buscando productos únicos:", uniqueProductIds);
-
       const productsData = await tx
         .select()
         .from(products)
         .where(inArray(products.id, uniqueProductIds))
         .for("update"); // SELECT FOR UPDATE - lock pesimista
-
-      console.log("✅ Productos encontrados:", productsData.length);
-      console.log(
-        "📦 Productos:",
-        productsData.map((p) => ({ id: p.id, name: p.name })),
-      );
 
       // Verificar que todos los productos únicos fueron encontrados
       assertProductsFound(uniqueProductIds, productsData);
@@ -210,6 +208,9 @@ export async function POST(request: Request) {
           ).toFixed(2),
           listPrice: product?.price || "0",
           discount: product?.discount || "0.00",
+          color: item.color || null,
+          size: item.size || null,
+          material: item.material || null,
         };
       });
 
@@ -255,7 +256,6 @@ export async function POST(request: Request) {
     if (user?.id) {
       try {
         await supabase.from("carts").delete().eq("user_id", user.id);
-        console.log("✅ Carrito limpiado para el usuario:", user.id);
       } catch (cartError) {
         console.error("⚠️ Error limpiando carrito (no crítico):", cartError);
         // No lanzamos error porque la orden ya fue creada exitosamente

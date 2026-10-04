@@ -22,7 +22,6 @@ import { formatOrderNumber } from "@/features/orders/utils/whatsapp";
 import db from "@/lib/supabase/db";
 import {
   OrderStatus,
-  inventoryReservations,
   medias,
   orderLines,
   orders,
@@ -73,6 +72,9 @@ export default async function AdminOrderDetailPage({
       price: orderLines.price,
       listPrice: orderLines.listPrice,
       discount: orderLines.discount,
+      color: orderLines.color,
+      size: orderLines.size,
+      material: orderLines.material,
       product: {
         id: products.id,
         name: products.name,
@@ -88,12 +90,6 @@ export default async function AdminOrderDetailPage({
     .leftJoin(products, eq(orderLines.productId, products.id))
     .leftJoin(medias, eq(products.featuredImageId, medias.id))
     .where(eq(orderLines.orderId, order.id));
-
-  // Obtener reservas de inventario (para color, size, material)
-  const reservations = await db
-    .select()
-    .from(inventoryReservations)
-    .where(eq(inventoryReservations.orderId, order.id));
 
   const orderNumber = formatOrderNumber(order.id);
   const customerData = order.customer_data as any;
@@ -193,10 +189,6 @@ export default async function AdminOrderDetailPage({
             <CardContent>
               <div className="space-y-4">
                 {items.map((item) => {
-                  const reservation = reservations.find(
-                    (r) => r.productId === item.product?.id,
-                  );
-
                   return (
                     <div
                       key={item.id}
@@ -219,36 +211,34 @@ export default async function AdminOrderDetailPage({
                             Cantidad: {item.quantity}
                           </p>
                         </div>
-                        {reservation && (
+                        {(item.color || item.size || item.material) && (
                           <div className="flex flex-wrap gap-3 text-sm">
-                            {reservation.color && (
+                            {item.color && (
                               <div className="flex items-center gap-1.5">
                                 <span className="text-muted-foreground">
                                   Color:
                                 </span>
                                 <div
                                   className="h-4 w-4 rounded-full border"
-                                  style={{ backgroundColor: reservation.color }}
+                                  style={{ backgroundColor: item.color }}
                                 />
                               </div>
                             )}
-                            {reservation.size && (
+                            {item.size && (
                               <div>
                                 <span className="text-muted-foreground">
                                   Tamaño:
                                 </span>{" "}
-                                <span className="font-medium">
-                                  {reservation.size}
-                                </span>
+                                <span className="font-medium">{item.size}</span>
                               </div>
                             )}
-                            {reservation.material && (
+                            {item.material && (
                               <div>
                                 <span className="text-muted-foreground">
                                   Material:
                                 </span>{" "}
                                 <span className="font-medium">
-                                  {reservation.material}
+                                  {item.material}
                                 </span>
                               </div>
                             )}
@@ -281,12 +271,16 @@ export default async function AdminOrderDetailPage({
                   <span className="text-muted-foreground">Envío</span>
                   <span>{formatShipping(shippingCost, order.zone)}</span>
                 </div>
-                <div className="pt-2">
-                  <ShippingCostEditor
-                    orderId={order.id}
-                    currentShippingCost={shippingCost}
-                  />
-                </div>
+                {/* Shipping is final once the order is paid (the API rejects it too) */}
+                {(orderStatus === "pending_confirmation" ||
+                  orderStatus === "pending_payment") && (
+                  <div className="pt-2">
+                    <ShippingCostEditor
+                      orderId={order.id}
+                      currentShippingCost={shippingCost}
+                    />
+                  </div>
+                )}
 
                 <Separator />
                 <div className="flex justify-between font-semibold text-lg">
@@ -298,8 +292,8 @@ export default async function AdminOrderDetailPage({
           </Card>
         </div>
 
-        {/* Columna lateral - Cliente y acciones */}
-        <div className="space-y-6">
+        {/* Columna lateral - Cliente y acciones (en movil va primero: es lo que se usa en cada pedido) */}
+        <div className="space-y-6 order-first md:order-none">
           {/* Cambiar Estado */}
           <OrderStatusChanger
             orderId={order.id}
@@ -307,16 +301,6 @@ export default async function AdminOrderDetailPage({
             paymentStatus={order.payment_status}
             shippingPending={shippingCost === null}
           />
-
-          {/* Eliminar Orden */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Acciones Peligrosas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <DeleteOrderDialog orderId={order.id} variant="button" />
-            </CardContent>
-          </Card>
 
           {/* Información del cliente */}
           <Card>
@@ -379,6 +363,28 @@ export default async function AdminOrderDetailPage({
                   <p className="font-medium">{order.email}</p>
                 </div>
               )}
+            </CardContent>
+          </Card>
+
+          {/* Eliminar Orden: siempre al final */}
+          <Card className="hidden md:block">
+            <CardHeader>
+              <CardTitle>Acciones Peligrosas</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DeleteOrderDialog orderId={order.id} variant="button" />
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="md:hidden">
+          {/* Eliminar Orden: siempre al final */}
+          <Card className="">
+            <CardHeader>
+              <CardTitle>Acciones Peligrosas</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DeleteOrderDialog orderId={order.id} variant="button" />
             </CardContent>
           </Card>
         </div>

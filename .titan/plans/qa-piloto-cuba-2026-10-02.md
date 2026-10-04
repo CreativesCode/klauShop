@@ -1,6 +1,6 @@
 # QA-PILOTO-CUBA: Plan de correccion pre-piloto
 
-> **Estado**: EN EJECUCION — Fases 0, 1, 2 y 3 en `main` y desplegadas (2026-10-04). Siguiente: Fase 4. Ver "Estado de ejecucion".
+> **Estado**: EN EJECUCION — Fases 0 a 4 en `main` y desplegadas (2026-10-04). Siguiente: Fase 5 (copy). Ver "Estado de ejecucion".
 > **Fecha**: 2026-10-02
 > **Proyecto**: Klau's Shop
 > **Evidencia**: `.titan/qa/2026-10-02-piloto-cuba.md` · Datos QA creados: `.titan/qa/2026-10-02-datos-qa-ledger.jsonl`
@@ -21,10 +21,11 @@ Los datos QA se borraron tras cada prueba; la BD coincide con la linea base.
 | Fase 2 (refresco) | P2-01, P2-02, P2-03, P2-04, P2-06 | P2-05 (no reproducido), P2-07 |
 | Fase 1 (6cac576, c875676) | P1-01..P1-17 (P1-16 solo aviso, decision del dueño). P1-10 venia de SN-05. 0022 y 0023 APLICADAS | — |
 | Fase 3 (20bc0bc) | P3-01..P3-08 | P3-05 parcial: el select del carrito logueado mantiene `description` (CartItemCard la muestra) y no hay store optimista. Catalogo offline (SW StaleWhileRevalidate) = 2o paso |
-| Fase 4, 5 | — | todo |
+| Fase 4 (2026-10-04) | P4-01..P4-07, P4-09; de P4-10: ADMIN-ORD-13/16/19/21 (AdminShell), INTEGRITY-12/13/14, CODE-21. SN-02 y SN-08 (lista) | P4-08 (acciones rapidas: **decision del dueño**; solo se renombro "Ver orden"), ADMIN-CAT-07/08 (colecciones vacias: decision), errores 409/404 tipados en rutas admin |
+| Fase 5 | — | todo |
 
 **Migraciones aplicadas en prod:** 0018 (RLS, despues del deploy), 0019 (texto WhatsApp envio a acordar), 0020 (perfiles
-al registrarse + backfill), 0021 (`orders.client_request_id`), 0022 (enlace admin → `/order/{id}`), 0023 (unaccent + `products.search_name`).
+al registrarse + backfill), 0021 (`orders.client_request_id`), 0022 (enlace admin → `/order/{id}`), 0023 (unaccent + `products.search_name`), 0024 (variante en `order_lines` + WhatsApp con variante).
 
 **Incidente:** tras aplicar 0018, `/admin/orders` dio 404 unos minutos: `urql-service.ts` solo enviaba `apiKey` y el
 gateway lo trataba como anon. Arreglado con `Authorization: Bearer <service role>` (cbb7aa5).
@@ -407,6 +408,22 @@ Para BD: migracion Drizzle en `drizzle/` + `drizzle/rls_policies.sql`. Despues d
   - **Verificar**: `Get-NetTCPConnection -RemotePort 6543` del proceso next dev se mantiene bajo tras varios HMR.
 
 ### Fase 4 — Admin
+
+> **Ejecucion 2026-10-04.** Verificado en dev :3001 con un usuario QA admin y un producto QA (ambos borrados; 0 pedidos creados):
+> - P4-01: `order_lines.color/size/material` (0024 APLICADA, backfill 8/15 lineas); detalles admin/cliente pintan la variante
+>   de la linea; checkout, pedido admin y WhatsApp (trigger y replay) la incluyen. "Comprar de nuevo" → "Te puede interesar" (con stock).
+> - P4-02: formulario de coleccion con FormField + schema en español (`features/collections/validations.ts`); vacio → 5 errores en español.
+> - P4-03: editar producto sin tocar el stock ya no lo pisa (DB 3 se mantuvo); si cambio el stock y la BD cambio entre medias →
+>   "El stock cambio mientras editabas (ahora hay N)" y no guarda. Slug duplicado → "Ese slug ya existe". Errores devueltos, no lanzados.
+> - P4-04: tras crear un pedido admin se navega al detalle (boton deshabilitado hasta entonces). Quitada la tarjeta con "Abrir WhatsApp" (ADMIN-ORD-16).
+> - P4-05: "Disponible: N" (stock - reservas activas); productos con opciones → una linea por variante.
+> - P4-06: columnas Cliente (tel clicable), Total (+ insignia "Envio por acordar" = SN-08), Fecha (La Habana); busqueda por numero,
+>   nombre o telefono; "Sin resultados"; "Acciones"/"Ver orden".
+> - P4-07: en movil estado → cliente → info → productos → eliminar (verificado a 393 px, sin scroll horizontal).
+> - P4-09: schema de producto en español (nombre, slug con regex, precio > 0, stock entero >= 0, descuento 0-100, imagen) con FormField.
+> - P4-10: envio no editable tras el pago (API + UI, = SN-02), change-status valida auth antes del body (Zod), GET publico de
+>   `/api/medias/[id]` borrado, CSV en español (KS-XXXX, fecha La Habana, estados traducidos, escape de formulas), bidi/control
+>   chars fuera de nombre/direccion/notas (`src/lib/safeText.ts`), console.log de datos fuera + `removeConsole` en prod, AdminShell fluido.
 
 - [ ] **P4-01 · Detalle de pedido (admin y cliente) con la variante equivocada si hay 2 del mismo producto** · Sev ALTA · Esf M
   `[ADMIN-ORD-05, REG-17]`

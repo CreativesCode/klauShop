@@ -331,6 +331,10 @@ export const orderLines = pgTable(
     discount: decimal("discount", { precision: 5, scale: 2 })
       .default("0.00")
       .notNull(),
+    // Variant bought (drizzle/0024); null = product without options
+    color: text("color"),
+    size: text("size"),
+    material: text("material"),
     createdAt: timestamp("created_at", {
       withTimezone: true,
     })

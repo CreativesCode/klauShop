@@ -7,31 +7,6 @@ import { getMediaUsage } from "@/features/medias/server/getMediaUsage";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } },
-) {
-  const media = await db.query.medias.findFirst({
-    where: eq(medias.id, params.id),
-  });
-
-  if (!media)
-    return NextResponse.json(
-      {
-        message: "Media not found.",
-      },
-      { status: 404 },
-    );
-
-  return NextResponse.json(
-    {
-      data: media,
-      preview: "https://hugo-coding.s3.us-west-1.amazonaws.com/" + media.key,
-    },
-    { status: 201 },
-  );
-}
-
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } },

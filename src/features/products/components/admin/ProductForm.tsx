@@ -61,8 +61,47 @@ type ProductFormData = Omit<InsertProducts, "additionalImages"> & {
   additionalImages?: string[];
 };
 
+const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+// Spanish messages and business rules on top of the table schema
 const productFormSchema = createInsertSchema(products).extend({
   additionalImages: z.array(z.string()).optional(),
+  name: z
+    .string({ required_error: "Escribe el nombre" })
+    .trim()
+    .min(1, "Escribe el nombre")
+    .max(191, "Máximo 191 caracteres"),
+  slug: z
+    .string({ required_error: "Escribe el slug o genéralo desde el nombre" })
+    .trim()
+    .min(1, "Escribe el slug o genéralo desde el nombre")
+    .max(191, "Máximo 191 caracteres")
+    .regex(
+      SLUG_PATTERN,
+      "Solo minúsculas, números y guiones (ej. vestido-rojo)",
+    ),
+  price: z
+    .string({ required_error: "Escribe el precio" })
+    .trim()
+    .refine((v) => Number(v) > 0, "El precio debe ser mayor que 0"),
+  discount: z
+    .string()
+    .nullable()
+    .optional()
+    .refine(
+      (v) => !v || (Number(v) >= 0 && Number(v) <= 100),
+      "El descuento va de 0 a 100",
+    ),
+  stock: z
+    .number({
+      required_error: "Escribe el stock",
+      invalid_type_error: "Escribe el stock",
+    })
+    .int("El stock debe ser un número entero")
+    .min(0, "El stock no puede ser negativo"),
+  featuredImageId: z
+    .string({ required_error: "Elige una imagen destacada" })
+    .min(1, "Elige una imagen destacada"),
 });
 
 export const ProductFormQuery = gql(/* GraphQL */ `
@@ -95,6 +134,7 @@ function ProductFrom({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
       ...product,
+      stock: product?.stock ?? 0,
       featured: product?.featured ?? false,
       showInSlider: product?.showInSlider ?? false,
       additionalImages:
@@ -177,9 +217,23 @@ function ProductFrom({
           (img) => img && typeof img === "string" && img.trim() !== "",
         );
 
-        product
-          ? await updateProductAction(product.id, cleanedData, filteredImages)
+        const result = product
+          ? await updateProductAction(
+              product.id,
+              cleanedData,
+              filteredImages,
+              product.stock ?? null,
+            )
           : await createProductAction(cleanedData, filteredImages);
+
+        if (result && "error" in result) {
+          toast({
+            title: "No se guardó",
+            description: result.error,
+            variant: "destructive",
+          });
+          return;
+        }
 
         router.push("/admin/products");
         router.refresh();
@@ -207,42 +261,53 @@ function ProductFrom({
         onSubmit={onSubmit}
       >
         <div className="flex flex-col gap-y-5 max-w-[500px]">
-          <FormItem>
-            <FormLabel className="text-sm">Nombre*</FormLabel>
-            <FormControl>
-              <Input
-                aria-invalid={!!form.formState.errors.name}
-                placeholder="Ingrese el nombre del producto."
-                {...register("name")}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm">Nombre*</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Nombre del producto"
+                    {...field}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <FormItem>
-            <FormLabel className="text-sm">Slug*</FormLabel>
-            <div className="flex gap-2">
-              <FormControl className="flex-1">
-                <Input
-                  defaultValue={product?.slug}
-                  aria-invalid={!!form.formState.errors.slug}
-                  placeholder="Type Product slug."
-                  {...register("slug")}
-                />
-              </FormControl>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={generateSlug}
-                disabled={!name || name.trim() === ""}
-                className="flex-shrink-0"
-                title="Generar slug desde el nombre"
-              >
-                <Icons.refresh className="h-4 w-4" />
-              </Button>
-            </div>
-            <FormMessage />
-          </FormItem>
+          <FormField
+            control={form.control}
+            name="slug"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm">Slug*</FormLabel>
+                <div className="flex gap-2">
+                  <FormControl className="flex-1">
+                    <Input
+                      placeholder="vestido-rojo"
+                      {...field}
+                      value={field.value ?? ""}
+                    />
+                  </FormControl>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={generateSlug}
+                    disabled={!name || name.trim() === ""}
+                    className="flex-shrink-0"
+                    title="Generar slug desde el nombre"
+                  >
+                    <Icons.refresh className="h-4 w-4" />
+                  </Button>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <FormField
             control={form.control}
@@ -432,18 +497,27 @@ function ProductFrom({
             <FormMessage />
           </FormItem>
 
-          <FormItem>
-            <FormLabel className="text-sm">Precio*</FormLabel>
-            <FormControl>
-              <Input
-                defaultValue={product?.price}
-                aria-invalid={!!form.formState.errors.price}
-                placeholder="Ingrese el precio del producto."
-                {...register("price")}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+          <FormField
+            control={form.control}
+            name="price"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm">Precio (CUP)*</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    inputMode="decimal"
+                    placeholder="Precio del producto"
+                    {...field}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <FormField
             control={control}
@@ -487,22 +561,37 @@ function ProductFrom({
             )}
           />
 
-          <FormItem>
-            <FormLabel className="text-sm">Stock*</FormLabel>
-            <FormControl>
-              <Input
-                type="number"
-                defaultValue={product?.stock ?? 0}
-                aria-invalid={!!form.formState.errors.stock}
-                placeholder="Stock quantity"
-                {...register("stock", { valueAsNumber: true })}
-              />
-            </FormControl>
-            <FormDescription>
-              Cantidad de items disponibles en el inventario
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
+          <FormField
+            control={form.control}
+            name="stock"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm">Stock*</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="1"
+                    inputMode="numeric"
+                    placeholder="Cantidad en inventario"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value === ""
+                          ? undefined
+                          : e.target.valueAsNumber,
+                      )
+                    }
+                  />
+                </FormControl>
+                <FormDescription>
+                  Cantidad de items disponibles en el inventario
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <FormField
             control={form.control}

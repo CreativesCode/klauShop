@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createInsertSchema } from "drizzle-zod";
 import { Suspense, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -18,7 +17,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 
-import { InsertCollection, collections } from "@/lib/supabase/schema";
+import { InsertCollection } from "@/lib/supabase/schema";
+import { collectionFormSchema } from "../../validations";
 
 import {
   createCollectionAction,
@@ -150,7 +150,7 @@ function CollectionForm({ collection }: CollectionFormProps) {
   const collectionsList = data?.collectionsCollection?.edges || [];
 
   const form = useForm<InsertCollection>({
-    resolver: zodResolver(createInsertSchema(collections)),
+    resolver: zodResolver(collectionFormSchema),
     defaultValues: {
       ...collection,
       featuredImageId: collection ? collection.featured_image_id : undefined,
@@ -170,7 +170,8 @@ function CollectionForm({ collection }: CollectionFormProps) {
     }
   };
 
-  const onSubmit = handleSubmit(async (data: InsertCollection) => {
+  const onSubmit = handleSubmit(async (values) => {
+    const data = values as InsertCollection;
     setIsPending(true);
     try {
       if (collection) {
@@ -210,66 +211,88 @@ function CollectionForm({ collection }: CollectionFormProps) {
         onSubmit={onSubmit}
       >
         <div className="flex flex-col gap-y-5 max-w-[500px]">
-          <FormItem>
-            <FormLabel className="text-sm">Label*</FormLabel>
-            <FormControl>
-              <Input
-                aria-invalid={!!form.formState.errors.label}
-                placeholder="Ingrese el label de la colección."
-                {...register("label")}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-          <FormItem>
-            <FormLabel className="text-sm">Título*</FormLabel>
-            <FormControl>
-              <Input
-                aria-invalid={!!form.formState.errors.title}
-                placeholder="Ingrese el título de la colección."
-                {...register("title")}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+          <FormField
+            control={form.control}
+            name="label"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm">Nombre corto (label)*</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Ej. Ropa de mujer"
+                    {...field}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm">Título*</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Título que se muestra en la colección"
+                    {...field}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <FormItem>
-            <FormLabel className="text-sm">Slug*</FormLabel>
-            <div className="flex gap-2">
-              <FormControl className="flex-1">
-                <Input
-                  defaultValue={collection?.slug}
-                  aria-invalid={!!form.formState.errors.slug}
-                  placeholder="Ingrese el slug de la colección."
-                  {...register("slug")}
-                />
-              </FormControl>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={generateSlug}
-                disabled={!label || label.trim() === ""}
-                className="flex-shrink-0"
-                title="Generar slug desde el label"
-              >
-                <Icons.refresh className="h-4 w-4" />
-              </Button>
-            </div>
-            <FormMessage />
-          </FormItem>
+          <FormField
+            control={form.control}
+            name="slug"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm">Slug*</FormLabel>
+                <div className="flex gap-2">
+                  <FormControl className="flex-1">
+                    <Input
+                      placeholder="ropa-de-mujer"
+                      {...field}
+                      value={field.value ?? ""}
+                    />
+                  </FormControl>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={generateSlug}
+                    disabled={!label || label.trim() === ""}
+                    className="flex-shrink-0"
+                    title="Generar slug desde el label"
+                  >
+                    <Icons.refresh className="h-4 w-4" />
+                  </Button>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <FormItem>
-            <FormLabel className="text-sm">Descripción*</FormLabel>
-            <FormControl>
-              <Textarea
-                defaultValue={collection?.description}
-                aria-invalid={!!form.formState.errors.description}
-                placeholder="Ingrese la descripción de la colección."
-                {...register("description")}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm">Descripción*</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Descripción de la colección"
+                    {...field}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <FormField
             control={form.control}

@@ -2600,17 +2600,11 @@ export type AdminOrdersPageQueryQuery = {
         order_status?: string | null;
         payment_status: string;
         created_at: any;
-        order_linesCollection?: {
-          __typename?: "order_linesConnection";
-          edges: Array<{
-            __typename?: "order_linesEdge";
-            node: {
-              __typename?: "order_lines";
-              id: string;
-              product_id: string;
-            };
-          }>;
-        } | null;
+        name?: string | null;
+        phone?: string | null;
+        zone?: string | null;
+        amount: any;
+        shipping_cost?: any | null;
       };
     }>;
   } | null;
@@ -3676,13 +3670,11 @@ export type OrderColumnsFragmentFragment = {
   order_status?: string | null;
   payment_status: string;
   created_at: any;
-  order_linesCollection?: {
-    __typename?: "order_linesConnection";
-    edges: Array<{
-      __typename?: "order_linesEdge";
-      node: { __typename?: "order_lines"; id: string; product_id: string };
-    }>;
-  } | null;
+  name?: string | null;
+  phone?: string | null;
+  zone?: string | null;
+  amount: any;
+  shipping_cost?: any | null;
 };
 
 export type ProductCardFragmentFragment = {
@@ -4661,41 +4653,11 @@ export const OrderColumnsFragmentFragmentDoc = {
           { kind: "Field", name: { kind: "Name", value: "order_status" } },
           { kind: "Field", name: { kind: "Name", value: "payment_status" } },
           { kind: "Field", name: { kind: "Name", value: "created_at" } },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "order_linesCollection" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "edges" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "node" },
-                        selectionSet: {
-                          kind: "SelectionSet",
-                          selections: [
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "id" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "product_id" },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
+          { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "phone" } },
+          { kind: "Field", name: { kind: "Name", value: "zone" } },
+          { kind: "Field", name: { kind: "Name", value: "amount" } },
+          { kind: "Field", name: { kind: "Name", value: "shipping_cost" } },
         ],
       },
     },
@@ -5357,41 +5319,11 @@ export const AdminOrdersPageQueryDocument = {
           { kind: "Field", name: { kind: "Name", value: "order_status" } },
           { kind: "Field", name: { kind: "Name", value: "payment_status" } },
           { kind: "Field", name: { kind: "Name", value: "created_at" } },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "order_linesCollection" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "edges" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "node" },
-                        selectionSet: {
-                          kind: "SelectionSet",
-                          selections: [
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "id" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "product_id" },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
+          { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "phone" } },
+          { kind: "Field", name: { kind: "Name", value: "zone" } },
+          { kind: "Field", name: { kind: "Name", value: "amount" } },
+          { kind: "Field", name: { kind: "Name", value: "shipping_cost" } },
         ],
       },
     },
@@ -6359,6 +6291,29 @@ export const OrderPageQueryDocument = {
                 kind: "Argument",
                 name: { kind: "Name", value: "first" },
                 value: { kind: "IntValue", value: "8" },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "filter" },
+                value: {
+                  kind: "ObjectValue",
+                  fields: [
+                    {
+                      kind: "ObjectField",
+                      name: { kind: "Name", value: "stock" },
+                      value: {
+                        kind: "ObjectValue",
+                        fields: [
+                          {
+                            kind: "ObjectField",
+                            name: { kind: "Name", value: "gt" },
+                            value: { kind: "IntValue", value: "0" },
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
               },
             ],
             selectionSet: {

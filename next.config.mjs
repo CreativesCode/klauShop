@@ -3,6 +3,13 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  compiler: {
+    // Production logs: keep errors/warnings only (debug logs printed user ids and carts)
+    removeConsole:
+      process.env.NODE_ENV === "production"
+        ? { exclude: ["error", "warn"] }
+        : false,
+  },
   images: {
     // Media keys are immutable (a new upload gets a new key): keep optimized images 30 days
     minimumCacheTTL: 2592000,

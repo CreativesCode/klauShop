@@ -35,7 +35,7 @@ const OrderPageQuery = gql(/* GraphQL */ `
       }
     }
 
-    productsCollection(first: 8) {
+    productsCollection(first: 8, filter: { stock: { gt: 0 } }) {
       edges {
         ...BuyAgainCardFragment
       }

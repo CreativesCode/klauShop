@@ -32,7 +32,7 @@ function BuyAgainCard({ products }: BuyAgainCardProps) {
   return (
     <Card>
       <CardHeader className="px-6 py-3 flex flex-row justify-between items-center bg-zinc-100 rounded-t-md">
-        <h2 className="text-lg font-semibold text-primary">Comprar de nuevo</h2>
+        <h2 className="text-lg font-semibold text-primary">Te puede interesar</h2>
       </CardHeader>
       <CardContent className="flex flex-col gap-y-5 py-5">
         {products.map(({ node }) => {

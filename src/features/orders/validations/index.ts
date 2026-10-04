@@ -1,4 +1,5 @@
 import { phoneSchema } from "@/lib/phone";
+import { stripUnsafeChars } from "@/lib/safeText";
 import { z } from "zod";
 
 // Validación para información del cliente en checkout de WhatsApp
@@ -6,7 +7,8 @@ export const customerInfoSchema = z.object({
   name: z
     .string()
     .min(2, "El nombre debe tener al menos 2 caracteres")
-    .max(100, "El nombre es demasiado largo"),
+    .max(100, "El nombre es demasiado largo")
+    .transform(stripUnsafeChars),
   phone: phoneSchema,
   zone: z
     .string()
@@ -14,8 +16,16 @@ export const customerInfoSchema = z.object({
     .max(200, "La zona es demasiado larga"),
   // Registered zone; null/absent = "Otro" (cost defined later by the admin)
   shippingZoneId: z.string().nullable().optional(),
-  address: z.string().max(500, "La dirección es demasiado larga").optional(),
-  notes: z.string().max(1000, "Las notas son demasiado largas").optional(),
+  address: z
+    .string()
+    .max(500, "La dirección es demasiado larga")
+    .transform(stripUnsafeChars)
+    .optional(),
+  notes: z
+    .string()
+    .max(1000, "Las notas son demasiado largas")
+    .transform(stripUnsafeChars)
+    .optional(),
 });
 
 export type CustomerInfoInput = z.infer<typeof customerInfoSchema>;

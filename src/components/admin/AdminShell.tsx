@@ -23,10 +23,10 @@ function AdminShell({
         {showBackButton && <BackButton />}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-semibold w-[480px] mb-2 leading-tight">
+            <h1 className="text-2xl font-semibold w-full max-w-[480px] mb-2 leading-tight">
               {heading}
             </h1>
-            <p className="max-w-xl text-zinc-500 text-md w-[580px] leading-tight">
+            <p className="w-full max-w-xl text-zinc-500 text-md leading-tight">
               {description}
             </p>
           </div>

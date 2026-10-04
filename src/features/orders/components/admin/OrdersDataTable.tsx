@@ -162,6 +162,7 @@ function DataTable<TData, TValue>({
       // En móvil, ocultar columnas menos importantes
       setColumnVisibility({
         payment_status: false,
+        created_at: false,
       });
     } else {
       // En desktop, mostrar todas las columnas
@@ -175,11 +176,19 @@ function DataTable<TData, TValue>({
       const search = filterValue.toLowerCase();
       const order = row.original.node;
 
-      // Buscar en número de orden (ID formateado)
+      // Order number, customer name or phone (digits only, so "5307 7035" matches)
       const orderNumber = formatOrderNumber(order.id).toLowerCase();
       const orderId = order.id.toLowerCase();
+      const name = (order.name || "").toLowerCase();
+      const digits = search.replace(/\D/g, "");
+      const phoneDigits = (order.phone || "").replace(/\D/g, "");
 
-      return orderNumber.includes(search) || orderId.includes(search);
+      return (
+        orderNumber.includes(search) ||
+        orderId.includes(search) ||
+        name.includes(search) ||
+        (digits.length >= 3 && phoneDigits.includes(digits))
+      );
     },
     [],
   );
@@ -228,7 +237,7 @@ function DataTable<TData, TValue>({
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Buscar por número de orden..."
+            placeholder="Buscar por número, cliente o teléfono..."
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
             className="pl-9"
@@ -351,7 +360,7 @@ function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Sin resultados.
                 </TableCell>
               </TableRow>
             )}

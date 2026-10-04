@@ -19,7 +19,6 @@ import { formatOrderNumber } from "@/features/orders/utils/whatsapp";
 import db from "@/lib/supabase/db";
 import {
   OrderStatus,
-  inventoryReservations,
   medias,
   orderLines,
   orders,
@@ -73,6 +72,9 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
       price: orderLines.price,
       listPrice: orderLines.listPrice,
       discount: orderLines.discount,
+      color: orderLines.color,
+      size: orderLines.size,
+      material: orderLines.material,
       product: {
         id: products.id,
         name: products.name,
@@ -89,12 +91,6 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
     .leftJoin(products, eq(orderLines.productId, products.id))
     .leftJoin(medias, eq(products.featuredImageId, medias.id))
     .where(eq(orderLines.orderId, order.id));
-
-  // Obtener reservas de inventario (para color, size, material)
-  const reservations = await db
-    .select()
-    .from(inventoryReservations)
-    .where(eq(inventoryReservations.orderId, order.id));
 
   const orderNumber = formatOrderNumber(order.id);
   const customerData = order.customer_data as any;
@@ -162,9 +158,6 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             {items.map((item) => {
-              const reservation = reservations.find(
-                (r) => r.productId === item.product?.id,
-              );
 
               return (
                 <div
@@ -199,36 +192,36 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
                         />
                       </p>
                     </div>
-                    {reservation && (
+                    {(item.color || item.size || item.material) && (
                       <div className="flex flex-wrap gap-3 text-sm">
-                        {reservation.color && (
+                        {item.color && (
                           <div className="flex items-center gap-1.5">
                             <span className="text-muted-foreground">
                               Color:
                             </span>
                             <div
                               className="h-4 w-4 rounded-full border"
-                              style={{ backgroundColor: reservation.color }}
+                              style={{ backgroundColor: item.color }}
                             />
                           </div>
                         )}
-                        {reservation.size && (
+                        {item.size && (
                           <div>
                             <span className="text-muted-foreground">
                               Tamaño:
                             </span>{" "}
                             <span className="font-medium">
-                              {reservation.size}
+                              {item.size}
                             </span>
                           </div>
                         )}
-                        {reservation.material && (
+                        {item.material && (
                           <div>
                             <span className="text-muted-foreground">
                               Material:
                             </span>{" "}
                             <span className="font-medium">
-                              {reservation.material}
+                              {item.material}
                             </span>
                           </div>
                         )}

@@ -37,6 +37,7 @@ import type { SelectProducts } from "@/lib/supabase/schema";
 import { formatPrice } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -51,7 +52,10 @@ type AdminOrderCreateProduct = Pick<
   | "colors"
   | "sizes"
   | "materials"
->;
+> & {
+  // Stock minus active reservations (what can actually be sold now)
+  available: number;
+};
 
 const adminCreateOrderSchema = z.object({
   cartItems: z
@@ -71,14 +75,6 @@ const adminCreateOrderSchema = z.object({
 
 type AdminCreateOrderValues = z.infer<typeof adminCreateOrderSchema>;
 
-type CreatedOrderResult = {
-  orderId: string;
-  orderNumber: string;
-  whatsappUrl: string;
-  whatsappMessage: string;
-  adminUrl: string;
-};
-
 type AdminOrderCreateFormProps = {
   products: AdminOrderCreateProduct[];
 };
@@ -91,7 +87,7 @@ export default function AdminOrderCreateForm({
   const { toast } = useToast();
   const [query, setQuery] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [created, setCreated] = useState<CreatedOrderResult | null>(null);
+  const router = useRouter();
 
   const productById = useMemo(() => {
     return new Map(products.map((p) => [p.id, p]));
@@ -142,7 +138,15 @@ export default function AdminOrderCreateForm({
 
   const addProduct = (productId: string) => {
     const current = getValues("cartItems");
-    const idx = current.findIndex((x) => x.productId === productId);
+    const p = productById.get(productId);
+    const hasOptions =
+      ((p?.colors as string[] | null)?.length ?? 0) > 0 ||
+      ((p?.sizes as string[] | null)?.length ?? 0) > 0 ||
+      ((p?.materials as string[] | null)?.length ?? 0) > 0;
+    // Products with options get one line per variant (pick it on the new line)
+    const idx = hasOptions
+      ? -1
+      : current.findIndex((x) => x.productId === productId);
     if (idx >= 0) {
       const existing = current[idx];
       update(idx, { ...existing, quantity: existing.quantity + 1 });
@@ -160,7 +164,7 @@ export default function AdminOrderCreateForm({
 
   const onSubmit = form.handleSubmit(async (values) => {
     setIsSubmitting(true);
-    setCreated(null);
+    let created = false;
 
     try {
       const payload: AdminCreateOrderValues = values;
@@ -179,11 +183,13 @@ export default function AdminOrderCreateForm({
         );
       }
 
-      setCreated(data as CreatedOrderResult);
+      // Leave the form: a second tap on "Crear orden" used to create a duplicate
+      created = true;
       toast({
         title: "Orden creada",
         description: `Orden ${data.orderNumber} creada correctamente.`,
       });
+      router.push(`/admin/orders/${data.orderId}`);
     } catch (err: any) {
       console.error("Admin order create error:", err);
       toast({
@@ -192,7 +198,8 @@ export default function AdminOrderCreateForm({
         variant: "destructive",
       });
     } finally {
-      setIsSubmitting(false);
+      // Stays disabled after success until the detail page opens
+      if (!created) setIsSubmitting(false);
     }
   });
 
@@ -233,9 +240,13 @@ export default function AdminOrderCreateForm({
                           {Number(p.discount || 0) > 0 && (
                             <span>-{Number(p.discount)}%</span>
                           )}
-                          {typeof p.stock === "number" && (
-                            <span>Stock: {p.stock}</span>
-                          )}
+                          <span
+                            className={
+                              p.available <= 0 ? "text-destructive" : undefined
+                            }
+                          >
+                            Disponible: {p.available}
+                          </span>
                         </div>
                       </div>
                       <Button
@@ -552,58 +563,6 @@ export default function AdminOrderCreateForm({
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? "Creando..." : "Crear orden"}
               </Button>
-
-              {created && (
-                <div className="rounded-md border p-3 space-y-3">
-                  <div className="font-medium">
-                    Orden creada:{" "}
-                    <span className="font-semibold">{created.orderNumber}</span>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Button asChild variant="default">
-                      <a
-                        href={created.whatsappUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Abrir WhatsApp
-                      </a>
-                    </Button>
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={async () => {
-                        try {
-                          await navigator.clipboard.writeText(
-                            created.whatsappMessage,
-                          );
-                          toast({
-                            title: "Copiado",
-                            description:
-                              "Mensaje de WhatsApp copiado al portapapeles.",
-                          });
-                        } catch {
-                          toast({
-                            title: "No se pudo copiar",
-                            description:
-                              "Tu navegador no permitió copiar el mensaje.",
-                            variant: "destructive",
-                          });
-                        }
-                      }}
-                    >
-                      Copiar mensaje
-                    </Button>
-
-                    <Button asChild variant="secondary">
-                      <Link href={`/admin/orders/${created.orderId}`}>
-                        Ver detalle en admin
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
-              )}
 
               <Button asChild variant="ghost" className="w-full">
                 <Link href="/admin/orders">Volver a órdenes</Link>

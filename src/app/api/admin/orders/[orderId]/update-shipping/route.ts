@@ -50,6 +50,16 @@ export async function POST(
         throw new Error("Orden no encontrada");
       }
 
+      // Once paid the amount is final (it is in the revenue and was charged)
+      if (
+        order.order_status !== "pending_confirmation" &&
+        order.order_status !== "pending_payment"
+      ) {
+        throw new Error(
+          "El envío solo se puede cambiar antes de que el pedido esté pagado.",
+        );
+      }
+
       const currentAmount = Number(order.amount || "0");
       const oldShipping = Number(order.shipping_cost || "0");
       const amountWithoutShipping = currentAmount - oldShipping;

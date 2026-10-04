@@ -49,7 +49,6 @@ export async function POST(request: NextRequest) {
       { status: 404 },
     );
 
-  console.log("userResponse", userResponse.user);
 
   const { data: updatedUser, error } =
     await adminClient.auth.admin.updateUserById(validate.data.userId, {
