@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;background:#F6F5FA;}
+*{box-sizing:border-box;}
+body{font-family:'Manrope',system-ui,sans-serif;color:#111827;-webkit-font-smoothing:antialiased;}
+a{color:#5B21B6;text-decoration:none;}
+a:hover{color:#4C1D95;}
+img{display:block;}
+.ks-scroll::-webkit-scrollbar{display:none;}
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;background:#F6F5FA;">
+
+  <!-- Sidebar (desktop) -->
+  <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+    <aside style="position:sticky;top:0;height:100vh;width:{{ sideW }};flex-shrink:0;display:flex;flex-direction:column;background:{{ side.bg }};border-right:1px solid {{ side.border }};padding:16px 12px;transition:width .2s;">
+      <div style="display:flex;align-items:center;gap:10px;height:48px;padding:0 6px;margin-bottom:12px;">
+        <img src="assets/isotipo.svg" alt="" style="width:34px;height:34px;flex-shrink:0;">
+        <sc-if value="{{ expanded }}"><span style="display:flex;flex-direction:column;line-height:1.1;"><span style="font-size:15px;font-weight:800;color:{{ side.fg }};">Klau's Shop</span><span style="font-size:12px;font-weight:600;color:{{ side.muted }};">Administración</span></span></sc-if>
+      </div>
+      <nav style="flex:1;display:flex;flex-direction:column;gap:18px;overflow-y:auto;" class="ks-scroll">
+        <sc-for list="{{ navGroups }}" as="g" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <sc-if value="{{ expanded }}"><span style="padding:0 10px 6px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:{{ side.muted }};">{{ g.title }}</span></sc-if>
+            <sc-for list="{{ g.items }}" as="it">
+              <a href="#" title="{{ it.label }}" style="position:relative;display:flex;align-items:center;gap:12px;height:40px;padding:0 10px;border-radius:10px;font-size:14px;font-weight:600;background:{{ it.bg }};color:{{ it.fg }};" style-hover="background:{{ side.hover }};">
+                <span style="width:19px;height:19px;flex-shrink:0;background:currentColor;-webkit-mask:url({{ it.icon }}) center/contain no-repeat;mask:url({{ it.icon }}) center/contain no-repeat;"></span>
+                <sc-if value="{{ expanded }}"><span style="flex:1;">{{ it.label }}</span></sc-if>
+                <sc-if value="{{ it.count }}"><span style="min-width:22px;height:20px;padding:0 6px;border-radius:999px;background:#F59E0B;color:#111827;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;">{{ it.count }}</span></sc-if>
+              </a>
+            </sc-for>
+          </div>
+        </sc-for>
+      </nav>
+      <div style="display:flex;flex-direction:column;gap:4px;padding-top:12px;border-top:1px solid {{ side.border }};">
+        <a href="Tienda Inicio.dc.html" style="display:flex;align-items:center;gap:12px;height:40px;padding:0 10px;border-radius:10px;font-size:14px;font-weight:600;color:{{ side.muted }};" style-hover="background:{{ side.hover }};">
+          <span style="width:19px;height:19px;flex-shrink:0;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/store.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/store.svg) center/contain no-repeat;"></span>
+          <sc-if value="{{ expanded }}"><span>Ver tienda</span></sc-if>
+        </a>
+        <button onClick="{{ toggleSide }}" style="display:flex;align-items:center;gap:12px;height:40px;padding:0 10px;border:0;border-radius:10px;background:transparent;font:inherit;font-size:14px;font-weight:600;color:{{ side.muted }};cursor:pointer;" style-hover="background:{{ side.hover }};">
+          <span style="width:19px;height:19px;flex-shrink:0;background:currentColor;-webkit-mask:url({{ collapseIcon }}) center/contain no-repeat;mask:url({{ collapseIcon }}) center/contain no-repeat;"></span>
+          <sc-if value="{{ expanded }}"><span>Contraer menú</span></sc-if>
+        </button>
+      </div>
+    </aside>
+  </sc-if>
+
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column;padding-bottom:{{ bottomPad }};">
+
+    <!-- Top bar -->
+    <header style="position:sticky;top:0;z-index:30;background:rgba(246,245,250,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid #ECEAF3;">
+      <div style="max-width:1400px;margin:0 auto;padding:12px clamp(16px,2.4vw,32px);display:flex;align-items:center;gap:12px;">
+        <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+          <img src="assets/isotipo.svg" alt="" style="width:32px;height:32px;">
+        </sc-if>
+        <label style="flex:1;max-width:440px;display:flex;align-items:center;gap:10px;height:42px;padding:0 14px;border-radius:12px;background:#fff;border:1px solid #E7E4EF;">
+          <span style="width:17px;height:17px;flex-shrink:0;background:#6B7280;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/search.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/search.svg) center/contain no-repeat;"></span>
+          <input placeholder="Buscar órdenes, productos, clientes…" style="flex:1;min-width:0;border:0;outline:none;background:transparent;font:inherit;font-size:14px;">
+          <sc-if value="{{ isDesktop }}"><span style="font-size:11px;font-weight:700;color:#6B7280;padding:2px 6px;border:1px solid #E5E7EB;border-radius:6px;">⌘K</span></sc-if>
+        </label>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+          <button aria-label="Notificaciones" style="position:relative;width:42px;height:42px;border-radius:12px;border:1px solid #E7E4EF;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+            <span style="width:18px;height:18px;background:#374151;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/bell.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/bell.svg) center/contain no-repeat;"></span>
+            <span style="position:absolute;top:9px;right:10px;width:8px;height:8px;border-radius:50%;background:#F59E0B;border:2px solid #fff;"></span>
+          </button>
+          <span style="width:42px;height:42px;border-radius:12px;background:#6D28D9;color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;">KL</span>
+        </div>
+      </div>
+    </header>
+
+    <main style="width:100%;max-width:1400px;margin:0 auto;padding:clamp(20px,2.4vw,32px) clamp(16px,2.4vw,32px) 40px;display:flex;flex-direction:column;gap:clamp(16px,1.8vw,24px);">
+
+      <!-- Page heading -->
+      <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;">
+        <div>
+          <p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#6B7280;">Martes, 20 de octubre</p>
+          <h1 style="margin:0;font-size:clamp(24px,2.4vw,32px);font-weight:800;letter-spacing:-.02em;">Hola, Klau</h1>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+          <div class="ks-scroll" style="display:flex;gap:2px;padding:3px;border-radius:12px;background:#fff;border:1px solid #E7E4EF;overflow-x:auto;max-width:100%;">
+            <sc-for list="{{ ranges }}" as="r" hint-placeholder-count="4">
+              <button onClick="{{ r.select }}" style="flex-shrink:0;height:34px;padding:0 14px;border:0;border-radius:9px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;background:{{ r.bg }};color:{{ r.fg }};">{{ r.label }}</button>
+            </sc-for>
+          </div>
+          <button style="height:42px;padding:0 16px;border-radius:12px;border:1px solid #E7E4EF;background:#fff;font:inherit;font-size:13px;font-weight:700;color:#111827;display:flex;align-items:center;gap:8px;cursor:pointer;" style-hover="border-color:#C4B5FD;">
+            <span style="width:16px;height:16px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/download.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/download.svg) center/contain no-repeat;"></span>Exportar
+          </button>
+        </div>
+      </div>
+
+      <!-- Attention -->
+      <section style="background:#fff;border:1px solid #ECEAF3;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+          <h2 style="margin:0;font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:#F59E0B;"></span>Requiere tu atención</h2>
+          <a href="Admin Ordenes.dc.html" style="font-size:13px;font-weight:700;">Ver órdenes →</a>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:10px;">
+          <sc-for list="{{ attention }}" as="a" hint-placeholder-count="4">
+            <a href="#" style="display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;background:{{ a.bg }};color:#111827;border:1px solid {{ a.border }};" style-hover="transform:translateY(-1px);color:#111827;">
+              <span style="width:38px;height:38px;border-radius:11px;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <span style="width:18px;height:18px;background:{{ a.fg }};-webkit-mask:url({{ a.icon }}) center/contain no-repeat;mask:url({{ a.icon }}) center/contain no-repeat;"></span>
+              </span>
+              <span style="flex:1;min-width:0;"><span style="display:block;font-size:22px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums;color:{{ a.fg }};">{{ a.n }}</span><span style="display:block;font-size:13px;font-weight:600;color:#374151;">{{ a.label }}</span></span>
+              <span style="width:16px;height:16px;background:#9CA3AF;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/chevron-right.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/chevron-right.svg) center/contain no-repeat;"></span>
+            </a>
+          </sc-for>
+        </div>
+      </section>
+
+      <!-- KPIs -->
+      <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:clamp(12px,1.4vw,16px);">
+        <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+          <div style="background:#fff;border:1px solid #ECEAF3;border-radius:18px;padding:18px 18px 14px;display:flex;flex-direction:column;gap:10px;min-width:0;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+              <span style="font-size:13px;font-weight:700;color:#6B7280;">{{ k.label }}</span>
+              <span style="display:inline-flex;align-items:center;gap:2px;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:800;background:{{ k.deltaBg }};color:{{ k.deltaFg }};">{{ k.delta }}</span>
+            </div>
+            <span style="font-size:clamp(22px,2vw,28px);font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ k.value }}<span style="font-size:14px;font-weight:700;color:#6B7280;margin-left:4px;">{{ k.unit }}</span></span>
+            <svg viewBox="0 0 100 28" preserveAspectRatio="none" style="width:100%;height:34px;display:block;">
+              <path d="{{ k.area }}" fill="{{ k.areaFill }}"></path>
+              <path d="{{ k.line }}" fill="none" stroke="{{ k.stroke }}" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linejoin="round"></path>
+            </svg>
+            <span style="font-size:12px;color:#6B7280;">vs. período anterior · {{ k.prev }}</span>
+          </div>
+        </sc-for>
+      </section>
+
+      <!-- Chart + pipeline -->
+      <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:clamp(12px,1.4vw,16px);">
+        <div style="grid-column:span {{ chartSpan }};background:#fff;border:1px solid #ECEAF3;border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0;">
+          <div style="display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:12px;">
+            <div>
+              <h2 style="margin:0 0 4px;font-size:15px;font-weight:800;">Ingresos pagados</h2>
+              <span style="font-size:13px;color:#6B7280;">{{ chartCaption }}</span>
+            </div>
+            <div style="text-align:right;">
+              <span style="display:block;font-size:13px;font-weight:700;color:#6B7280;">{{ hoverLabel }}</span>
+              <span style="display:block;font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;">{{ hoverValue }}</span>
+            </div>
+          </div>
+          <div style="position:relative;height:clamp(180px,22vw,260px);display:flex;gap:6px;">
+            <div style="display:flex;flex-direction:column;justify-content:space-between;font-size:11px;font-weight:600;color:#9CA3AF;padding-bottom:22px;text-align:right;width:34px;flex-shrink:0;">
+              <sc-for list="{{ yTicks }}" as="t" hint-placeholder-count="4"><span>{{ t }}</span></sc-for>
+            </div>
+            <div style="position:relative;flex:1;min-width:0;display:flex;flex-direction:column;">
+              <div style="position:absolute;inset:0 0 22px 0;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none;">
+                <sc-for list="{{ yTicks }}" as="t"><span style="border-top:1px dashed #ECEAF3;"></span></sc-for>
+              </div>
+              <div onMouseLeave="{{ clearHover }}" style="position:relative;flex:1;display:flex;align-items:flex-end;gap:{{ barGap }};">
+                <sc-for list="{{ bars }}" as="b" hint-placeholder-count="20">
+                  <div onMouseEnter="{{ b.hover }}" onClick="{{ b.hover }}" style="flex:1;height:100%;display:flex;align-items:flex-end;cursor:pointer;">
+                    <div style="width:100%;height:{{ b.h }};min-height:3px;border-radius:5px 5px 2px 2px;background:{{ b.color }};transition:background .15s;"></div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="height:22px;display:flex;justify-content:space-between;align-items:flex-end;font-size:11px;font-weight:600;color:#9CA3AF;">
+                <sc-for list="{{ xTicks }}" as="t" hint-placeholder-count="4"><span>{{ t }}</span></sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:#fff;border:1px solid #ECEAF3;border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0;">
+          <div>
+            <h2 style="margin:0 0 4px;font-size:15px;font-weight:800;">Estado de las órdenes</h2>
+            <span style="font-size:13px;color:#6B7280;">{{ pipelineTotal }} órdenes activas en el período</span>
+          </div>
+          <div style="display:flex;height:10px;border-radius:999px;overflow:hidden;gap:2px;">
+            <sc-for list="{{ pipeline }}" as="s" hint-placeholder-count="6"><span style="flex:{{ s.n }};background:{{ s.dot }};"></span></sc-for>
+          </div>
+          <div style="display:flex;flex-direction:column;">
+            <sc-for list="{{ pipeline }}" as="s" hint-placeholder-count="6">
+              <a href="#" style="display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid #F3F2F7;color:#111827;" style-hover="color:#6D28D9;">
+                <span style="width:10px;height:10px;border-radius:3px;background:{{ s.dot }};flex-shrink:0;"></span>
+                <span style="flex:1;font-size:14px;font-weight:600;">{{ s.label }}</span>
+                <span style="font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;">{{ s.n }}</span>
+              </a>
+            </sc-for>
+          </div>
+        </div>
+      </section>
+
+      <!-- Orders + inventory -->
+      <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:clamp(12px,1.4vw,16px);">
+        <div style="grid-column:span {{ chartSpan }};background:#fff;border:1px solid #ECEAF3;border-radius:18px;min-width:0;overflow:hidden;">
+          <div style="padding:18px 20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #F3F2F7;">
+            <h2 style="margin:0;font-size:15px;font-weight:800;">Órdenes recientes</h2>
+            <div class="ks-scroll" style="display:flex;gap:6px;overflow-x:auto;max-width:100%;">
+              <sc-for list="{{ orderFilters }}" as="f" hint-placeholder-count="3">
+                <button onClick="{{ f.select }}" style="flex-shrink:0;height:32px;padding:0 12px;border-radius:999px;border:1px solid {{ f.border }};background:{{ f.bg }};color:{{ f.fg }};font:inherit;font-size:12px;font-weight:700;cursor:pointer;">{{ f.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+          <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+            <div style="overflow-x:auto;">
+              <table style="width:100%;border-collapse:collapse;font-size:14px;">
+                <thead>
+                  <tr style="text-align:left;color:#6B7280;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">
+                    <th style="padding:12px 20px;font-weight:700;">Orden</th>
+                    <th style="padding:12px 12px;font-weight:700;">Cliente</th>
+                    <th style="padding:12px 12px;font-weight:700;">Estado</th>
+                    <th style="padding:12px 12px;font-weight:700;text-align:right;">Total</th>
+                    <th style="padding:12px 20px;font-weight:700;text-align:right;">Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <sc-for list="{{ orders }}" as="o" hint-placeholder-count="6">
+                    <tr style="border-top:1px solid #F3F2F7;" style-hover="background:#FAF9FD;">
+                      <td style="padding:12px 20px;white-space:nowrap;"><span style="display:block;font-weight:800;">{{ o.id }}</span><span style="font-size:12px;color:#6B7280;">{{ o.when }}</span></td>
+                      <td style="padding:12px 12px;"><span style="display:block;font-weight:600;">{{ o.name }}</span><span style="font-size:12px;color:#6B7280;">{{ o.zone }} · {{ o.items }}</span></td>
+                      <td style="padding:12px 12px;"><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap;background:{{ o.st.bg }};color:{{ o.st.fg }};"><span style="width:6px;height:6px;border-radius:50%;background:currentColor;"></span>{{ o.st.label }}</span></td>
+                      <td style="padding:12px 12px;text-align:right;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ o.total }}</td>
+                      <td style="padding:12px 20px;text-align:right;">
+                        <sc-if value="{{ o.action }}">
+                          <button onClick="{{ o.advance }}" style="height:34px;padding:0 12px;border-radius:10px;border:0;background:{{ o.actionBg }};color:{{ o.actionFg }};font:inherit;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;">{{ o.action }}</button>
+                        </sc-if>
+                      </td>
+                    </tr>
+                  </sc-for>
+                </tbody>
+              </table>
+            </div>
+          </sc-if>
+          <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;">
+              <sc-for list="{{ orders }}" as="o">
+                <div style="padding:14px 16px;border-top:1px solid #F3F2F7;display:flex;flex-direction:column;gap:10px;">
+                  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+                    <span><span style="display:block;font-weight:800;font-size:14px;">{{ o.id }} · {{ o.name }}</span><span style="font-size:12px;color:#6B7280;">{{ o.when }} · {{ o.zone }}</span></span>
+                    <span style="font-weight:800;font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ o.total }}</span>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                    <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:{{ o.st.bg }};color:{{ o.st.fg }};"><span style="width:6px;height:6px;border-radius:50%;background:currentColor;"></span>{{ o.st.label }}</span>
+                    <sc-if value="{{ o.action }}"><button onClick="{{ o.advance }}" style="height:40px;padding:0 14px;border-radius:10px;border:0;background:{{ o.actionBg }};color:{{ o.actionFg }};font:inherit;font-size:13px;font-weight:800;">{{ o.action }}</button></sc-if>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+
+        <div style="background:#fff;border:1px solid #ECEAF3;border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;min-width:0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <h2 style="margin:0;font-size:15px;font-weight:800;">Inventario</h2>
+            <a href="#" style="font-size:13px;font-weight:700;">Productos →</a>
+          </div>
+          <sc-for list="{{ inventory }}" as="p" hint-placeholder-count="5">
+            <a href="#" style="display:flex;align-items:center;gap:12px;color:#111827;" style-hover="color:#6D28D9;">
+              <img src="{{ p.img }}" alt="" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#F1EEF7;">
+              <span style="flex:1;min-width:0;"><span style="display:block;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ p.name }}</span><span style="font-size:12px;color:#6B7280;">{{ p.cat }}</span></span>
+              <span style="padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap;background:{{ p.bg }};color:{{ p.fg }};">{{ p.stock }}</span>
+            </a>
+          </sc-for>
+          <div style="margin-top:auto;padding-top:12px;border-top:1px solid #F3F2F7;">
+            <span style="display:block;font-size:13px;font-weight:700;color:#6B7280;margin-bottom:10px;">Más vendidos del período</span>
+            <sc-for list="{{ topProducts }}" as="t" hint-placeholder-count="3">
+              <div style="display:flex;align-items:center;gap:10px;padding:6px 0;">
+                <span style="flex:1;min-width:0;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ t.name }}</span>
+                <span style="width:72px;height:6px;border-radius:999px;background:#F1EEF7;overflow:hidden;flex-shrink:0;"><span style="display:block;height:100%;width:{{ t.pct }};background:#6D28D9;border-radius:999px;"></span></span>
+                <span style="width:24px;text-align:right;font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;">{{ t.n }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Mobile tab bar -->
+  <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+    <nav style="position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(255,255,255,.95);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid #ECEAF3;display:grid;grid-template-columns:repeat(5,1fr);padding:6px 6px calc(6px + env(safe-area-inset-bottom));">
+      <sc-for list="{{ tabBar }}" as="n" hint-placeholder-count="5">
+        <a href="#" style="position:relative;height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:700;color:{{ n.color }};">
+          <span style="width:22px;height:22px;background:currentColor;-webkit-mask:url({{ n.icon }}) center/contain no-repeat;mask:url({{ n.icon }}) center/contain no-repeat;"></span>{{ n.label }}
+          <sc-if value="{{ n.count }}"><span style="position:absolute;top:2px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#F59E0B;color:#111827;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;">{{ n.count }}</span></sc-if>
+        </a>
+      </sc-for>
+    </nav>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;sidebarTheme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Claro&quot;,&quot;Oscuro&quot;],&quot;default&quot;:&quot;Claro&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;collapsedSidebar&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const ICON = n => 'https://unpkg.com/lucide-static@0.460.0/icons/' + n + '.svg';
+const IMG = k => 'https://bhwyagfoyylgrdgyngrm.supabase.co/storage/v1/object/public/klaushop/public/' + k;
+const fmt = n => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+const STATUS = {
+  pending_confirmation: { label: 'Por confirmar', bg: '#FEFCE8', fg: '#A16207', dot: '#EAB308' },
+  pending_payment: { label: 'Pendiente de pago', bg: '#FFF7ED', fg: '#C2410C', dot: '#F97316' },
+  paid: { label: 'Pagada', bg: '#F0FDF4', fg: '#15803D', dot: '#22C55E' },
+  processing: { label: 'Procesando', bg: '#EFF6FF', fg: '#1D4ED8', dot: '#3B82F6' },
+  shipped: { label: 'Enviada', bg: '#EEF2FF', fg: '#4338CA', dot: '#6366F1' },
+  delivered: { label: 'Entregada', bg: '#ECFDF5', fg: '#047857', dot: '#10B981' },
+  cancelled: { label: 'Cancelada', bg: '#FEF2F2', fg: '#B91C1C', dot: '#EF4444' },
+};
+const NEXT = { pending_confirmation: ['pending_payment', 'Confirmar'], pending_payment: ['paid', 'Marcar pagada'], paid: ['processing', 'Preparar'], processing: ['shipped', 'Marcar enviada'], shipped: ['delivered', 'Entregada'] };
+const ORDERS = [
+  { id: 'KS-1058', name: 'Daniela Pérez', zone: 'Santa Clara', items: '2 artículos', total: 9500, when: 'Hace 12 min', s: 'pending_confirmation' },
+  { id: 'KS-1057', name: 'Yanelis Rodríguez', zone: 'Placetas', items: '1 artículo', total: 5000, when: 'Hace 40 min', s: 'pending_confirmation' },
+  { id: 'KS-1056', name: 'Carlos Méndez', zone: 'Santa Clara', items: '3 artículos', total: 12900, when: 'Hace 2 h', s: 'pending_payment' },
+  { id: 'KS-1055', name: 'Mariela Gómez', zone: 'Encrucijada', items: '1 artículo', total: 4500, when: 'Hoy, 09:14', s: 'paid' },
+  { id: 'KS-1054', name: 'Leidy Castillo', zone: 'Calabazar de Sagua', items: '2 artículos', total: 6497, when: 'Ayer', s: 'processing' },
+  { id: 'KS-1053', name: 'Roberto Díaz', zone: 'Santa Clara', items: '1 artículo', total: 8000, when: 'Ayer', s: 'shipped' },
+  { id: 'KS-1052', name: 'Anabel Torres', zone: 'Placetas', items: '4 artículos', total: 3900, when: '18 oct', s: 'delivered' },
+];
+const RANGES = [{ id: 'today', label: 'Hoy', days: 1, k: 0.06 }, { id: '7d', label: '7 días', days: 7, k: 0.3 }, { id: 'month', label: 'Este mes', days: 20, k: 1 }, { id: '90d', label: '90 días', days: 90, k: 3.6 }];
+function series(n, seed) { const a = []; let x = seed; for (let i = 0; i < n; i++) { x = (x * 9301 + 49297) % 233280; a.push(0.25 + (x / 233280) * 0.75 + Math.sin(i / 2.3) * 0.15); } return a; }
+function spark(vals) {
+  const max = Math.max(...vals), min = Math.min(...vals), r = max - min || 1;
+  const pts = vals.map((v, i) => [(i / (vals.length - 1)) * 100, 26 - ((v - min) / r) * 22]);
+  const line = 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L');
+  return { line, area: line + ' L100 28 L0 28 Z' };
+}
+
+class Component extends DCLogic {
+  state = { vw: typeof window !== 'undefined' ? window.innerWidth : 1440, range: 'month', hover: -1, filter: 'all', collapsed: null, orders: ORDERS };
+  componentDidMount() { this.onR = () => this.setState({ vw: window.innerWidth }); window.addEventListener('resize', this.onR); }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); }
+  renderVals() {
+    const { vw, range, hover, filter, orders } = this.state;
+    const mobile = vw < 900;
+    const collapsed = this.state.collapsed ?? (this.props.collapsedSidebar ?? false);
+    const dark = (this.props.sidebarTheme ?? 'Claro') === 'Oscuro';
+    const side = dark
+      ? { bg: '#1E1033', border: '#2E1A4D', fg: '#fff', muted: '#C4B5FD', hover: 'rgba(255,255,255,.07)', activeBg: 'rgba(196,181,253,.16)', activeFg: '#fff', idle: '#DDD6FE' }
+      : { bg: '#fff', border: '#ECEAF3', fg: '#111827', muted: '#6B7280', hover: '#F5F3FF', activeBg: '#F5F3FF', activeFg: '#5B21B6', idle: '#374151' };
+    const R = RANGES.find(r => r.id === range);
+    const pending = orders.filter(o => o.s === 'pending_confirmation').length;
+    const nav = (label, icon, active, count) => ({ label, icon: ICON(icon), bg: active ? side.activeBg : 'transparent', fg: active ? side.activeFg : side.idle, count: count || 0 });
+
+    const nBars = R.id === '90d' ? 13 : R.id === 'today' ? 12 : R.days;
+    const raw = series(nBars, R.days * 7 + 3);
+    const total = 186400 * R.k;
+    const sum = raw.reduce((a, b) => a + b, 0);
+    const vals = raw.map(v => (v / sum) * total);
+    const max = Math.max(...vals);
+    const niceMax = Math.ceil(max / 5000) * 5000 || 5000;
+    const labelFor = i => R.id === 'today' ? `${8 + i}:00` : R.id === '90d' ? `Sem ${i + 1}` : R.id === '7d' ? ['Mié', 'Jue', 'Vie', 'Sáb', 'Dom', 'Lun', 'Mar'][i] : `${i + 1} oct`;
+    const xIdx = [0, Math.floor(nBars / 3), Math.floor((2 * nBars) / 3), nBars - 1];
+
+    const kdef = [
+      { label: 'Ingresos pagados', value: fmt(total), unit: 'CUP', d: 12.4, prev: fmt(total / 1.124) + ' CUP', seed: 3 },
+      { label: 'Ventas pagadas', value: fmt(Math.max(1, 38 * R.k)), unit: '', d: 8.1, prev: fmt(Math.max(1, 35 * R.k)), seed: 11 },
+      { label: 'Ticket promedio', value: fmt(4905), unit: 'CUP', d: 3.9, prev: '4.721 CUP', seed: 17 },
+      { label: 'Ingresos por envíos', value: fmt(11400 * R.k), unit: 'CUP', d: -4.2, prev: fmt(11900 * R.k) + ' CUP', seed: 29 },
+    ];
+    const pipeCounts = ['pending_confirmation', 'pending_payment', 'paid', 'processing', 'shipped', 'delivered'].map(s => ({ s, n: orders.filter(o => o.s === s).length + ({ paid: 4, processing: 2, shipped: 3, delivered: 21 }[s] || 0) }));
+    const shown = orders.filter(o => filter === 'all' || (filter === 'pending' ? ['pending_confirmation', 'pending_payment'].includes(o.s) : !['pending_confirmation', 'pending_payment'].includes(o.s))).slice(0, mobile ? 5 : 7);
+
+    return {
+      isDesktop: !mobile, isMobile: mobile, expanded: !collapsed, sideW: collapsed ? '72px' : '248px', side,
+      collapseIcon: ICON(collapsed ? 'panel-left-open' : 'panel-left-close'),
+      toggleSide: () => this.setState({ collapsed: !collapsed }),
+      bottomPad: mobile ? '76px' : '0',
+      navGroups: [
+        { title: 'General', items: [nav('Dashboard', 'layout-dashboard', true), nav('Órdenes', 'receipt', false, pending)] },
+        { title: 'Catálogo', items: [nav('Productos', 'shopping-cart'), nav('Colecciones', 'folder'), nav('Multimedia', 'image')] },
+        { title: 'Clientes y envíos', items: [nav('Usuarios', 'user'), nav('Zonas de envío', 'truck')] },
+      ],
+      ranges: RANGES.map(r => ({ label: r.label, bg: r.id === range ? '#111827' : 'transparent', fg: r.id === range ? '#fff' : '#4B5563', select: () => this.setState({ range: r.id, hover: -1 }) })),
+      attention: [
+        { n: pending, label: 'Órdenes por confirmar', icon: ICON('clock'), bg: '#FEFCE8', border: '#FEF08A', fg: '#A16207' },
+        { n: orders.filter(o => o.s === 'pending_payment').length, label: 'Esperando pago', icon: ICON('credit-card'), bg: '#FFF7ED', border: '#FED7AA', fg: '#C2410C' },
+        { n: 3, label: 'Productos sin stock', icon: ICON('package-x'), bg: '#FEF2F2', border: '#FECACA', fg: '#B91C1C' },
+        { n: 2, label: 'Envío sin costo definido', icon: ICON('truck'), bg: '#F5F3FF', border: '#DDD6FE', fg: '#5B21B6' },
+      ],
+      kpis: kdef.map(k => {
+        const sp = spark(series(14, k.seed + R.days)); const up = k.d >= 0;
+        return { ...k, ...sp, delta: (up ? '↑ ' : '↓ ') + Math.abs(k.d).toFixed(1) + '%', deltaBg: up ? '#ECFDF5' : '#FEF2F2', deltaFg: up ? '#047857' : '#B91C1C', stroke: '#6D28D9', areaFill: 'rgba(109,40,217,.08)' };
+      }),
+      chartSpan: mobile || vw < 1180 ? 1 : 2,
+      chartCaption: `${R.label} · ${fmt(total)} CUP en total`,
+      hoverLabel: hover >= 0 ? labelFor(hover) : 'Mejor día',
+      hoverValue: fmt(hover >= 0 ? vals[hover] : max) + ' CUP',
+      yTicks: [niceMax, niceMax * 0.66, niceMax * 0.33, 0].map(v => v >= 1000 ? Math.round(v / 1000) + 'k' : '0'),
+      xTicks: xIdx.map(labelFor),
+      barGap: nBars > 16 ? '4px' : '8px',
+      bars: vals.map((v, i) => ({ h: (v / niceMax) * 100 + '%', color: i === hover ? '#6D28D9' : (hover < 0 && v === max) ? '#7C3AED' : '#DDD6FE', hover: () => this.setState({ hover: i }) })),
+      clearHover: () => this.setState({ hover: -1 }),
+      pipelineTotal: pipeCounts.reduce((a, b) => a + b.n, 0),
+      pipeline: pipeCounts.map(p => ({ label: STATUS[p.s].label, n: p.n, dot: STATUS[p.s].dot })),
+      orderFilters: [['all', 'Todas'], ['pending', 'Pendientes'], ['done', 'En curso']].map(([id, label]) => ({ label, bg: id === filter ? '#111827' : '#fff', fg: id === filter ? '#fff' : '#374151', border: id === filter ? '#111827' : '#E5E7EB', select: () => this.setState({ filter: id }) })),
+      orders: shown.map(o => {
+        const nx = NEXT[o.s]; const urgent = o.s === 'pending_confirmation' || o.s === 'pending_payment';
+        return { ...o, total: fmt(o.total) + ' CUP', st: STATUS[o.s], action: nx ? nx[1] : '', actionBg: urgent ? '#6D28D9' : '#F3F2F7', actionFg: urgent ? '#fff' : '#111827',
+          advance: () => nx && this.setState(s => ({ orders: s.orders.map(x => x.id === o.id ? { ...x, s: nx[0] } : x) })) };
+      }),
+      inventory: [
+        { name: 'Carro Todoterreno RC Off-Road', cat: 'Juguetes', img: IMG('K-06UnQmtDPKl-eFlO7r3.jpeg'), stock: 'Agotado', bg: '#FEF2F2', fg: '#B91C1C' },
+        { name: 'Monedero Negro', cat: 'Bolsos', img: IMG('trqkd0DgVZmpJ37wLVd1K.jpeg'), stock: 'Agotado', bg: '#FEF2F2', fg: '#B91C1C' },
+        { name: 'Pantalón Blanco Hueso de Hilo', cat: 'Pantalones', img: IMG('1J9yxbOSfjm46i2urf-XH.jpeg'), stock: '1 und.', bg: '#FFF7ED', fg: '#C2410C' },
+        { name: 'Camisa de Hombre Elastizada', cat: 'Camisas', img: IMG('C8uM6EKeXo1Zzowo_-bJ_.jpeg'), stock: '1 und.', bg: '#FFF7ED', fg: '#C2410C' },
+        { name: 'Lego 250 pcs', cat: 'Juguetes', img: IMG('kGDTm2BFn6WlDBZYHYLDc.jpeg'), stock: '3 und.', bg: '#FFF7ED', fg: '#C2410C' },
+      ],
+      topProducts: [['Vestido Negro Ajustado', 9], ['Guantes infantiles', 7], ['Serum Facial 4 en 1', 5]].map(([name, n]) => ({ name, n, pct: (n / 9) * 100 + '%' })),
+      tabBar: [
+        { label: 'Inicio', icon: ICON('layout-dashboard'), color: '#6D28D9' },
+        { label: 'Órdenes', icon: ICON('receipt'), color: '#6B7280', count: pending },
+        { label: 'Productos', icon: ICON('shopping-cart'), color: '#6B7280' },
+        { label: 'Clientes', icon: ICON('user'), color: '#6B7280' },
+        { label: 'Más', icon: ICON('menu'), color: '#6B7280' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

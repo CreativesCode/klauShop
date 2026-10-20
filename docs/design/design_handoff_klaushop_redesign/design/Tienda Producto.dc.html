@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;background:#FAFAFC;}
+*{box-sizing:border-box;}
+body{font-family:'Manrope',system-ui,sans-serif;color:#111827;-webkit-font-smoothing:antialiased;}
+a{color:#5B21B6;text-decoration:none;}
+a:hover{color:#4C1D95;}
+img{display:block;}
+.ks-scroll::-webkit-scrollbar{display:none;}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#FAFAFC;padding-bottom:{{ bottomPad }};">
+
+  <div style="background:#2E1065;color:#EDE9FE;font-size:13px;font-weight:500;">
+    <div style="max-width:1320px;margin:0 auto;padding:9px 20px;display:flex;justify-content:center;align-items:center;gap:10px;text-align:center;">
+      <span style="width:6px;height:6px;border-radius:50%;background:#F59E0B;flex-shrink:0;"></span>
+      <span>Envíos a domicilio en Santa Clara, Placetas, Encrucijada y Calabazar de Sagua</span>
+    </div>
+  </div>
+
+  <header style="position:sticky;top:0;z-index:40;background:rgba(255,255,255,0.86);backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #EEEAF6;">
+    <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+      <div style="max-width:1320px;margin:0 auto;padding:14px 32px;display:flex;align-items:center;gap:32px;">
+        <a href="Tienda Inicio.dc.html" style="display:flex;align-items:center;flex-shrink:0;height:44px;overflow:hidden;"><img src="assets/imagotipo_horizontal.svg" alt="Klau's Shop" style="height:76px;width:auto;margin:0 -18px 0 -26px;"></a>
+        <label style="flex:1;max-width:560px;display:flex;align-items:center;gap:10px;height:44px;padding:0 16px;border-radius:999px;background:#F4F2F8;">
+          <span style="width:18px;height:18px;flex-shrink:0;background:#6B7280;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/search.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/search.svg) center/contain no-repeat;"></span>
+          <input placeholder="Buscar vestidos, juguetes, accesorios…" style="flex:1;border:0;background:transparent;outline:none;font:inherit;font-size:14px;">
+        </label>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:6px;">
+          <a href="#" style="display:flex;align-items:center;gap:8px;height:44px;padding:0 14px;border-radius:999px;color:#111827;font-size:14px;font-weight:600;" style-hover="background:#F4F2F8;">
+            <span style="width:20px;height:20px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/user.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/user.svg) center/contain no-repeat;"></span>Entrar
+          </a>
+          <button onClick="{{ openCart }}" style="display:flex;align-items:center;gap:8px;height:44px;padding:0 16px 0 14px;border:0;border-radius:999px;background:#111827;color:#fff;font:inherit;font-size:14px;font-weight:600;cursor:pointer;" style-hover="background:#2E1065;">
+            <span style="width:19px;height:19px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/shopping-bag.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/shopping-bag.svg) center/contain no-repeat;"></span>
+            Carrito <span style="min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:#F59E0B;color:#111827;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;">{{ cartCount }}</span>
+          </button>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:8px 12px;display:flex;align-items:center;gap:4px;">
+        <a href="Tienda Inicio.dc.html" aria-label="Volver" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#111827;">
+          <span style="width:22px;height:22px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/chevron-left.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/chevron-left.svg) center/contain no-repeat;"></span>
+        </a>
+        <a href="Tienda Inicio.dc.html" style="flex:1;display:flex;justify-content:center;height:40px;overflow:hidden;"><img src="assets/imagotipo_horizontal.svg" alt="Klau's Shop" style="height:68px;width:auto;margin-top:-14px;"></a>
+        <button onClick="{{ openCart }}" aria-label="Carrito" style="position:relative;width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center;color:#111827;">
+          <span style="width:22px;height:22px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/shopping-bag.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/shopping-bag.svg) center/contain no-repeat;"></span>
+          <span style="position:absolute;top:5px;right:4px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#F59E0B;color:#111827;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;">{{ cartCount }}</span>
+        </button>
+      </div>
+    </sc-if>
+  </header>
+
+  <main style="max-width:1320px;margin:0 auto;padding:clamp(12px,2vw,24px) clamp(16px,3vw,32px) 0;">
+    <nav style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;font-weight:600;color:#6B7280;margin-bottom:clamp(12px,2vw,24px);">
+      <a href="Tienda Inicio.dc.html" style="color:#6B7280;">Inicio</a><span>/</span><a href="#" style="color:#6B7280;">{{ p.cat }}</a><span>/</span><span style="color:#111827;">{{ p.name }}</span>
+    </nav>
+
+    <div style="display:flex;flex-wrap:wrap;gap:clamp(24px,4vw,64px);align-items:flex-start;">
+      <!-- Gallery -->
+      <div style="flex:1 1 520px;min-width:0;display:flex;gap:12px;flex-direction:{{ galleryDir }};">
+        <div class="ks-scroll" style="display:flex;flex-direction:{{ thumbDir }};gap:10px;overflow:auto;flex-shrink:0;">
+          <sc-for list="{{ thumbs }}" as="t" hint-placeholder-count="2">
+            <button onClick="{{ t.select }}" style="width:72px;height:90px;padding:0;border-radius:12px;overflow:hidden;border:2px solid {{ t.border }};background:#F1EEF7;cursor:pointer;flex-shrink:0;">
+              <img src="{{ t.src }}" alt="" style="width:100%;height:100%;object-fit:cover;">
+            </button>
+          </sc-for>
+        </div>
+        <div style="position:relative;flex:1;aspect-ratio:4/5;border-radius:24px;overflow:hidden;background:#F1EEF7;">
+          <img src="{{ mainImg }}" alt="{{ p.name }}" style="width:100%;height:100%;object-fit:cover;">
+          <div style="position:absolute;top:14px;left:14px;display:flex;gap:6px;">
+            <sc-if value="{{ p.badge }}"><span style="padding:5px 12px;border-radius:999px;background:#fff;color:#5B21B6;font-size:12px;font-weight:800;">{{ p.badge }}</span></sc-if>
+            <sc-if value="{{ p.discount }}"><span style="padding:5px 12px;border-radius:999px;background:#F59E0B;color:#111827;font-size:12px;font-weight:800;">-{{ p.discount }}%</span></sc-if>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div style="flex:1 1 380px;min-width:0;max-width:540px;display:flex;flex-direction:column;gap:22px;position:sticky;top:96px;">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <a href="#" style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6B7280;">{{ p.cat }}</a>
+            <div style="display:flex;gap:6px;">
+              <button aria-label="Compartir" style="width:42px;height:42px;border-radius:50%;border:1px solid #E5E7EB;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                <span style="width:18px;height:18px;background:#111827;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/share-2.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/share-2.svg) center/contain no-repeat;"></span>
+              </button>
+              <button onClick="{{ toggleWish }}" aria-label="Favorito" style="width:42px;height:42px;border-radius:50%;border:1px solid #E5E7EB;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="{{ heartFill }}" stroke="{{ heartStroke }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+              </button>
+            </div>
+          </div>
+          <h1 style="margin:0;font-size:clamp(26px,3vw,38px);font-weight:800;line-height:1.15;letter-spacing:-.02em;text-wrap:pretty;">{{ p.name }}</h1>
+          <div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 12px;">
+            <span style="font-size:clamp(26px,2.6vw,32px);font-weight:800;font-variant-numeric:tabular-nums;">{{ price }}</span>
+            <sc-if value="{{ oldPrice }}"><span style="font-size:17px;color:#6B7280;text-decoration:line-through;">{{ oldPrice }}</span><span style="font-size:14px;font-weight:700;color:#B45309;">Ahorras {{ saving }}</span></sc-if>
+          </div>
+          <span style="display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:{{ stockColor }};"><span style="width:8px;height:8px;border-radius:50%;background:currentColor;"></span>{{ stockText }}</span>
+        </div>
+
+        <sc-if value="{{ hasColors }}">
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <span style="font-size:14px;font-weight:700;">Color: <span style="font-weight:500;color:#4B5563;">{{ colorName }}</span></span>
+            <div style="display:flex;gap:10px;">
+              <sc-for list="{{ colors }}" as="c">
+                <button onClick="{{ c.select }}" aria-label="{{ c.name }}" style="width:40px;height:40px;border-radius:50%;padding:3px;border:2px solid {{ c.ring }};background:#fff;cursor:pointer;"><span style="display:block;width:100%;height:100%;border-radius:50%;background:{{ c.hex }};border:1px solid rgba(17,24,39,.12);"></span></button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasSizes }}">
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:14px;font-weight:700;">Talla</span><a href="#" style="font-size:13px;font-weight:700;">Guía de tallas</a></div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+              <sc-for list="{{ sizes }}" as="s">
+                <button onClick="{{ s.select }}" style="min-width:56px;height:48px;padding:0 16px;border-radius:12px;border:1.5px solid {{ s.border }};background:{{ s.bg }};color:{{ s.fg }};font:inherit;font-size:15px;font-weight:700;cursor:pointer;">{{ s.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;height:54px;border-radius:999px;border:1px solid #D1D5DB;background:#fff;">
+            <button onClick="{{ dec }}" aria-label="Menos" style="width:48px;height:100%;border:0;background:transparent;font:inherit;font-size:20px;cursor:pointer;color:#111827;">−</button>
+            <span style="width:28px;text-align:center;font-weight:800;font-variant-numeric:tabular-nums;">{{ qty }}</span>
+            <button onClick="{{ inc }}" aria-label="Más" style="width:48px;height:100%;border:0;background:transparent;font:inherit;font-size:20px;cursor:pointer;color:{{ incColor }};">+</button>
+          </div>
+          <button onClick="{{ addToCart }}" style="flex:1;min-width:200px;height:54px;border:0;border-radius:999px;background:#6D28D9;color:#fff;font:inherit;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 8px 24px -8px rgba(109,40,217,.55);display:flex;align-items:center;justify-content:center;gap:10px;" style-hover="background:#5B21B6;">
+            <span style="width:19px;height:19px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/shopping-bag.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/shopping-bag.svg) center/contain no-repeat;"></span>Añadir al carrito
+          </button>
+        </div>
+        <a href="#" style="display:flex;align-items:center;justify-content:center;gap:10px;height:52px;border-radius:999px;border:1.5px solid #111827;color:#111827;font-size:15px;font-weight:800;margin-top:-10px;" style-hover="background:#111827;color:#fff;">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"></path></svg>
+          Preguntar por WhatsApp
+        </a>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div style="padding:14px;border-radius:16px;background:#F5F3FF;display:flex;gap:10px;align-items:flex-start;">
+            <span style="width:20px;height:20px;flex-shrink:0;background:#6D28D9;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/truck.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/truck.svg) center/contain no-repeat;"></span>
+            <span style="font-size:13px;line-height:1.45;color:#374151;"><strong style="display:block;color:#111827;">Envío a domicilio</strong>Costo según tu zona</span>
+          </div>
+          <div style="padding:14px;border-radius:16px;background:#FFF8EE;display:flex;gap:10px;align-items:flex-start;">
+            <span style="width:20px;height:20px;flex-shrink:0;background:#B45309;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/repeat.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/repeat.svg) center/contain no-repeat;"></span>
+            <span style="font-size:13px;line-height:1.45;color:#374151;"><strong style="display:block;color:#111827;">Cambios al recibir</strong>Si no te sirve, lo devuelves</span>
+          </div>
+        </div>
+
+        <div style="border-top:1px solid #ECEAF3;">
+          <sc-for list="{{ accordion }}" as="a" hint-placeholder-count="2">
+            <div style="border-bottom:1px solid #ECEAF3;">
+              <button onClick="{{ a.toggle }}" style="width:100%;height:56px;padding:0;border:0;background:transparent;display:flex;align-items:center;justify-content:space-between;font:inherit;font-size:15px;font-weight:800;color:#111827;cursor:pointer;">{{ a.title }}<span style="font-size:20px;font-weight:500;color:#6B7280;">{{ a.sign }}</span></button>
+              <sc-if value="{{ a.open }}"><p style="margin:0 0 18px;font-size:15px;line-height:1.65;color:#4B5563;text-wrap:pretty;">{{ a.body }}</p></sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recommendations -->
+    <section style="padding-top:clamp(56px,7vw,96px);">
+      <h2 style="margin:0 0 20px;font-size:clamp(22px,2.2vw,30px);font-weight:800;letter-spacing:-.02em;">Te puede interesar</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(max(156px,calc((100% - 72px)/4)),1fr));gap:clamp(24px,3vw,40px) clamp(12px,1.8vw,24px);">
+        <sc-for list="{{ recs }}" as="r" hint-placeholder-count="4">
+          <a href="#" style="display:flex;flex-direction:column;gap:10px;color:#111827;min-width:0;">
+            <span style="display:block;aspect-ratio:4/5;border-radius:18px;overflow:hidden;background:#F1EEF7;"><img src="{{ r.img }}" alt="" style="width:100%;height:100%;object-fit:cover;"></span>
+            <span style="font-size:12px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.06em;">{{ r.cat }}</span>
+            <span style="font-size:15px;font-weight:600;line-height:1.35;margin-top:-4px;">{{ r.name }}</span>
+            <span style="font-size:16px;font-weight:800;margin-top:-4px;">{{ r.price }}</span>
+          </a>
+        </sc-for>
+      </div>
+    </section>
+  </main>
+
+  <!-- Mobile sticky buy bar -->
+  <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;left:0;right:0;bottom:0;z-index:45;background:rgba(255,255,255,.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid #EEEAF6;padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px;">
+      <span style="display:flex;flex-direction:column;line-height:1.2;"><span style="font-size:17px;font-weight:800;">{{ price }}</span><span style="font-size:12px;font-weight:600;color:{{ stockColor }};">{{ stockText }}</span></span>
+      <button onClick="{{ addToCart }}" style="flex:1;height:50px;border:0;border-radius:999px;background:#6D28D9;color:#fff;font:inherit;font-size:15px;font-weight:800;">Añadir al carrito</button>
+    </div>
+  </sc-if>
+
+  <!-- Cart drawer -->
+  <sc-if value="{{ cartOpen }}">
+    <div onClick="{{ closeCart }}" style="position:fixed;inset:0;z-index:70;background:rgba(17,24,39,.42);"></div>
+    <aside style="position:fixed;top:0;right:0;bottom:0;z-index:71;width:min(100%,440px);background:#fff;display:flex;flex-direction:column;box-shadow:-20px 0 60px -20px rgba(17,24,39,.35);">
+      <div style="padding:18px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #F1EEF7;">
+        <span style="font-size:18px;font-weight:800;">Tu carrito <span style="color:#6B7280;font-weight:600;">({{ cartCount }})</span></span>
+        <button onClick="{{ closeCart }}" aria-label="Cerrar" style="width:44px;height:44px;border:0;border-radius:50%;background:#F4F2F8;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+          <span style="width:18px;height:18px;background:#111827;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/x.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/x.svg) center/contain no-repeat;"></span>
+        </button>
+      </div>
+      <sc-if value="{{ justAdded }}">
+        <div style="margin:14px 20px 0;padding:10px 14px;border-radius:12px;background:#ECFDF5;color:#047857;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;">
+          <span style="width:17px;height:17px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/circle-check.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/circle-check.svg) center/contain no-repeat;"></span>Producto añadido. Tu stock está reservado al pedir.
+        </div>
+      </sc-if>
+      <div style="flex:1;overflow-y:auto;padding:8px 20px;">
+        <sc-for list="{{ cartItems }}" as="c" hint-placeholder-count="2">
+          <div style="display:flex;gap:14px;padding:14px 0;border-bottom:1px solid #F1EEF7;">
+            <img src="{{ c.img }}" alt="" style="width:76px;height:96px;border-radius:12px;object-fit:cover;background:#F1EEF7;flex-shrink:0;">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;">
+              <span style="font-size:14px;font-weight:700;line-height:1.35;">{{ c.name }}</span>
+              <span style="font-size:13px;color:#6B7280;">{{ c.variant }}</span>
+              <div style="margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                <div style="display:flex;align-items:center;height:36px;border-radius:999px;border:1px solid #E5E7EB;">
+                  <button onClick="{{ c.dec }}" style="width:34px;height:100%;border:0;background:transparent;font:inherit;font-size:16px;cursor:pointer;">−</button>
+                  <span style="width:20px;text-align:center;font-size:14px;font-weight:800;">{{ c.qty }}</span>
+                  <button onClick="{{ c.inc }}" style="width:34px;height:100%;border:0;background:transparent;font:inherit;font-size:16px;cursor:pointer;">+</button>
+                </div>
+                <span style="font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;">{{ c.total }}</span>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+        <sc-if value="{{ cartEmpty }}"><p style="text-align:center;color:#6B7280;padding:48px 0;font-size:15px;">Tu carrito está vacío.</p></sc-if>
+        <div style="padding:18px 0 8px;display:flex;flex-direction:column;gap:8px;">
+          <span style="font-size:14px;font-weight:700;">Zona de entrega</span>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <sc-for list="{{ zones }}" as="z" hint-placeholder-count="4">
+              <button onClick="{{ z.select }}" style="min-height:44px;padding:8px 12px;border-radius:12px;border:1.5px solid {{ z.border }};background:{{ z.bg }};font:inherit;font-size:13px;font-weight:700;color:#111827;text-align:left;cursor:pointer;">{{ z.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+      <div style="padding:16px 20px calc(16px + env(safe-area-inset-bottom));border-top:1px solid #F1EEF7;display:flex;flex-direction:column;gap:10px;background:#FAFAFC;">
+        <div style="display:flex;justify-content:space-between;font-size:14px;color:#4B5563;"><span>Subtotal</span><span style="font-variant-numeric:tabular-nums;">{{ subtotal }}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;color:#4B5563;"><span>Envío</span><span style="color:#B45309;font-weight:700;">Se acuerda por WhatsApp</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:800;"><span>Total</span><span style="font-variant-numeric:tabular-nums;">{{ subtotal }}</span></div>
+        <button style="height:54px;border:0;border-radius:999px;background:#6D28D9;color:#fff;font:inherit;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;" style-hover="background:#5B21B6;">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"></path></svg>
+          Hacer pedido por WhatsApp
+        </button>
+        <span style="font-size:12px;color:#6B7280;text-align:center;">El pago se coordina por WhatsApp, fuera de la tienda.</span>
+      </div>
+    </aside>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;producto&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Vestido Negro&quot;,&quot;Monedero Negro&quot;],&quot;default&quot;:&quot;Vestido Negro&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const IMG = k => 'https://bhwyagfoyylgrdgyngrm.supabase.co/storage/v1/object/public/klaushop/public/' + k;
+const fmt = n => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' CUP';
+const PRODUCTS = {
+  'Monedero Negro': { id: 'bag', name: 'Monedero Negro', cat: 'Bolsos', price: 5260, discount: 5, stock: 1, imgs: ['trqkd0DgVZmpJ37wLVd1K.jpeg', 'tWjFv5bvkWbtF1Om4jR4f.jpeg'], colors: [{ name: 'Negro', hex: '#111111' }], sizes: [],
+    desc: 'Monedero compacto en tono negro con cierre seguro y compartimentos interiores para tarjetas y billetes. Cabe en cualquier bolso y combina con todo.' },
+  'Vestido Negro': { id: 'dress', name: 'Vestido Negro Ajustado con Falda Acampanada', cat: 'Vestidos', price: 5000, discount: 0, badge: 'Nuevo', stock: 6, imgs: ['1MhUGz7WEZy-_8xmlsy_C.jpeg'], colors: [], sizes: ['M', 'L'],
+    desc: 'Vestido de corte ajustado en el torso y falda acampanada que estiliza la figura. Tela suave con buena caída, ideal para salidas o eventos de día y de noche.' },
+};
+const SHIP = 'El costo de envío se calcula según tu dirección y se muestra al finalizar la compra. Coordinamos entrega a domicilio o punto de recogida según tu zona. Las devoluciones o cambios solo se aceptan en el momento de la entrega, si el producto no te sirve o no te gusta.';
+
+class Component extends DCLogic {
+  state = { vw: typeof window !== 'undefined' ? window.innerWidth : 1440, img: 0, size: '', color: 0, qty: 1, wish: false, open: 0, cartOpen: false, justAdded: false, zone: 'Santa Clara',
+    cart: [{ key: 'lego', name: 'Lego 250 pcs', variant: 'Juguetes', img: IMG('kGDTm2BFn6WlDBZYHYLDc.jpeg'), unit: 3500, qty: 1 }] };
+  componentDidMount() { this.onR = () => this.setState({ vw: window.innerWidth }); window.addEventListener('resize', this.onR); }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); }
+  setQty(key, d) { this.setState(s => ({ cart: s.cart.map(c => c.key === key ? { ...c, qty: c.qty + d } : c).filter(c => c.qty > 0) })); }
+  renderVals() {
+    const st = this.state;
+    const mobile = st.vw < 820;
+    const p = PRODUCTS[this.props.producto ?? 'Vestido Negro'] || PRODUCTS['Vestido Negro'];
+    const final = p.discount ? Math.round(p.price * (1 - p.discount / 100)) : p.price;
+    const size = st.size || p.sizes[0] || '';
+    const imgIdx = Math.min(st.img, p.imgs.length - 1);
+    const count = st.cart.reduce((a, c) => a + c.qty, 0);
+    const sub = st.cart.reduce((a, c) => a + c.qty * c.unit, 0);
+    return {
+      isDesktop: !mobile, isMobile: mobile, bottomPad: mobile ? '84px' : '0',
+      p: { ...p, badge: p.badge || '', discount: p.discount || 0 },
+      galleryDir: mobile ? 'column-reverse' : 'row', thumbDir: mobile ? 'row' : 'column',
+      mainImg: IMG(p.imgs[imgIdx]),
+      thumbs: p.imgs.map((k, i) => ({ src: IMG(k), border: i === imgIdx ? '#6D28D9' : 'transparent', select: () => this.setState({ img: i }) })),
+      price: fmt(final), oldPrice: p.discount ? fmt(p.price) : '', saving: fmt(p.price - final),
+      stockText: p.stock <= 1 ? 'Última unidad disponible' : p.stock < 5 ? `Quedan ${p.stock} unidades` : 'En stock · listo para entregar',
+      stockColor: p.stock < 5 ? '#B45309' : '#047857',
+      heartFill: st.wish ? '#6D28D9' : 'none', heartStroke: st.wish ? '#6D28D9' : '#111827', toggleWish: () => this.setState({ wish: !st.wish }),
+      hasColors: p.colors.length > 0, colorName: p.colors[st.color]?.name || '',
+      colors: p.colors.map((c, i) => ({ ...c, ring: i === st.color ? '#111827' : '#E5E7EB', select: () => this.setState({ color: i }) })),
+      hasSizes: p.sizes.length > 0,
+      sizes: p.sizes.map(s => ({ label: s, border: s === size ? '#111827' : '#D1D5DB', bg: s === size ? '#111827' : '#fff', fg: s === size ? '#fff' : '#111827', select: () => this.setState({ size: s }) })),
+      qty: st.qty, incColor: st.qty >= p.stock ? '#D1D5DB' : '#111827',
+      dec: () => this.setState({ qty: Math.max(1, st.qty - 1) }), inc: () => this.setState({ qty: Math.min(p.stock, st.qty + 1) }),
+      accordion: [{ title: 'Descripción', body: p.desc }, { title: 'Envío y devoluciones', body: SHIP }].map((a, i) => ({ ...a, open: st.open === i, sign: st.open === i ? '−' : '+', toggle: () => this.setState({ open: st.open === i ? -1 : i }) })),
+      recs: [['Pantalón Blanco Hueso de Hilo', 'Pantalones', 4500, '1J9yxbOSfjm46i2urf-XH.jpeg'], ['Guantes infantiles para el frío', 'Accesorios', 1000, 'LrV9qQy747HXqoe8jP3UT.jpeg'], ['Serum Facial Especial 4 en 1', 'Cuidado de la piel', 1500, 'rGHV_4GfpNxO0Y-XIVCpr.jpeg'], ['Camisa de Hombre Elastizada', 'Camisas', 5225, 'C8uM6EKeXo1Zzowo_-bJ_.jpeg']].map(([name, cat, pr, k]) => ({ name, cat, price: fmt(pr), img: IMG(k) })),
+      cartCount: count, cartOpen: st.cartOpen, justAdded: st.justAdded, cartEmpty: st.cart.length === 0,
+      openCart: () => this.setState({ cartOpen: true, justAdded: false }), closeCart: () => this.setState({ cartOpen: false }),
+      addToCart: () => {
+        const key = p.id + size + st.color;
+        const variant = [p.cat, size && `Talla ${size}`, p.colors[st.color]?.name].filter(Boolean).join(' · ');
+        this.setState(s => {
+          const ex = s.cart.find(c => c.key === key);
+          const cart = ex ? s.cart.map(c => c.key === key ? { ...c, qty: Math.min(p.stock, c.qty + s.qty) } : c) : [...s.cart, { key, name: p.name, variant, img: IMG(p.imgs[0]), unit: final, qty: s.qty }];
+          return { cart, cartOpen: true, justAdded: true };
+        });
+      },
+      cartItems: st.cart.map(c => ({ ...c, total: fmt(c.unit * c.qty), dec: () => this.setQty(c.key, -1), inc: () => this.setQty(c.key, 1) })),
+      zones: ['Santa Clara', 'Placetas', 'Encrucijada', 'Calabazar de Sagua'].map(z => ({ label: z, border: z === st.zone ? '#6D28D9' : '#E5E7EB', bg: z === st.zone ? '#F5F3FF' : '#fff', select: () => this.setState({ zone: z }) })),
+      subtotal: fmt(sub),
+    };
+  }
+}
+</script>
+</body>
+</html>

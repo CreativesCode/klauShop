@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;background:#FAFAFC;}
+*{box-sizing:border-box;}
+body{font-family:'Manrope',system-ui,sans-serif;color:#111827;-webkit-font-smoothing:antialiased;}
+a{color:#5B21B6;text-decoration:none;}
+a:hover{color:#4C1D95;}
+img{display:block;}
+.ks-scroll::-webkit-scrollbar{display:none;}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#FAFAFC;padding-bottom:{{ bottomPad }};">
+
+  <!-- Announcement -->
+  <div style="background:#2E1065;color:#EDE9FE;font-size:13px;font-weight:500;">
+    <div style="max-width:1320px;margin:0 auto;padding:9px 20px;display:flex;justify-content:center;align-items:center;gap:10px;text-align:center;">
+      <span style="width:6px;height:6px;border-radius:50%;background:#F59E0B;flex-shrink:0;"></span>
+      <span style="text-wrap:pretty;">Envíos a domicilio en Santa Clara, Placetas, Encrucijada y Calabazar de Sagua</span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header style="position:sticky;top:0;z-index:40;background:rgba(255,255,255,0.86);backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #EEEAF6;">
+    <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+      <div style="max-width:1320px;margin:0 auto;padding:14px 32px;display:flex;align-items:center;gap:32px;">
+        <a href="#" style="display:flex;align-items:center;flex-shrink:0;height:44px;overflow:hidden;">
+          <img src="assets/imagotipo_horizontal.svg" alt="Klau's Shop" style="height:76px;width:auto;margin:0 -18px 0 -26px;">
+        </a>
+        <label style="flex:1;max-width:560px;display:flex;align-items:center;gap:10px;height:44px;padding:0 16px;border-radius:999px;background:#F4F2F8;border:1px solid transparent;" style-focus-within="border-color:#C4B5FD;background:#fff;">
+          <span style="width:18px;height:18px;flex-shrink:0;background:#6B7280;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/search.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/search.svg) center/contain no-repeat;"></span>
+          <input placeholder="Buscar vestidos, juguetes, accesorios…" style="flex:1;border:0;background:transparent;outline:none;font:inherit;font-size:14px;color:#111827;">
+        </label>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:6px;">
+          <a href="#" style="display:flex;align-items:center;gap:8px;height:44px;padding:0 14px;border-radius:999px;color:#111827;font-size:14px;font-weight:600;" style-hover="background:#F4F2F8;">
+            <span style="width:20px;height:20px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/user.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/user.svg) center/contain no-repeat;"></span>Entrar
+          </a>
+          <a href="#" aria-label="Favoritos" style="position:relative;display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:999px;color:#111827;" style-hover="background:#F4F2F8;">
+            <span style="width:20px;height:20px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/heart.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/heart.svg) center/contain no-repeat;"></span>
+            <sc-if value="{{ hasWish }}"><span style="position:absolute;top:6px;right:6px;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#6D28D9;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;">{{ wishCount }}</span></sc-if>
+          </a>
+          <a href="#" style="display:flex;align-items:center;gap:8px;height:44px;padding:0 16px 0 14px;border-radius:999px;background:#111827;color:#fff;font-size:14px;font-weight:600;" style-hover="background:#2E1065;color:#fff;">
+            <span style="width:19px;height:19px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/shopping-bag.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/shopping-bag.svg) center/contain no-repeat;"></span>
+            Carrito <span style="min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:#F59E0B;color:#111827;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;">{{ cartCount }}</span>
+          </a>
+        </div>
+      </div>
+      <nav style="max-width:1320px;margin:0 auto;padding:0 32px;display:flex;gap:4px;overflow-x:auto;" class="ks-scroll">
+        <sc-for list="{{ categories }}" as="c" hint-placeholder-count="8">
+          <a href="#" style="flex-shrink:0;padding:10px 14px 12px;font-size:14px;font-weight:600;color:#4B5563;border-bottom:2px solid transparent;white-space:nowrap;" style-hover="color:#111827;border-bottom-color:#6D28D9;">{{ c.label }}</a>
+        </sc-for>
+      </nav>
+    </sc-if>
+    <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:8px 12px;display:flex;align-items:center;gap:4px;">
+        <button aria-label="Menú" style="width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center;border-radius:12px;color:#111827;">
+          <span style="width:22px;height:22px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/menu.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/menu.svg) center/contain no-repeat;"></span>
+        </button>
+        <a href="#" style="flex:1;display:flex;justify-content:center;height:40px;overflow:hidden;">
+          <img src="assets/imagotipo_horizontal.svg" alt="Klau's Shop" style="height:68px;width:auto;margin-top:-14px;">
+        </a>
+        <a href="#" aria-label="Carrito" style="position:relative;width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#111827;">
+          <span style="width:22px;height:22px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/shopping-bag.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/shopping-bag.svg) center/contain no-repeat;"></span>
+          <span style="position:absolute;top:5px;right:4px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#F59E0B;color:#111827;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;">{{ cartCount }}</span>
+        </a>
+      </div>
+      <div style="padding:0 16px 12px;">
+        <label style="display:flex;align-items:center;gap:10px;height:44px;padding:0 14px;border-radius:12px;background:#F4F2F8;">
+          <span style="width:18px;height:18px;background:#6B7280;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/search.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/search.svg) center/contain no-repeat;"></span>
+          <input placeholder="Buscar en Klau's Shop" style="flex:1;border:0;background:transparent;outline:none;font:inherit;font-size:16px;">
+        </label>
+      </div>
+    </sc-if>
+  </header>
+
+  <!-- Hero -->
+  <section style="max-width:1320px;margin:0 auto;padding:clamp(16px,3vw,32px) clamp(16px,3vw,32px) 0;">
+    <sc-if value="{{ heroMosaic }}" hint-placeholder-val="{{ true }}">
+      <div style="background:#FFF8EE;border-radius:clamp(20px,2.4vw,32px);overflow:hidden;display:flex;flex-wrap:wrap;">
+        <div style="flex:1 1 400px;padding:clamp(28px,5vw,72px);display:flex;flex-direction:column;justify-content:center;gap:clamp(18px,2vw,26px);">
+          <span style="align-self:flex-start;display:inline-flex;align-items:center;gap:8px;padding:6px 12px 6px 8px;border-radius:999px;background:#fff;border:1px solid #F3E6CF;font-size:13px;font-weight:600;color:#92400E;">
+            <span style="padding:2px 8px;border-radius:999px;background:#F59E0B;color:#111827;font-size:11px;font-weight:800;letter-spacing:.04em;">NUEVO</span>Llegaron vestidos y accesorios
+          </span>
+          <h1 style="margin:0;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(48px,7.2vw,104px);line-height:.95;letter-spacing:-.02em;color:#111827;">Moda para<br>el <em style="color:#6D28D9;">día a día.</em></h1>
+          <p style="margin:0;max-width:440px;font-size:clamp(15px,1.3vw,18px);line-height:1.6;color:#4B5563;text-wrap:pretty;">Ropa, accesorios y regalos seleccionados con cariño. Pides en minutos y lo coordinamos contigo por WhatsApp.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;">
+            <a href="#productos" style="display:inline-flex;align-items:center;gap:10px;height:52px;padding:0 26px;border-radius:999px;background:#6D28D9;color:#fff;font-size:15px;font-weight:700;box-shadow:0 8px 24px -8px rgba(109,40,217,.55);" style-hover="background:#5B21B6;color:#fff;">
+              Ver novedades
+              <span style="width:18px;height:18px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/arrow-right.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/arrow-right.svg) center/contain no-repeat;"></span>
+            </a>
+            <a href="#encargos" style="display:inline-flex;align-items:center;height:52px;padding:0 24px;border-radius:999px;background:#fff;color:#111827;border:1px solid #E7DCC8;font-size:15px;font-weight:700;" style-hover="border-color:#111827;color:#111827;">Encargos Shein · Temu · Amazon</a>
+          </div>
+        </div>
+        <div style="flex:1 1 440px;min-height:clamp(340px,42vw,600px);display:grid;grid-template-columns:1.25fr 1fr;grid-template-rows:1fr 1fr;gap:10px;padding:10px;">
+          <div style="grid-row:span 2;position:relative;border-radius:22px;overflow:hidden;background:#EADFCB;">
+            <img src="https://bhwyagfoyylgrdgyngrm.supabase.co/storage/v1/object/public/klaushop/public/1MhUGz7WEZy-_8xmlsy_C.jpeg" alt="Vestido negro" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+            <a href="#" style="position:absolute;left:12px;right:12px;bottom:12px;display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:16px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);color:#111827;">
+              <span style="flex:1;min-width:0;"><span style="display:block;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Vestido Negro Ajustado</span><span style="display:block;font-size:13px;color:#4B5563;">5.000 CUP</span></span>
+              <span style="width:34px;height:34px;border-radius:50%;background:#111827;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="width:16px;height:16px;background:#fff;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/arrow-up-right.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/arrow-up-right.svg) center/contain no-repeat;"></span></span>
+            </a>
+          </div>
+          <div style="position:relative;border-radius:22px;overflow:hidden;background:#EADFCB;">
+            <img src="https://bhwyagfoyylgrdgyngrm.supabase.co/storage/v1/object/public/klaushop/public/1J9yxbOSfjm46i2urf-XH.jpeg" alt="Pantalón blanco hueso" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+            <span style="position:absolute;top:10px;left:10px;padding:4px 10px;border-radius:999px;background:#F59E0B;color:#111827;font-size:12px;font-weight:800;">-10%</span>
+          </div>
+          <div style="position:relative;border-radius:22px;overflow:hidden;background:#EADFCB;">
+            <img src="https://bhwyagfoyylgrdgyngrm.supabase.co/storage/v1/object/public/klaushop/public/trqkd0DgVZmpJ37wLVd1K.jpeg" alt="Monedero negro" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+          </div>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ heroFull }}" hint-placeholder-val="{{ false }}">
+      <div style="position:relative;border-radius:clamp(20px,2.4vw,32px);overflow:hidden;min-height:clamp(460px,52vw,680px);display:flex;align-items:flex-end;">
+        <img src="https://bhwyagfoyylgrdgyngrm.supabase.co/storage/v1/object/public/klaushop/public/bg-hero.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(17,24,39,0) 30%,rgba(17,24,39,.72) 100%);"></div>
+        <div style="position:relative;padding:clamp(24px,5vw,64px);display:flex;flex-direction:column;gap:18px;max-width:760px;">
+          <h1 style="margin:0;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(48px,7.2vw,104px);line-height:.95;letter-spacing:-.02em;color:#fff;">Moda para<br>el <em style="color:#FCD34D;">día a día.</em></h1>
+          <p style="margin:0;max-width:440px;font-size:clamp(15px,1.3vw,18px);line-height:1.6;color:#fff;">Ropa, accesorios y regalos seleccionados con cariño. Pides en minutos y lo coordinamos contigo por WhatsApp.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;">
+            <a href="#productos" style="display:inline-flex;align-items:center;height:52px;padding:0 26px;border-radius:999px;background:#fff;color:#111827;font-size:15px;font-weight:700;" style-hover="background:#F5F3FF;color:#111827;">Ver novedades</a>
+            <a href="#encargos" style="display:inline-flex;align-items:center;height:52px;padding:0 24px;border-radius:999px;border:1.5px solid rgba(255,255,255,.7);color:#fff;font-size:15px;font-weight:700;" style-hover="background:rgba(255,255,255,.12);color:#fff;">Encargos Shein · Temu · Amazon</a>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:1px;margin-top:clamp(12px,1.6vw,20px);border-radius:18px;overflow:hidden;background:#EEEAF6;border:1px solid #EEEAF6;">
+      <sc-for list="{{ perks }}" as="p" hint-placeholder-count="4">
+        <div style="background:#fff;padding:16px 18px;display:flex;align-items:center;gap:14px;">
+          <span style="width:40px;height:40px;border-radius:12px;background:#F5F3FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="width:20px;height:20px;background:#6D28D9;-webkit-mask:url({{ p.icon }}) center/contain no-repeat;mask:url({{ p.icon }}) center/contain no-repeat;"></span>
+          </span>
+          <span style="min-width:0;"><span style="display:block;font-size:14px;font-weight:700;">{{ p.title }}</span><span style="display:block;font-size:13px;color:#6B7280;">{{ p.text }}</span></span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section style="max-width:1320px;margin:0 auto;padding:clamp(40px,5vw,72px) clamp(16px,3vw,32px) 0;">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;">
+      <h2 style="margin:0;font-size:clamp(22px,2.2vw,30px);font-weight:800;letter-spacing:-.02em;">Compra por categoría</h2>
+      <a href="#" style="font-size:14px;font-weight:700;white-space:nowrap;">Ver todo →</a>
+    </div>
+    <div class="ks-scroll" style="display:grid;grid-auto-flow:column;grid-auto-columns:minmax(132px,1fr);gap:clamp(10px,1.4vw,18px);overflow-x:auto;scroll-snap-type:x mandatory;margin:0 calc(-1 * clamp(16px,3vw,32px));padding:0 clamp(16px,3vw,32px);">
+      <sc-for list="{{ catCards }}" as="c" hint-placeholder-count="6">
+        <a href="#" style="scroll-snap-align:start;display:flex;flex-direction:column;gap:10px;color:#111827;" style-hover="color:#6D28D9;">
+          <span style="display:block;aspect-ratio:1/1;border-radius:20px;overflow:hidden;background:#F4F2F8;">
+            <img src="{{ c.img }}" alt="{{ c.label }}" style="width:100%;height:100%;object-fit:cover;">
+          </span>
+          <span style="font-size:14px;font-weight:700;text-align:center;">{{ c.label }}</span>
+        </a>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- Products -->
+  <section id="productos" style="max-width:1320px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(16px,3vw,32px) 0;">
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 24px;margin-bottom:24px;">
+      <div>
+        <h2 style="margin:0 0 6px;font-size:clamp(22px,2.2vw,30px);font-weight:800;letter-spacing:-.02em;">Te encantarán</h2>
+        <p style="margin:0;font-size:15px;color:#6B7280;">Piezas casuales y urbanas, con existencias limitadas.</p>
+      </div>
+      <div class="ks-scroll" style="display:flex;gap:6px;padding:4px;border-radius:999px;background:#F1EEF7;overflow-x:auto;max-width:100%;">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
+          <button onClick="{{ t.select }}" style="flex-shrink:0;height:38px;padding:0 16px;border:0;border-radius:999px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;background:{{ t.bg }};color:{{ t.fg }};box-shadow:{{ t.shadow }};">{{ t.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(max(156px,calc((100% - 72px)/4)),1fr));gap:clamp(24px,3vw,40px) clamp(12px,1.8vw,24px);">
+      <sc-for list="{{ products }}" as="p" hint-placeholder-count="8">
+        <article style="display:flex;flex-direction:column;gap:12px;min-width:0;">
+          <div style="position:relative;aspect-ratio:4/5;border-radius:18px;overflow:hidden;background:#F1EEF7;">
+            <a href="#" style="position:absolute;inset:0;">
+              <img src="{{ p.img }}" alt="{{ p.name }}" style="width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.2,.7,.2,1);" style-hover="transform:scale(1.04);">
+            </a>
+            <div style="position:absolute;top:10px;left:10px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;pointer-events:none;">
+              <sc-if value="{{ p.badge }}"><span style="padding:4px 10px;border-radius:999px;background:#fff;color:#5B21B6;font-size:11px;font-weight:800;letter-spacing:.02em;">{{ p.badge }}</span></sc-if>
+              <sc-if value="{{ p.discount }}"><span style="padding:4px 10px;border-radius:999px;background:#F59E0B;color:#111827;font-size:11px;font-weight:800;">-{{ p.discount }}%</span></sc-if>
+            </div>
+            <button onClick="{{ p.toggleWish }}" aria-label="Añadir a favoritos" style="position:absolute;top:8px;right:8px;width:40px;height:40px;border:0;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="{{ p.heartFill }}" stroke="{{ p.heartStroke }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+            </button>
+            <button onClick="{{ p.add }}" style="position:absolute;left:8px;right:8px;bottom:8px;height:42px;border:0;border-radius:12px;background:rgba(17,24,39,.9);color:#fff;font:inherit;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;" style-hover="background:#6D28D9;">
+              <span style="width:16px;height:16px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/plus.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/plus.svg) center/contain no-repeat;"></span>{{ p.addLabel }}
+            </button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;min-width:0;padding:0 2px;">
+            <span style="font-size:12px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.06em;">{{ p.cat }}</span>
+            <a href="#" style="font-size:15px;font-weight:600;line-height:1.35;color:#111827;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;" style-hover="color:#6D28D9;">{{ p.name }}</a>
+            <div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px;margin-top:2px;">
+              <span style="font-size:16px;font-weight:800;color:#111827;font-variant-numeric:tabular-nums;">{{ p.price }}</span>
+              <sc-if value="{{ p.old }}"><span style="font-size:13px;color:#6B7280;text-decoration:line-through;">{{ p.old }}</span></sc-if>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:{{ p.stockColor }};">
+              <span style="width:6px;height:6px;border-radius:50%;background:currentColor;"></span>{{ p.stock }}<sc-if value="{{ p.sizes }}"><span style="color:#6B7280;font-weight:500;">· Tallas {{ p.sizes }}</span></sc-if>
+            </div>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+    <div style="display:flex;justify-content:center;margin-top:36px;">
+      <a href="#" style="display:inline-flex;align-items:center;height:48px;padding:0 26px;border-radius:999px;border:1px solid #D1D5DB;color:#111827;font-size:15px;font-weight:700;background:#fff;" style-hover="border-color:#111827;color:#111827;">Ver toda la tienda</a>
+    </div>
+  </section>
+
+  <!-- Editorial banners -->
+  <section style="max-width:1320px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(16px,3vw,32px) 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(12px,1.6vw,20px);">
+    <sc-for list="{{ banners }}" as="b" hint-placeholder-count="2">
+      <a href="#" style="position:relative;display:flex;align-items:flex-end;min-height:clamp(380px,38vw,520px);border-radius:28px;overflow:hidden;background:#EADFCB;color:#fff;">
+        <img src="{{ b.img }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+        <span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(17,24,39,0) 35%,rgba(17,24,39,.75) 100%);"></span>
+        <span style="position:relative;padding:clamp(22px,3vw,36px);display:flex;flex-direction:column;gap:12px;max-width:460px;">
+          <span style="font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#FCD34D;">{{ b.kicker }}</span>
+          <span style="font-family:'Instrument Serif',serif;font-size:clamp(40px,4.4vw,60px);line-height:1;">{{ b.title }}</span>
+          <span style="font-size:15px;line-height:1.55;color:#fff;text-wrap:pretty;">{{ b.text }}</span>
+          <span style="align-self:flex-start;margin-top:6px;display:inline-flex;align-items:center;height:46px;padding:0 22px;border-radius:999px;background:#fff;color:#111827;font-size:14px;font-weight:700;">{{ b.cta }}</span>
+        </span>
+      </a>
+    </sc-for>
+  </section>
+
+  <!-- Encargos -->
+  <section id="encargos" style="max-width:1320px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(16px,3vw,32px) 0;">
+    <div style="border-radius:28px;background:#2E1065;color:#fff;padding:clamp(28px,5vw,64px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:clamp(28px,4vw,56px);align-items:center;">
+      <div style="display:flex;flex-direction:column;gap:18px;">
+        <span style="font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#FCD34D;">Compras por encargo</span>
+        <h2 style="margin:0;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(38px,4.6vw,64px);line-height:1;letter-spacing:-.01em;">¿Lo viste en Shein, Temu o Amazon? <em style="color:#C4B5FD;">Te lo traemos.</em></h2>
+        <a href="#" style="align-self:flex-start;display:inline-flex;align-items:center;gap:10px;height:52px;padding:0 24px;border-radius:999px;background:#F59E0B;color:#111827;font-size:15px;font-weight:800;" style-hover="background:#FBBF24;color:#111827;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"></path></svg>
+          Enviar link por WhatsApp
+        </a>
+      </div>
+      <ol style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;">
+        <sc-for list="{{ steps }}" as="s" hint-placeholder-count="3">
+          <li style="display:flex;gap:16px;align-items:flex-start;padding:18px 20px;border-radius:18px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);">
+            <span style="width:34px;height:34px;border-radius:50%;background:#fff;color:#2E1065;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ s.n }}</span>
+            <span><span style="display:block;font-size:16px;font-weight:700;margin-bottom:4px;">{{ s.title }}</span><span style="display:block;font-size:14px;line-height:1.55;color:#DDD6FE;">{{ s.text }}</span></span>
+          </li>
+        </sc-for>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="margin-top:clamp(56px,7vw,104px);background:#fff;border-top:1px solid #EEEAF6;">
+    <div style="max-width:1320px;margin:0 auto;padding:clamp(36px,5vw,64px) clamp(16px,3vw,32px) 28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:32px;">
+      <div style="grid-column:span 2;min-width:0;max-width:380px;display:flex;flex-direction:column;gap:12px;">
+        <div style="height:46px;overflow:hidden;"><img src="assets/imagotipo_horizontal.svg" alt="Klau's Shop" style="height:80px;margin:-17px 0 0 -26px;"></div>
+        <p style="margin:0;font-size:14px;line-height:1.65;color:#4B5563;">Tu tienda online de ropa y accesorios. Envíos a domicilio en Santa Clara, Placetas, Encrucijada y Calabazar de Sagua.</p>
+      </div>
+      <sc-for list="{{ footerCols }}" as="col" hint-placeholder-count="3">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <span style="font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#111827;">{{ col.title }}</span>
+          <sc-for list="{{ col.links }}" as="l">
+            <a href="#" style="font-size:14px;color:#4B5563;" style-hover="color:#6D28D9;">{{ l }}</a>
+          </sc-for>
+        </div>
+      </sc-for>
+    </div>
+    <div style="max-width:1320px;margin:0 auto;padding:18px clamp(16px,3vw,32px) 28px;border-top:1px solid #F1EEF7;font-size:13px;color:#6B7280;">© 2026 Klau's Shop. Todos los derechos reservados.</div>
+  </footer>
+
+  <!-- Mobile bottom nav -->
+  <sc-if value="{{ showBottom }}" hint-placeholder-val="{{ false }}">
+    <nav style="position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid #EEEAF6;display:grid;grid-template-columns:repeat(4,1fr);padding:6px 8px calc(6px + env(safe-area-inset-bottom));">
+      <sc-for list="{{ bottomNav }}" as="n" hint-placeholder-count="4">
+        <a href="#" style="height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:700;color:{{ n.color }};">
+          <span style="width:22px;height:22px;background:currentColor;-webkit-mask:url({{ n.icon }}) center/contain no-repeat;mask:url({{ n.icon }}) center/contain no-repeat;"></span>{{ n.label }}
+        </a>
+      </sc-for>
+    </nav>
+  </sc-if>
+
+  <sc-if value="{{ toast }}">
+    <div style="position:fixed;left:50%;transform:translateX(-50%);bottom:{{ toastBottom }};z-index:60;display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:14px;background:#111827;color:#fff;font-size:14px;font-weight:600;box-shadow:0 12px 32px -8px rgba(17,24,39,.4);white-space:nowrap;">
+      <span style="width:18px;height:18px;background:#34D399;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/circle-check.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/circle-check.svg) center/contain no-repeat;"></span>{{ toast }}
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;heroLayout&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Mosaico&quot;,&quot;Imagen completa&quot;],&quot;default&quot;:&quot;Mosaico&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;showBottomNav&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const IMG = k => 'https://bhwyagfoyylgrdgyngrm.supabase.co/storage/v1/object/public/klaushop/public/' + k;
+const ICON = n => 'https://unpkg.com/lucide-static@0.460.0/icons/' + n + '.svg';
+const fmt = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' CUP';
+const PRODUCTS = [
+  { id: 1, name: 'Vestido Negro Ajustado con Falda Acampanada', cat: 'Vestidos', price: 5000, img: '1MhUGz7WEZy-_8xmlsy_C.jpeg', badge: 'Nuevo', stock: 6, sizes: 'L · M', tags: ['new'] },
+  { id: 2, name: 'Pantalón Blanco Hueso de Hilo', cat: 'Pantalones', price: 5000, discount: 10, img: '1J9yxbOSfjm46i2urf-XH.jpeg', badge: 'Destacado', stock: 1, sizes: 'L', tags: ['sale', 'best'] },
+  { id: 3, name: 'Monedero Negro', cat: 'Bolsos', price: 5260, discount: 5, img: 'trqkd0DgVZmpJ37wLVd1K.jpeg', stock: 1, tags: ['sale'] },
+  { id: 4, name: 'Camisa de Hombre Elastizada Modelo Chino', cat: 'Camisas', price: 5500, discount: 5, img: 'C8uM6EKeXo1Zzowo_-bJ_.jpeg', stock: 1, sizes: 'M', tags: ['sale'] },
+  { id: 5, name: 'Lego 250 pcs', cat: 'Juguetes', price: 3500, img: 'kGDTm2BFn6WlDBZYHYLDc.jpeg', badge: 'Nuevo', stock: 3, tags: ['new', 'best'] },
+  { id: 6, name: 'Carro Todoterreno RC Off-Road', cat: 'Juguetes', price: 8000, img: 'K-06UnQmtDPKl-eFlO7r3.jpeg', stock: 1, tags: ['new'] },
+  { id: 7, name: 'Guantes infantiles para el frío', cat: 'Accesorios', price: 1000, img: 'LrV9qQy747HXqoe8jP3UT.jpeg', badge: 'Mejor venta', stock: 12, sizes: '2–10 años', tags: ['best'] },
+  { id: 8, name: 'Serum Facial Especial 4 en 1', cat: 'Cuidado de la piel', price: 1500, img: 'rGHV_4GfpNxO0Y-XIVCpr.jpeg', stock: 9, tags: ['best'] },
+  { id: 9, name: 'Lapiceros Multicolor con Figuras Kawaii', cat: 'Hogar y Oficina', price: 400, img: 'yxcgFsVVM7dVqt2hPGi5j.jpeg', badge: 'Nuevo', stock: 20, tags: ['new'] },
+];
+const TABS = [{ id: 'all', label: 'Todo' }, { id: 'new', label: 'Novedades' }, { id: 'sale', label: 'Ofertas' }, { id: 'best', label: 'Más vendidos' }];
+
+class Component extends DCLogic {
+  state = { vw: typeof window !== 'undefined' ? window.innerWidth : 1440, tab: 'all', cart: 0, wish: [2], toast: '', added: [] };
+  componentDidMount() {
+    this.onR = () => this.setState({ vw: window.innerWidth });
+    window.addEventListener('resize', this.onR);
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); clearTimeout(this.t); }
+  flash(msg) { clearTimeout(this.t); this.setState({ toast: msg }); this.t = setTimeout(() => this.setState({ toast: '' }), 2200); }
+  renderVals() {
+    const { vw, tab, cart, wish, toast, added } = this.state;
+    const mobile = vw < 820;
+    const heroFull = (this.props.heroLayout ?? 'Mosaico') === 'Imagen completa';
+    const showBottom = mobile && (this.props.showBottomNav ?? true);
+    const list = PRODUCTS.filter(p => tab === 'all' || p.tags.includes(tab)).slice(0, 8);
+    return {
+      isDesktop: !mobile, isMobile: mobile, heroMosaic: !heroFull, heroFull,
+      showBottom, bottomPad: showBottom ? '72px' : '0',
+      toast, toastBottom: showBottom ? '84px' : '24px',
+      cartCount: cart, wishCount: wish.length, hasWish: wish.length > 0,
+      categories: ['Ver todo', 'Vestimenta para mujer', 'Accesorios', 'Bolsos', 'Juguetes', 'Hogar y Oficina', 'Ropa de playa', 'Cuidado de la piel', 'Pandora 925'].map(label => ({ label })),
+      perks: [
+        { icon: ICON('truck'), title: 'Envío a domicilio', text: '4 municipios de Villa Clara' },
+        { icon: ICON('message-circle'), title: 'Pedido por WhatsApp', text: 'Te confirmamos en minutos' },
+        { icon: ICON('badge-check'), title: 'Revisado antes de entregar', text: 'Calidad / precio garantizada' },
+        { icon: ICON('package-search'), title: 'Encargos', text: 'Shein, Temu y Amazon' },
+      ],
+      catCards: [
+        { label: 'Vestidos', img: IMG('1MhUGz7WEZy-_8xmlsy_C.jpeg') },
+        { label: 'Pantalones', img: IMG('1J9yxbOSfjm46i2urf-XH.jpeg') },
+        { label: 'Bolsos', img: IMG('trqkd0DgVZmpJ37wLVd1K.jpeg') },
+        { label: 'Juguetes', img: IMG('kGDTm2BFn6WlDBZYHYLDc.jpeg') },
+        { label: 'Cuidado de la piel', img: IMG('rGHV_4GfpNxO0Y-XIVCpr.jpeg') },
+        { label: 'Hogar y Oficina', img: IMG('yxcgFsVVM7dVqt2hPGi5j.jpeg') },
+      ],
+      tabs: TABS.map(t => ({
+        label: t.label, bg: t.id === tab ? '#fff' : 'transparent', fg: t.id === tab ? '#111827' : '#6B7280',
+        shadow: t.id === tab ? '0 1px 3px rgba(17,24,39,.12)' : 'none',
+        select: () => this.setState({ tab: t.id }),
+      })),
+      products: list.map(p => {
+        const final = p.discount ? Math.round(p.price * (1 - p.discount / 100)) : p.price;
+        const w = wish.includes(p.id);
+        const inCart = added.includes(p.id);
+        return {
+          name: p.name, cat: p.cat, img: IMG(p.img), badge: p.badge || '', discount: p.discount || 0,
+          price: fmt(final), old: p.discount ? fmt(p.price) : '', sizes: p.sizes || '',
+          stock: p.stock <= 1 ? 'Última unidad' : p.stock < 5 ? `Quedan ${p.stock}` : 'En stock',
+          stockColor: p.stock < 5 ? '#B45309' : '#047857',
+          heartFill: w ? '#6D28D9' : 'none', heartStroke: w ? '#6D28D9' : '#111827',
+          addLabel: inCart ? 'Añadido ✓' : 'Añadir al carrito',
+          toggleWish: () => this.setState(s => ({ wish: w ? s.wish.filter(x => x !== p.id) : [...s.wish, p.id] })),
+          add: () => { this.setState(s => ({ cart: s.cart + 1, added: [...s.added, p.id] })); this.flash('Añadido al carrito'); },
+        };
+      }),
+      banners: [
+        { img: IMG('banner-cupboard.jpg'), kicker: 'Armario cápsula', title: 'Esenciales.', text: 'Prendas versátiles que combinan entre sí sin esfuerzo. Vístete con elegancia en minutos.', cta: 'Explorar ropa' },
+        { img: IMG('banner-swimwear.jpg'), kicker: 'Colección playa', title: 'Verano.', text: 'Diseños atemporales y cortes que realzan tu belleza natural, hechos para durar.', cta: 'Ver ropa de playa' },
+      ],
+      steps: [
+        { n: '1', title: 'Nos mandas el link', text: 'Copia el enlace del producto y envíalo por WhatsApp.' },
+        { n: '2', title: 'Te cotizamos rápido', text: 'Precio final y fecha estimada de llegada, sin sorpresas.' },
+        { n: '3', title: 'Te lo llevamos', text: 'Entrega a domicilio o en un punto acordado.' },
+      ],
+      footerCols: [
+        { title: 'Categorías', links: ['Vestimenta para mujer', 'Accesorios', 'Juguetes', 'Hogar y Oficina', 'Ropa de playa'] },
+        { title: 'Servicios', links: ['Encargos', 'Mis órdenes', 'Lista de deseos'] },
+        { title: 'Información', links: ['Sobre nosotros', 'Zonas de envío', 'Contacto'] },
+      ],
+      bottomNav: [
+        { label: 'Inicio', icon: ICON('house'), color: '#6D28D9' },
+        { label: 'Categorías', icon: ICON('layout-grid'), color: '#6B7280' },
+        { label: 'Favoritos', icon: ICON('heart'), color: '#6B7280' },
+        { label: 'Cuenta', icon: ICON('user'), color: '#6B7280' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;background:#F6F5FA;}
+*{box-sizing:border-box;}
+body{font-family:'Manrope',system-ui,sans-serif;color:#111827;-webkit-font-smoothing:antialiased;}
+a{color:#5B21B6;text-decoration:none;}
+a:hover{color:#4C1D95;}
+img{display:block;}
+.ks-scroll::-webkit-scrollbar{display:none;}
+input[type=checkbox]{accent-color:#6D28D9;width:17px;height:17px;cursor:pointer;}
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;background:#F6F5FA;">
+  <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+    <aside style="position:sticky;top:0;height:100vh;width:248px;flex-shrink:0;display:flex;flex-direction:column;background:#fff;border-right:1px solid #ECEAF3;padding:16px 12px;">
+      <div style="display:flex;align-items:center;gap:10px;height:48px;padding:0 6px;margin-bottom:12px;">
+        <img src="assets/isotipo.svg" alt="" style="width:34px;height:34px;">
+        <span style="display:flex;flex-direction:column;line-height:1.1;"><span style="font-size:15px;font-weight:800;">Klau's Shop</span><span style="font-size:12px;font-weight:600;color:#6B7280;">Administración</span></span>
+      </div>
+      <nav style="flex:1;display:flex;flex-direction:column;gap:18px;">
+        <sc-for list="{{ navGroups }}" as="g" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <span style="padding:0 10px 6px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6B7280;">{{ g.title }}</span>
+            <sc-for list="{{ g.items }}" as="it">
+              <a href="{{ it.href }}" style="display:flex;align-items:center;gap:12px;height:40px;padding:0 10px;border-radius:10px;font-size:14px;font-weight:600;background:{{ it.bg }};color:{{ it.fg }};" style-hover="background:#F5F3FF;">
+                <span style="width:19px;height:19px;flex-shrink:0;background:currentColor;-webkit-mask:url({{ it.icon }}) center/contain no-repeat;mask:url({{ it.icon }}) center/contain no-repeat;"></span>
+                <span style="flex:1;">{{ it.label }}</span>
+                <sc-if value="{{ it.count }}"><span style="min-width:22px;height:20px;padding:0 6px;border-radius:999px;background:#F59E0B;color:#111827;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;">{{ it.count }}</span></sc-if>
+              </a>
+            </sc-for>
+          </div>
+        </sc-for>
+      </nav>
+      <a href="Tienda Inicio.dc.html" style="display:flex;align-items:center;gap:12px;height:40px;padding:0 10px;border-radius:10px;font-size:14px;font-weight:600;color:#6B7280;border-top:1px solid #ECEAF3;margin-top:12px;padding-top:12px;height:52px;">
+        <span style="width:19px;height:19px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/store.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/store.svg) center/contain no-repeat;"></span>Ver tienda
+      </a>
+    </aside>
+  </sc-if>
+
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column;padding-bottom:{{ bottomPad }};">
+    <header style="position:sticky;top:0;z-index:30;background:rgba(246,245,250,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid #ECEAF3;">
+      <div style="max-width:1400px;margin:0 auto;padding:12px clamp(16px,2.4vw,32px);display:flex;align-items:center;gap:12px;">
+        <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}"><img src="assets/isotipo.svg" alt="" style="width:32px;height:32px;"></sc-if>
+        <span style="font-size:14px;font-weight:600;color:#6B7280;display:flex;gap:6px;align-items:center;"><a href="Admin Dashboard.dc.html" style="color:#6B7280;">Admin</a><span>/</span><span style="color:#111827;font-weight:700;">Órdenes</span></span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+          <button aria-label="Notificaciones" style="position:relative;width:42px;height:42px;border-radius:12px;border:1px solid #E7E4EF;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+            <span style="width:18px;height:18px;background:#374151;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/bell.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/bell.svg) center/contain no-repeat;"></span>
+            <span style="position:absolute;top:9px;right:10px;width:8px;height:8px;border-radius:50%;background:#F59E0B;border:2px solid #fff;"></span>
+          </button>
+          <span style="width:42px;height:42px;border-radius:12px;background:#6D28D9;color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;">KL</span>
+        </div>
+      </div>
+    </header>
+
+    <main style="width:100%;max-width:1400px;margin:0 auto;padding:clamp(20px,2.4vw,32px) clamp(16px,2.4vw,32px) 40px;display:flex;flex-direction:column;gap:18px;">
+      <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;">
+        <div>
+          <h1 style="margin:0 0 4px;font-size:clamp(24px,2.4vw,32px);font-weight:800;letter-spacing:-.02em;">Órdenes</h1>
+          <p style="margin:0;font-size:14px;color:#6B7280;">Pedidos recibidos por la tienda y confirmados por WhatsApp.</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button style="height:42px;padding:0 16px;border-radius:12px;border:1px solid #E7E4EF;background:#fff;font:inherit;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;cursor:pointer;">
+            <span style="width:16px;height:16px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/download.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/download.svg) center/contain no-repeat;"></span>Exportar
+          </button>
+          <button style="height:42px;padding:0 16px;border-radius:12px;border:0;background:#6D28D9;color:#fff;font:inherit;font-size:13px;font-weight:800;display:flex;align-items:center;gap:8px;cursor:pointer;" style-hover="background:#5B21B6;">
+            <span style="width:16px;height:16px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/plus.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/plus.svg) center/contain no-repeat;"></span>Nueva orden
+          </button>
+        </div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #ECEAF3;border-radius:18px;overflow:hidden;">
+        <!-- Status tabs -->
+        <div class="ks-scroll" style="display:flex;gap:4px;padding:0 12px;border-bottom:1px solid #F1EFF6;overflow-x:auto;">
+          <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="6">
+            <button onClick="{{ t.select }}" style="flex-shrink:0;display:flex;align-items:center;gap:8px;height:52px;padding:0 12px;border:0;border-bottom:2px solid {{ t.line }};background:transparent;font:inherit;font-size:14px;font-weight:700;color:{{ t.fg }};cursor:pointer;">
+              {{ t.label }}<span style="min-width:22px;height:20px;padding:0 6px;border-radius:999px;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;background:{{ t.cbg }};color:{{ t.cfg }};">{{ t.count }}</span>
+            </button>
+          </sc-for>
+        </div>
+
+        <!-- Toolbar -->
+        <div style="padding:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+          <label style="flex:1 1 260px;display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border-radius:10px;background:#F6F5FA;">
+            <span style="width:16px;height:16px;background:#6B7280;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/search.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/search.svg) center/contain no-repeat;"></span>
+            <input value="{{ query }}" onInput="{{ onQuery }}" placeholder="Buscar por número, cliente o teléfono" style="flex:1;min-width:0;border:0;outline:none;background:transparent;font:inherit;font-size:14px;">
+          </label>
+          <div class="ks-scroll" style="display:flex;gap:6px;overflow-x:auto;max-width:100%;">
+            <sc-for list="{{ zoneChips }}" as="z" hint-placeholder-count="5">
+              <button onClick="{{ z.select }}" style="flex-shrink:0;height:36px;padding:0 12px;border-radius:999px;border:1px solid {{ z.border }};background:{{ z.bg }};color:{{ z.fg }};font:inherit;font-size:12px;font-weight:700;cursor:pointer;">{{ z.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+
+        <sc-if value="{{ hasSelection }}">
+          <div style="margin:0 12px 12px;padding:10px 14px;border-radius:12px;background:#111827;color:#fff;display:flex;flex-wrap:wrap;align-items:center;gap:10px;">
+            <span style="font-size:14px;font-weight:700;flex:1;">{{ selCount }} seleccionadas</span>
+            <button style="height:34px;padding:0 12px;border-radius:9px;border:0;background:#fff;color:#111827;font:inherit;font-size:12px;font-weight:800;cursor:pointer;">Marcar como enviadas</button>
+            <button style="height:34px;padding:0 12px;border-radius:9px;border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;font:inherit;font-size:12px;font-weight:800;cursor:pointer;">Exportar</button>
+            <button onClick="{{ clearSel }}" style="height:34px;padding:0 10px;border:0;background:transparent;color:#C4B5FD;font:inherit;font-size:12px;font-weight:800;cursor:pointer;">Cancelar</button>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:14px;">
+              <thead>
+                <tr style="text-align:left;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:.05em;background:#FAFAFC;border-top:1px solid #F1EFF6;">
+                  <th style="padding:10px 0 10px 16px;width:36px;"><input type="checkbox" checked="{{ allChecked }}" onChange="{{ toggleAll }}"></th>
+                  <sc-for list="{{ cols }}" as="c" hint-placeholder-count="6">
+                    <th style="padding:10px 12px;font-weight:700;text-align:{{ c.align }};white-space:nowrap;">
+                      <button onClick="{{ c.sort }}" style="border:0;background:transparent;padding:0;font:inherit;color:{{ c.color }};text-transform:uppercase;letter-spacing:.05em;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">{{ c.label }}<span>{{ c.arrow }}</span></button>
+                    </th>
+                  </sc-for>
+                  <th style="padding:10px 16px;"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ rows }}" as="o" hint-placeholder-count="8">
+                  <tr style="border-top:1px solid #F1EFF6;background:{{ o.rowBg }};" style-hover="background:#FAF9FD;">
+                    <td style="padding:12px 0 12px 16px;"><input type="checkbox" checked="{{ o.checked }}" onChange="{{ o.toggle }}"></td>
+                    <td style="padding:12px;white-space:nowrap;"><a href="Admin Orden Detalle.dc.html" style="font-weight:800;color:#111827;" style-hover="color:#6D28D9;">{{ o.id }}</a></td>
+                    <td style="padding:12px;"><span style="display:block;font-weight:600;white-space:nowrap;">{{ o.name }}</span><span style="font-size:12px;color:#6B7280;white-space:nowrap;">{{ o.phone }} · {{ o.zone }}</span></td>
+                    <td style="padding:12px;white-space:nowrap;color:#4B5563;font-variant-numeric:tabular-nums;">{{ o.date }}</td>
+                    <td style="padding:12px;">
+                      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                        <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap;background:{{ o.st.bg }};color:{{ o.st.fg }};"><span style="width:6px;height:6px;border-radius:50%;background:currentColor;"></span>{{ o.st.label }}</span>
+                        <sc-if value="{{ o.stale }}"><span title="Pendiente hace más de 48 h: el stock sigue reservado" style="padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800;background:#FFF7ED;color:#C2410C;white-space:nowrap;">⏱ {{ o.stale }}</span></sc-if>
+                      </div>
+                    </td>
+                    <td style="padding:12px;"><span style="font-size:13px;font-weight:700;color:{{ o.payFg }};white-space:nowrap;">{{ o.pay }}</span></td>
+                    <td style="padding:12px;text-align:right;white-space:nowrap;"><span style="display:block;font-weight:800;font-variant-numeric:tabular-nums;">{{ o.total }}</span><sc-if value="{{ o.shipPending }}"><span style="font-size:11px;font-weight:700;color:#B45309;">Envío por acordar</span></sc-if></td>
+                    <td style="padding:12px 16px;text-align:right;white-space:nowrap;">
+                      <div style="display:inline-flex;gap:6px;align-items:center;">
+                        <sc-if value="{{ o.action }}"><button onClick="{{ o.advance }}" style="height:32px;padding:0 12px;border-radius:9px;border:0;background:{{ o.actionBg }};color:{{ o.actionFg }};font:inherit;font-size:12px;font-weight:800;cursor:pointer;">{{ o.action }}</button></sc-if>
+                        <a href="Admin Orden Detalle.dc.html" aria-label="Ver orden" style="width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#6B7280;" style-hover="background:#F3F2F7;color:#111827;">
+                          <span style="width:16px;height:16px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/chevron-right.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/chevron-right.svg) center/contain no-repeat;"></span>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;">
+            <sc-for list="{{ rows }}" as="o">
+              <a href="Admin Orden Detalle.dc.html" style="padding:14px 16px;border-top:1px solid #F1EFF6;display:flex;flex-direction:column;gap:10px;color:#111827;">
+                <div style="display:flex;justify-content:space-between;gap:10px;">
+                  <span><span style="display:block;font-weight:800;font-size:15px;">{{ o.id }} · {{ o.name }}</span><span style="font-size:12px;color:#6B7280;">{{ o.date }} · {{ o.zone }}</span></span>
+                  <span style="text-align:right;"><span style="display:block;font-weight:800;font-size:15px;white-space:nowrap;">{{ o.total }}</span><sc-if value="{{ o.shipPending }}"><span style="font-size:11px;font-weight:700;color:#B45309;">Envío por acordar</span></sc-if></span>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                  <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:{{ o.st.bg }};color:{{ o.st.fg }};"><span style="width:6px;height:6px;border-radius:50%;background:currentColor;"></span>{{ o.st.label }}</span>
+                  <sc-if value="{{ o.stale }}"><span style="padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800;background:#FFF7ED;color:#C2410C;">⏱ {{ o.stale }}</span></sc-if>
+                  <span style="font-size:12px;font-weight:700;color:{{ o.payFg }};margin-left:auto;">{{ o.pay }}</span>
+                </div>
+              </a>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ empty }}"><p style="margin:0;padding:48px 16px;text-align:center;color:#6B7280;font-size:14px;border-top:1px solid #F1EFF6;">No hay órdenes con estos filtros.</p></sc-if>
+
+        <div style="padding:12px 16px;border-top:1px solid #F1EFF6;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;font-size:13px;color:#6B7280;">
+          <span>Mostrando {{ shownCount }} de 128 órdenes</span>
+          <div style="display:flex;gap:4px;">
+            <sc-for list="{{ pages }}" as="pg" hint-placeholder-count="5">
+              <button style="min-width:34px;height:34px;padding:0 8px;border-radius:9px;border:1px solid {{ pg.border }};background:{{ pg.bg }};color:{{ pg.fg }};font:inherit;font-size:13px;font-weight:700;cursor:pointer;">{{ pg.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+    <nav style="position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(255,255,255,.95);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid #ECEAF3;display:grid;grid-template-columns:repeat(5,1fr);padding:6px 6px calc(6px + env(safe-area-inset-bottom));">
+      <sc-for list="{{ tabBar }}" as="n" hint-placeholder-count="5">
+        <a href="{{ n.href }}" style="position:relative;height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:700;color:{{ n.color }};">
+          <span style="width:22px;height:22px;background:currentColor;-webkit-mask:url({{ n.icon }}) center/contain no-repeat;mask:url({{ n.icon }}) center/contain no-repeat;"></span>{{ n.label }}
+          <sc-if value="{{ n.count }}"><span style="position:absolute;top:2px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#F59E0B;color:#111827;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;">{{ n.count }}</span></sc-if>
+        </a>
+      </sc-for>
+    </nav>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const ICON = n => 'https://unpkg.com/lucide-static@0.460.0/icons/' + n + '.svg';
+const fmt = n => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' CUP';
+const STATUS = {
+  pending_confirmation: { label: 'Por confirmar', bg: '#FEFCE8', fg: '#A16207' },
+  pending_payment: { label: 'Pendiente de pago', bg: '#FFF7ED', fg: '#C2410C' },
+  paid: { label: 'Pagada', bg: '#F0FDF4', fg: '#15803D' },
+  processing: { label: 'Procesando', bg: '#EFF6FF', fg: '#1D4ED8' },
+  shipped: { label: 'Enviada', bg: '#EEF2FF', fg: '#4338CA' },
+  delivered: { label: 'Entregada', bg: '#ECFDF5', fg: '#047857' },
+  cancelled: { label: 'Cancelada', bg: '#FEF2F2', fg: '#B91C1C' },
+};
+const NEXT = { pending_confirmation: ['pending_payment', 'Confirmar'], pending_payment: ['paid', 'Marcar pagada'], paid: ['processing', 'Preparar'], processing: ['shipped', 'Enviar'], shipped: ['delivered', 'Entregada'] };
+const DATA = [
+  ['KS-1058', 'Daniela Pérez', '+53 5234 1187', 'Santa Clara', '20/10 10:42', 9500, 'pending_confirmation', null, 0],
+  ['KS-1057', 'Yanelis Rodríguez', '+53 5512 9034', 'Placetas', '20/10 10:14', 5000, 'pending_confirmation', null, 0],
+  ['KS-1056', 'Carlos Méndez', '+53 5398 2210', 'Santa Clara', '20/10 08:30', 12900, 'pending_payment', 300, 0],
+  ['KS-1051', 'Osmany Ruiz', '+53 5401 7763', 'Encrucijada', '17/10 16:05', 3500, 'pending_payment', 600, 3],
+  ['KS-1055', 'Mariela Gómez', '+53 5287 4419', 'Encrucijada', '20/10 09:14', 4500, 'paid', 600, 0],
+  ['KS-1054', 'Leidy Castillo', '+53 5633 0852', 'Calabazar de Sagua', '19/10 18:22', 6497, 'processing', 600, 0],
+  ['KS-1053', 'Roberto Díaz', '+53 5170 6625', 'Santa Clara', '19/10 15:47', 8000, 'shipped', 300, 0],
+  ['KS-1052', 'Anabel Torres', '+53 5355 2981', 'Placetas', '18/10 11:03', 3900, 'delivered', 500, 0],
+  ['KS-1050', 'Lisandra Mora', '+53 5490 1176', 'Santa Clara', '16/10 13:30', 1500, 'delivered', 300, 0],
+  ['KS-1049', 'Jorge Pino', '+53 5222 3305', 'Placetas', '15/10 09:58', 5260, 'cancelled', 500, 0],
+].map(([id, name, phone, zone, date, total, s, ship, staleDays]) => ({ id, name, phone, zone, date, total, s, ship, staleDays }));
+const TABS = [['all', 'Todas'], ['pending', 'Pendientes'], ['paid', 'Pagadas'], ['processing', 'En preparación'], ['shipped', 'Enviadas'], ['delivered', 'Entregadas'], ['cancelled', 'Canceladas']];
+const inTab = (o, t) => t === 'all' || (t === 'pending' ? ['pending_confirmation', 'pending_payment'].includes(o.s) : o.s === t);
+
+class Component extends DCLogic {
+  state = { vw: typeof window !== 'undefined' ? window.innerWidth : 1440, tab: 'all', zone: 'Todas', q: '', sel: [], sort: 'date', dir: -1, data: DATA };
+  componentDidMount() { this.onR = () => this.setState({ vw: window.innerWidth }); window.addEventListener('resize', this.onR); }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); }
+  renderVals() {
+    const { vw, tab, zone, q, sel, sort, dir, data } = this.state;
+    const mobile = vw < 900;
+    const pending = data.filter(o => o.s === 'pending_confirmation').length;
+    let rows = data.filter(o => inTab(o, tab) && (zone === 'Todas' || o.zone === zone) && (!q || (o.id + o.name + o.phone).toLowerCase().includes(q.toLowerCase())));
+    const key = { id: o => o.id, name: o => o.name, date: o => o.id, total: o => o.total, status: o => o.s }[sort] || (o => o.id);
+    rows = [...rows].sort((a, b) => (key(a) > key(b) ? 1 : -1) * dir);
+    const nav = (label, icon, href, active, count) => ({ label, icon: ICON(icon), href, bg: active ? '#F5F3FF' : 'transparent', fg: active ? '#5B21B6' : '#374151', count: count || 0 });
+    const col = (id, label, align) => ({ label, align: align || 'left', arrow: sort === id ? (dir > 0 ? '↑' : '↓') : '', color: sort === id ? '#111827' : '#6B7280', sort: () => this.setState({ sort: id, dir: sort === id ? -dir : -1 }) });
+    return {
+      isDesktop: !mobile, isMobile: mobile, bottomPad: mobile ? '76px' : '0',
+      navGroups: [
+        { title: 'General', items: [nav('Dashboard', 'layout-dashboard', 'Admin Dashboard.dc.html'), nav('Órdenes', 'receipt', 'Admin Ordenes.dc.html', true, pending)] },
+        { title: 'Catálogo', items: [nav('Productos', 'shopping-cart', '#'), nav('Colecciones', 'folder', '#'), nav('Multimedia', 'image', '#')] },
+        { title: 'Clientes y envíos', items: [nav('Usuarios', 'user', '#'), nav('Zonas de envío', 'truck', '#')] },
+      ],
+      tabs: TABS.map(([id, label]) => ({ label, count: data.filter(o => inTab(o, id)).length, line: id === tab ? '#6D28D9' : 'transparent', fg: id === tab ? '#111827' : '#6B7280', cbg: id === tab ? '#6D28D9' : (id === 'pending' ? '#FEF3C7' : '#F3F2F7'), cfg: id === tab ? '#fff' : (id === 'pending' ? '#92400E' : '#4B5563'), select: () => this.setState({ tab: id, sel: [] }) })),
+      query: q, onQuery: e => this.setState({ q: e.target.value }),
+      zoneChips: ['Todas', 'Santa Clara', 'Placetas', 'Encrucijada', 'Calabazar de Sagua'].map(z => ({ label: z, border: z === zone ? '#111827' : '#E5E7EB', bg: z === zone ? '#111827' : '#fff', fg: z === zone ? '#fff' : '#374151', select: () => this.setState({ zone: z }) })),
+      hasSelection: sel.length > 0, selCount: sel.length, clearSel: () => this.setState({ sel: [] }),
+      allChecked: rows.length > 0 && rows.every(o => sel.includes(o.id)),
+      toggleAll: () => this.setState({ sel: rows.every(o => sel.includes(o.id)) ? [] : rows.map(o => o.id) }),
+      cols: [col('id', 'Número'), col('name', 'Cliente'), col('date', 'Fecha'), col('status', 'Estado'), { label: 'Pago', align: 'left', arrow: '', color: '#6B7280', sort: () => {} }, col('total', 'Total', 'right')],
+      rows: rows.map(o => {
+        const nx = NEXT[o.s]; const urgent = o.s === 'pending_confirmation' || o.s === 'pending_payment'; const checked = sel.includes(o.id);
+        const paid = !['pending_confirmation', 'pending_payment', 'cancelled'].includes(o.s);
+        return { ...o, total: fmt(o.total + (o.ship || 0)), st: STATUS[o.s], stale: o.staleDays ? `Hace ${o.staleDays} días` : '', shipPending: o.ship === null,
+          pay: o.s === 'cancelled' ? 'Reembolsado' : paid ? 'Pagado' : 'No pagado', payFg: o.s === 'cancelled' ? '#6B7280' : paid ? '#15803D' : '#B91C1C',
+          checked, rowBg: checked ? '#F5F3FF' : 'transparent', toggle: () => this.setState(s => ({ sel: checked ? s.sel.filter(x => x !== o.id) : [...s.sel, o.id] })),
+          action: nx ? nx[1] : '', actionBg: urgent ? '#6D28D9' : '#F3F2F7', actionFg: urgent ? '#fff' : '#111827',
+          advance: () => nx && this.setState(s => ({ data: s.data.map(x => x.id === o.id ? { ...x, s: nx[0], staleDays: 0 } : x) })) };
+      }),
+      empty: rows.length === 0, shownCount: rows.length,
+      pages: ['‹', '1', '2', '3', '…', '13', '›'].map(l => ({ label: l, border: l === '1' ? '#111827' : '#E5E7EB', bg: l === '1' ? '#111827' : '#fff', fg: l === '1' ? '#fff' : '#374151' })),
+      tabBar: [
+        { label: 'Inicio', icon: ICON('layout-dashboard'), color: '#6B7280', href: 'Admin Dashboard.dc.html' },
+        { label: 'Órdenes', icon: ICON('receipt'), color: '#6D28D9', count: pending, href: 'Admin Ordenes.dc.html' },
+        { label: 'Productos', icon: ICON('shopping-cart'), color: '#6B7280', href: '#' },
+        { label: 'Clientes', icon: ICON('user'), color: '#6B7280', href: '#' },
+        { label: 'Más', icon: ICON('menu'), color: '#6B7280', href: '#' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 20% 98%; /* #FAFAFC */
+    --foreground: 221 39% 11%; /* #111827 */
+    --card: 0 0% 100%;
+    --card-foreground: 221 39% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 221 39% 11%;
+    --primary: 263 70% 50%; /* #6D28D9 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 36 100% 97%; /* #FFF8EE crema */
+    --secondary-foreground: 221 39% 11%;
+    --muted: 260 23% 96%; /* #F4F2F8 */
+    --muted-foreground: 220 9% 46%; /* #6B7280 */
+    --accent: 38 92% 50%; /* #F59E0B */
+    --accent-foreground: 221 39% 11%; /* texto sobre ámbar = tinta, nunca blanco */
+    --destructive: 0 74% 42%; /* #B91C1C */
+    --destructive-foreground: 0 0% 100%;
+    --border: 254 27% 94%; /* #ECEAF3 */
+    --input: 218 14% 84%; /* #D1D5DB */
+    --ring: 263 70% 50%;
+    --radius: 1.125rem; /* 18px */
+  }
+  /* .dark: sin cambios (no forma parte del rediseño) */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  [id] {
+    scroll-margin-top: 120px;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* ELIMINADO: scrollbar global de 2px */

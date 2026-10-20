@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;background:#FAFAFC;}
+*{box-sizing:border-box;}
+body{font-family:'Manrope',system-ui,sans-serif;color:#111827;-webkit-font-smoothing:antialiased;}
+a{color:#5B21B6;text-decoration:none;}
+a:hover{color:#4C1D95;text-decoration:underline;}
+</style>
+</helmet>
+
+<div style="max-width:1120px;margin:0 auto;padding:clamp(24px,5vw,64px) clamp(16px,4vw,40px) 96px;display:flex;flex-direction:column;gap:clamp(48px,7vw,88px);">
+
+  <!-- Intro -->
+  <header style="display:flex;flex-direction:column;gap:18px;">
+    <img src="assets/imagotipo_horizontal.svg" alt="Klau's Shop" style="width:180px;margin:-30px 0 -30px -30px;">
+    <h1 style="margin:0;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(44px,6vw,76px);line-height:1;letter-spacing:-.02em;">Auditoría y guía de diseño <em style="color:#6D28D9;">2.0</em></h1>
+    <p style="margin:0;max-width:680px;font-size:17px;line-height:1.65;color:#4B5563;text-wrap:pretty;">Revisión crítica de la tienda y del panel admin, más el sistema base (tokens + componentes) para aplicar el rediseño en todo el sitio sin rediseñar pantalla por pantalla. Se conservan logo y colores.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;">
+      <a href="Tienda Inicio.dc.html" style="display:inline-flex;align-items:center;height:44px;padding:0 20px;border-radius:999px;background:#6D28D9;color:#fff;font-weight:700;font-size:14px;text-decoration:none;">Ver rediseño de la tienda</a>
+      <a href="Admin Dashboard.dc.html" style="display:inline-flex;align-items:center;height:44px;padding:0 20px;border-radius:999px;background:#111827;color:#fff;font-weight:700;font-size:14px;text-decoration:none;">Ver dashboard admin</a>
+      <a href="Vista Responsive.dc.html" style="display:inline-flex;align-items:center;height:44px;padding:0 20px;border-radius:999px;border:1px solid #D1D5DB;color:#111827;font-weight:700;font-size:14px;text-decoration:none;background:#fff;">Escritorio + móvil lado a lado</a>
+    </div>
+  </header>
+
+  <!-- 01 Audit -->
+  <section style="display:flex;flex-direction:column;gap:24px;">
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <span style="font-size:12px;font-weight:800;letter-spacing:.14em;color:#6D28D9;">01 · AUDITORÍA</span>
+      <h2 style="margin:0;font-size:clamp(26px,3vw,36px);font-weight:800;letter-spacing:-.02em;">¿Cumple con los estándares actuales?</h2>
+      <p style="margin:0;max-width:720px;font-size:15px;line-height:1.6;color:#4B5563;">Parcialmente. La base técnica (Next 14 + shadcn + Tailwind) es sólida y los colores de marca funcionan, pero hay inconsistencias visuales, problemas de legibilidad en móvil y un admin que no se puede usar desde el teléfono.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px;">
+      <sc-for list="{{ scores }}" as="s" hint-placeholder-count="6">
+        <div style="background:#fff;border:1px solid #ECEAF3;border-radius:16px;padding:16px 18px;display:flex;align-items:center;gap:14px;">
+          <span style="width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0;background:{{ s.bg }};color:{{ s.fg }};">{{ s.grade }}</span>
+          <span><span style="display:block;font-size:15px;font-weight:700;">{{ s.area }}</span><span style="display:block;font-size:13px;color:#6B7280;line-height:1.45;">{{ s.note }}</span></span>
+        </div>
+      </sc-for>
+    </div>
+
+    <sc-for list="{{ auditGroups }}" as="g" hint-placeholder-count="2">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <h3 style="margin:12px 0 4px;font-size:18px;font-weight:800;">{{ g.title }}</h3>
+        <sc-for list="{{ g.items }}" as="f">
+          <div style="background:#fff;border:1px solid #ECEAF3;border-radius:14px;padding:16px 18px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;">
+            <span style="grid-row:span 2;align-self:start;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.04em;white-space:nowrap;background:{{ f.sevBg }};color:{{ f.sevFg }};">{{ f.sev }}</span>
+            <span style="font-size:15px;font-weight:700;line-height:1.4;">{{ f.issue }}</span>
+            <span style="font-size:14px;line-height:1.55;color:#4B5563;"><span style="color:#111827;font-weight:700;">Solución: </span>{{ f.fix }} <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#6B7280;">{{ f.file }}</span></span>
+          </div>
+        </sc-for>
+      </div>
+    </sc-for>
+  </section>
+
+  <!-- 02 Foundations -->
+  <section style="display:flex;flex-direction:column;gap:28px;">
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <span style="font-size:12px;font-weight:800;letter-spacing:.14em;color:#6D28D9;">02 · FUNDAMENTOS</span>
+      <h2 style="margin:0;font-size:clamp(26px,3vw,36px);font-weight:800;letter-spacing:-.02em;">Color, tipografía y forma</h2>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <h3 style="margin:0;font-size:16px;font-weight:800;">Color — mismo violeta y ámbar, con roles claros</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;">
+        <sc-for list="{{ colors }}" as="c" hint-placeholder-count="10">
+          <div style="background:#fff;border:1px solid #ECEAF3;border-radius:14px;overflow:hidden;">
+            <div style="height:72px;background:{{ c.hex }};"></div>
+            <div style="padding:10px 12px;"><span style="display:block;font-size:13px;font-weight:800;">{{ c.name }}</span><span style="display:block;font-family:'JetBrains Mono',monospace;font-size:11px;color:#6B7280;">{{ c.hex }}</span><span style="display:block;font-size:12px;color:#4B5563;margin-top:4px;line-height:1.4;">{{ c.role }}</span></div>
+          </div>
+        </sc-for>
+      </div>
+      <p style="margin:0;font-size:14px;line-height:1.6;color:#4B5563;max-width:760px;"><strong style="color:#111827;">Regla:</strong> el ámbar #F59E0B nunca es color de texto sobre blanco (contraste 2.1:1). Úsalo como fondo con texto #111827, o usa #B45309 para texto. El violeta es la única acción primaria; el negro #111827 es la acción secundaria fuerte (carrito, filtros activos).</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;">
+      <div style="background:#fff;border:1px solid #ECEAF3;border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:10px;">
+        <span style="font-size:12px;font-weight:800;color:#6B7280;letter-spacing:.06em;">DISPLAY · SOLO TIENDA</span>
+        <span style="font-family:'Instrument Serif',serif;font-size:64px;line-height:1;">Instrument <em style="color:#6D28D9;">Serif</em></span>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:#4B5563;">Títulos editoriales (hero, banners, encargos). Le da carácter de boutique de moda. Peso 400, cursiva para el acento en violeta. Nunca en admin ni en textos menores de 32px.</p>
+      </div>
+      <div style="background:#fff;border:1px solid #ECEAF3;border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:10px;">
+        <span style="font-size:12px;font-weight:800;color:#6B7280;letter-spacing:.06em;">UI · TIENDA + ADMIN (reemplaza Sora)</span>
+        <span style="font-size:56px;font-weight:800;line-height:1;letter-spacing:-.03em;">Manrope</span>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:#4B5563;">Más compacta y legible que Sora en tamaños pequeños, con cifras tabulares para precios y métricas (<span style="font-family:'JetBrains Mono',monospace;font-size:12px;">tabular-nums</span>). Pesos: 500 texto, 600 enlaces, 700 botones, 800 títulos.</p>
+      </div>
+    </div>
+
+    <div style="background:#fff;border:1px solid #ECEAF3;border-radius:18px;overflow:hidden;">
+      <sc-for list="{{ typeScale }}" as="t" hint-placeholder-count="7">
+        <div style="display:grid;grid-template-columns:minmax(110px,160px) minmax(0,1fr);gap:16px;align-items:center;padding:14px 20px;border-bottom:1px solid #F3F2F7;">
+          <span style="font-size:12px;color:#6B7280;line-height:1.4;"><span style="display:block;font-weight:800;color:#111827;">{{ t.name }}</span><span style="font-family:'JetBrains Mono',monospace;">{{ t.spec }}</span></span>
+          <span style="font-family:{{ t.family }};font-size:{{ t.size }};font-weight:{{ t.weight }};line-height:1.15;letter-spacing:{{ t.ls }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ t.sample }}</span>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:12px;">
+      <sc-for list="{{ shapeRules }}" as="r" hint-placeholder-count="4">
+        <div style="background:#fff;border:1px solid #ECEAF3;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px;">
+          <span style="font-size:14px;font-weight:800;">{{ r.title }}</span>
+          <span style="font-size:13px;line-height:1.55;color:#4B5563;">{{ r.text }}</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B21B6;background:#F5F3FF;padding:6px 8px;border-radius:8px;">{{ r.code }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- 03 Components -->
+  <section style="display:flex;flex-direction:column;gap:20px;">
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <span style="font-size:12px;font-weight:800;letter-spacing:.14em;color:#6D28D9;">03 · COMPONENTES BASE</span>
+      <h2 style="margin:0;font-size:clamp(26px,3vw,36px);font-weight:800;letter-spacing:-.02em;">Piezas que se reutilizan en todo el sitio</h2>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr));gap:16px;">
+      <!-- Buttons -->
+      <div style="background:#fff;border:1px solid #ECEAF3;border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:16px;">
+        <span style="font-size:14px;font-weight:800;">Button <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#6B7280;font-weight:400;">components/ui/button.tsx</span></span>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+          <button style="height:48px;padding:0 22px;border:0;border-radius:999px;background:#6D28D9;color:#fff;font:inherit;font-size:15px;font-weight:700;box-shadow:0 8px 24px -8px rgba(109,40,217,.55);cursor:pointer;" style-hover="background:#5B21B6;">Primario</button>
+          <button style="height:48px;padding:0 22px;border:0;border-radius:999px;background:#111827;color:#fff;font:inherit;font-size:15px;font-weight:700;cursor:pointer;" style-hover="background:#2E1065;">Oscuro</button>
+          <button style="height:48px;padding:0 22px;border-radius:999px;border:1px solid #D1D5DB;background:#fff;color:#111827;font:inherit;font-size:15px;font-weight:700;cursor:pointer;" style-hover="border-color:#111827;">Contorno</button>
+          <button style="height:48px;padding:0 22px;border:0;border-radius:999px;background:#F59E0B;color:#111827;font:inherit;font-size:15px;font-weight:800;cursor:pointer;" style-hover="background:#FBBF24;">WhatsApp / acento</button>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+          <button style="height:40px;padding:0 16px;border:0;border-radius:10px;background:#6D28D9;color:#fff;font:inherit;font-size:13px;font-weight:800;">Admin · Confirmar</button>
+          <button style="height:40px;padding:0 16px;border:0;border-radius:10px;background:#F3F2F7;color:#111827;font:inherit;font-size:13px;font-weight:800;">Admin · Secundario</button>
+          <button style="height:40px;padding:0 16px;border:0;border-radius:10px;background:#FEF2F2;color:#B91C1C;font:inherit;font-size:13px;font-weight:800;">Cancelar orden</button>
+        </div>
+        <span style="font-size:13px;line-height:1.55;color:#4B5563;">Tienda: píldora (radio 999px), alto 48–52px. Admin: radio 10px, alto 40px (densidad). Un solo primario visible por bloque.</span>
+      </div>
+
+      <!-- Inputs -->
+      <div style="background:#fff;border:1px solid #ECEAF3;border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:14px;">
+        <span style="font-size:14px;font-weight:800;">Input · Search <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#6B7280;font-weight:400;">ui/input.tsx</span></span>
+        <label style="display:flex;align-items:center;gap:10px;height:46px;padding:0 16px;border-radius:999px;background:#F4F2F8;">
+          <span style="width:18px;height:18px;background:#6B7280;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/search.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/search.svg) center/contain no-repeat;"></span>
+          <input placeholder="Buscar vestidos, juguetes…" style="flex:1;border:0;background:transparent;outline:none;font:inherit;font-size:15px;">
+        </label>
+        <label style="display:flex;flex-direction:column;gap:6px;">
+          <span style="font-size:13px;font-weight:700;">Teléfono (WhatsApp)</span>
+          <input value="+53 5256 4206" style="height:46px;padding:0 14px;border-radius:12px;border:1px solid #D1D5DB;font:inherit;font-size:16px;outline:none;" style-focus="border-color:#6D28D9;box-shadow:0 0 0 4px #EDE9FE;">
+          <span style="font-size:12px;color:#6B7280;">Te escribimos aquí para confirmar el pedido.</span>
+        </label>
+        <span style="font-size:13px;line-height:1.55;color:#4B5563;">Mínimo 16px de fuente en móvil (evita el zoom automático en iOS). Foco: borde violeta + anillo #EDE9FE.</span>
+      </div>
+
+      <!-- Badges -->
+      <div style="background:#fff;border:1px solid #ECEAF3;border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:14px;">
+        <span style="font-size:14px;font-weight:800;">Badge · Estado de orden <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#6B7280;font-weight:400;">ui/badge.tsx · orderStatus.tsx</span></span>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <span style="padding:4px 10px;border-radius:999px;background:#F5F3FF;color:#5B21B6;font-size:12px;font-weight:800;">Nuevo</span>
+          <span style="padding:4px 10px;border-radius:999px;background:#111827;color:#fff;font-size:12px;font-weight:800;">Mejor venta</span>
+          <span style="padding:4px 10px;border-radius:999px;background:#fff;color:#5B21B6;border:1px solid #DDD6FE;font-size:12px;font-weight:800;">Destacado</span>
+          <span style="padding:4px 10px;border-radius:999px;background:#F59E0B;color:#111827;font-size:12px;font-weight:800;">-10%</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <sc-for list="{{ statuses }}" as="s" hint-placeholder-count="7">
+            <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:{{ s.bg }};color:{{ s.fg }};"><span style="width:6px;height:6px;border-radius:50%;background:currentColor;"></span>{{ s.label }}</span>
+          </sc-for>
+        </div>
+        <span style="font-size:13px;line-height:1.55;color:#4B5563;">Las insignias de producto dejan de ser rojas (hoy Nuevo/Destacado/Mejor venta son todas rojo, igual que el descuento). El ámbar queda reservado a descuentos.</span>
+      </div>
+
+      <!-- Product card -->
+      <div style="background:#fff;border:1px solid #ECEAF3;border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:14px;">
+        <span style="font-size:14px;font-weight:800;">ProductCard <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#6B7280;font-weight:400;">products/components/ProductCard.tsx</span></span>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;">
+          <article style="width:200px;display:flex;flex-direction:column;gap:10px;">
+            <div style="position:relative;aspect-ratio:4/5;border-radius:18px;overflow:hidden;background:#F1EEF7;">
+              <img src="https://bhwyagfoyylgrdgyngrm.supabase.co/storage/v1/object/public/klaushop/public/1J9yxbOSfjm46i2urf-XH.jpeg" alt="" style="width:100%;height:100%;object-fit:cover;">
+              <span style="position:absolute;top:10px;left:10px;padding:4px 10px;border-radius:999px;background:#F59E0B;color:#111827;font-size:11px;font-weight:800;">-10%</span>
+              <span style="position:absolute;top:8px;right:8px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg></span>
+            </div>
+            <span style="font-size:12px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:.06em;">Pantalones</span>
+            <span style="font-size:15px;font-weight:600;line-height:1.35;margin-top:-6px;">Pantalón Blanco Hueso de Hilo</span>
+            <span style="display:flex;gap:8px;align-items:baseline;margin-top:-4px;"><span style="font-size:16px;font-weight:800;">4.500 CUP</span><span style="font-size:13px;color:#6B7280;text-decoration:line-through;">5.000</span></span>
+            <span style="font-size:12px;font-weight:600;color:#B45309;margin-top:-4px;">● Última unidad · Tallas L</span>
+          </article>
+          <ul style="flex:1;min-width:200px;margin:0;padding-left:18px;font-size:13px;line-height:1.7;color:#4B5563;">
+            <li>Imagen 4:5 (ropa se ve mejor vertical), radio 18px.</li>
+            <li>Máximo 5 datos: categoría, nombre, precio, stock, tallas.</li>
+            <li>Se quitan los puntos de color y chips de talla (ruido visual).</li>
+            <li>Texto mínimo 12px (hoy hay 10px en móvil).</li>
+            <li>Favorito: área táctil 40px (hoy 28px).</li>
+            <li>Precio sin decimales y con separador: 4.500 CUP.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- KPI + nav -->
+      <div style="background:#fff;border:1px solid #ECEAF3;border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:14px;">
+        <span style="font-size:14px;font-weight:800;">StatCard · Admin <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#6B7280;font-weight:400;">nuevo: components/admin/StatCard.tsx</span></span>
+        <div style="border:1px solid #ECEAF3;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:8px;max-width:300px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;font-weight:700;color:#6B7280;">Ingresos pagados</span><span style="padding:3px 8px;border-radius:999px;background:#ECFDF5;color:#047857;font-size:12px;font-weight:800;">↑ 12.4%</span></div>
+          <span style="font-size:28px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;">186.400<span style="font-size:14px;color:#6B7280;margin-left:4px;">CUP</span></span>
+          <span style="font-size:12px;color:#6B7280;">vs. período anterior · 165.836 CUP</span>
+        </div>
+        <span style="font-size:13px;line-height:1.55;color:#4B5563;">Etiqueta corta (sin “- mes”: el período ya lo dice el selector), valor con unidad atenuada, delta con color semántico.</span>
+      </div>
+
+      <div style="background:#fff;border:1px solid #ECEAF3;border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:14px;">
+        <span style="font-size:14px;font-weight:800;">SidebarNav · Admin <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#6B7280;font-weight:400;">components/admin/SidebarNav.tsx</span></span>
+        <div style="display:flex;flex-direction:column;gap:2px;max-width:260px;">
+          <span style="padding:0 10px 6px;font-size:11px;font-weight:700;letter-spacing:.08em;color:#6B7280;">GENERAL</span>
+          <span style="display:flex;align-items:center;gap:12px;height:40px;padding:0 10px;border-radius:10px;background:#F5F3FF;color:#5B21B6;font-size:14px;font-weight:600;"><span style="width:19px;height:19px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/layout-dashboard.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/layout-dashboard.svg) center/contain no-repeat;"></span>Dashboard</span>
+          <span style="display:flex;align-items:center;gap:12px;height:40px;padding:0 10px;border-radius:10px;color:#374151;font-size:14px;font-weight:600;"><span style="width:19px;height:19px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/receipt.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/receipt.svg) center/contain no-repeat;"></span><span style="flex:1;">Órdenes</span><span style="min-width:22px;height:20px;padding:0 6px;border-radius:999px;background:#F59E0B;color:#111827;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;">2</span></span>
+        </div>
+        <span style="font-size:13px;line-height:1.55;color:#4B5563;">Grupos con título, contador de pendientes, versión colapsada (72px) y en móvil se convierte en barra inferior de 5 pestañas.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 Responsive -->
+  <section style="display:flex;flex-direction:column;gap:20px;">
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <span style="font-size:12px;font-weight:800;letter-spacing:.14em;color:#6D28D9;">04 · RESPONSIVE</span>
+      <h2 style="margin:0;font-size:clamp(26px,3vw,36px);font-weight:800;letter-spacing:-.02em;">Reglas para que siempre se vea bien</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px;">
+      <sc-for list="{{ responsive }}" as="r" hint-placeholder-count="6">
+        <div style="background:#fff;border:1px solid #ECEAF3;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:6px;">
+          <span style="font-size:15px;font-weight:800;">{{ r.title }}</span>
+          <span style="font-size:14px;line-height:1.55;color:#4B5563;">{{ r.text }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- 05 Apply -->
+  <section style="display:flex;flex-direction:column;gap:20px;">
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <span style="font-size:12px;font-weight:800;letter-spacing:.14em;color:#6D28D9;">05 · CÓMO APLICARLO</span>
+      <h2 style="margin:0;font-size:clamp(26px,3vw,36px);font-weight:800;letter-spacing:-.02em;">Orden de implementación</h2>
+      <p style="margin:0;max-width:720px;font-size:15px;line-height:1.6;color:#4B5563;">Al cambiar tokens y componentes base primero, el 80% de las pantallas (colecciones, carrito, órdenes, tablas admin) mejora sin tocarlas.</p>
+    </div>
+    <sc-for list="{{ steps }}" as="s" hint-placeholder-count="5">
+      <div style="background:#fff;border:1px solid #ECEAF3;border-radius:18px;overflow:hidden;">
+        <div style="padding:16px 20px;display:flex;align-items:flex-start;gap:14px;">
+          <span style="width:30px;height:30px;border-radius:50%;background:#111827;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ s.n }}</span>
+          <span><span style="display:block;font-size:15px;font-weight:800;">{{ s.title }}</span><span style="display:block;font-size:14px;line-height:1.55;color:#4B5563;">{{ s.text }}</span></span>
+        </div>
+        <sc-if value="{{ s.code }}"><pre style="margin:0;padding:16px 20px;background:#1E1033;color:#EDE9FE;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.6;overflow-x:auto;white-space:pre;">{{ s.code }}</pre></sc-if>
+      </div>
+    </sc-for>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const SEV = { Crítico: ['#FEF2F2', '#B91C1C'], Alto: ['#FFF7ED', '#C2410C'], Medio: ['#FEFCE8', '#A16207'], Bajo: ['#F3F4F6', '#374151'] };
+const f = (sev, issue, fix, file) => ({ sev, issue, fix, file, sevBg: SEV[sev][0], sevFg: SEV[sev][1] });
+const g = (grade, area, note) => { const c = { A: ['#ECFDF5', '#047857'], B: ['#F0FDF4', '#15803D'], C: ['#FEFCE8', '#A16207'], D: ['#FEF2F2', '#B91C1C'] }[grade[0]]; return { grade, area, note, bg: c[0], fg: c[1] }; };
+
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      scores: [
+        g('A', 'Marca y color', 'Logo y paleta violeta/ámbar con personalidad. Se conservan.'),
+        g('C', 'Tipografía', 'Sora en todo; jerarquía irregular, 10px en móvil.'),
+        g('C', 'Consistencia visual', '3 radios de botón distintos, insignias todas rojas.'),
+        g('B-', 'Tienda en móvil', 'Funciona, pero hero alto y tarjetas saturadas.'),
+        g('D', 'Admin en móvil', 'Sin navegación: el sidebar se oculta y no hay reemplazo.'),
+        g('C', 'Dashboard', 'Datos reales, pero pasivo: no prioriza qué hacer.'),
+      ],
+      auditGroups: [
+        { title: 'Tienda', items: [
+          f('Alto', 'Hero con texto blanco directamente sobre la foto, sin capa de contraste; alturas fijas 500/600/800px y h1 hasta text-9xl.', 'Hero en mosaico sobre crema (o foto con degradado inferior), altura por contenido con clamp(), dos CTAs: compra + encargos.', '(store)/page.tsx · HeroSection'),
+          f('Alto', 'Insignias Nuevo / Destacado / Mejor venta y el descuento son todas rojas (#ff0000): no se distinguen y compiten con el precio.', 'Insignias neutras/violeta; ámbar solo para descuento.', 'ui/badge.tsx'),
+          f('Alto', 'ProductCard satura: categoría, nombre, 2 precios, stock, hasta 6 puntos de color y 6 chips de talla; textos de 10px en móvil.', 'Máx. 5 datos, mínimo 12px, imagen 4:5, botón “Añadir” sobre la imagen.', 'ProductCard.tsx'),
+          f('Medio', '“Te encantarán” y “Productos destacados” son dos rejillas iguales y repiten productos (el pantalón aparece en ambas).', 'Una sola rejilla con pestañas Novedades / Ofertas / Más vendidos.', '(store)/page.tsx'),
+          f('Medio', 'Las 4 tarjetas de beneficios son genéricas, centradas, con íconos ámbar sobre blanco (contraste 2.1:1).', 'Barra compacta de beneficios bajo el hero + bloque dedicado a Encargos (el diferenciador real).', 'DifferentFeatureCards'),
+          f('Medio', 'Categorías en círculos fijos de 180/240px: en móvil ocupan media pantalla y no se nota que hay scroll.', 'Tarjetas cuadradas con scroll-snap que asoman la siguiente.', 'ProductSubCollectionsCircles'),
+          f('Medio', 'Radios de botón mezclados: rounded (hero), rounded-full (banner), rounded-md (default).', 'Tienda = píldora; admin = 10px. Definido en buttonVariants.', 'ui/button.tsx'),
+          f('Medio', 'Precios “5225.00 CUP”: decimales innecesarios y sin separador de miles.', 'Helper formatCUP() → “5.225 CUP”, con tabular-nums.', 'lib/utils.ts'),
+          f('Bajo', 'Restos de la plantilla: alt="Furniture", título por defecto “Ecommerce Platform Built with Nextjs 14.”, dirección de California y email de hugo-coding en siteConfig.', 'Reemplazar por datos reales (afecta SEO y confianza).', 'config/site.ts'),
+          f('Bajo', 'Scrollbar global de 2px: casi imposible de agarrar en escritorio.', 'Eliminar la regla o subir a 8px con thumb redondeado.', 'globals.css'),
+        ]},
+        { title: 'Admin', items: [
+          f('Crítico', 'En pantallas < md el sidebar tiene “hidden” y no existe otro menú: desde el móvil no se puede navegar entre secciones.', 'Barra inferior de 5 pestañas en móvil (Inicio, Órdenes, Productos, Clientes, Más).', '(admin)/admin/layout.tsx'),
+          f('Alto', 'Gráfico y ventas usan col-span-4 y col-span-3 dentro de md:grid-cols-2: entre 768 y 1024px se generan columnas implícitas y se desborda.', 'Grid con auto-fit/minmax o lg:grid-cols-3 + col-span-2.', 'dashboard/page.tsx'),
+          f('Alto', 'El flujo es por WhatsApp (por confirmar → pago → preparar → enviar) pero el dashboard solo muestra un contador de pendientes.', 'Bloque “Requiere tu atención” + tabla con la siguiente acción en un clic (usa VALID_STATUS_TRANSITIONS).', 'orderStatus.tsx'),
+          f('Medio', '5 KPIs en lg:grid-cols-5 con títulos largos (“Ingresos por envíos (pagados) - mes”) aunque el rango sea otro.', '4 KPIs con etiqueta corta, delta y sparkline; ticket promedio en lugar de usuarios.', 'dashboard/page.tsx'),
+          f('Medio', 'El admin reutiliza la barra de la tienda y duplica pt-[50px] en contenedor y main.', 'Shell propio: sidebar + topbar con búsqueda y notificaciones.', 'AdminShell.tsx'),
+          f('Bajo', 'moneyUSD() formatea CUP; íconos SVG pegados a mano en cada tarjeta.', 'formatCUP() compartido e íconos desde Icons (lucide).', 'dashboard/page.tsx'),
+        ]},
+      ],
+      colors: [
+        { name: 'Violeta 600', hex: '#6D28D9', role: 'Acción primaria, enlaces, activo' },
+        { name: 'Violeta 700', hex: '#5B21B6', role: 'Hover, texto de marca' },
+        { name: 'Violeta 950', hex: '#2E1065', role: 'Barra superior, bloques oscuros' },
+        { name: 'Violeta 50', hex: '#F5F3FF', role: 'Fondos de selección' },
+        { name: 'Ámbar 500', hex: '#F59E0B', role: 'Descuentos, contadores, WhatsApp' },
+        { name: 'Ámbar 700', hex: '#B45309', role: 'Texto “pocas unidades”' },
+        { name: 'Crema', hex: '#FFF8EE', role: 'Hero y superficies editoriales' },
+        { name: 'Tinta', hex: '#111827', role: 'Texto y botón oscuro' },
+        { name: 'Gris 500', hex: '#6B7280', role: 'Texto secundario (mín. 4.5:1)' },
+        { name: 'Fondo', hex: '#FAFAFC', role: 'Fondo tienda · admin #F6F5FA' },
+      ],
+      typeScale: [
+        { name: 'Display', spec: 'Serif 48–104 / clamp', family: "'Instrument Serif',serif", size: '56px', weight: 400, ls: '-.02em', sample: 'Moda para el día a día.' },
+        { name: 'H1 admin', spec: '800 · 24–32', family: 'Manrope', size: '32px', weight: 800, ls: '-.02em', sample: 'Hola, Klau' },
+        { name: 'H2 sección', spec: '800 · 22–30', family: 'Manrope', size: '28px', weight: 800, ls: '-.02em', sample: 'Te encantarán' },
+        { name: 'Título tarjeta', spec: '600 · 15', family: 'Manrope', size: '15px', weight: 600, ls: '0', sample: 'Vestido Negro Ajustado con Falda Acampanada' },
+        { name: 'Cuerpo', spec: '500 · 15–17 / 1.6', family: 'Manrope', size: '16px', weight: 500, ls: '0', sample: 'Pides en minutos y lo coordinamos contigo por WhatsApp.' },
+        { name: 'Precio', spec: '800 · 16 · tabular', family: 'Manrope', size: '16px', weight: 800, ls: '0', sample: '4.500 CUP' },
+        { name: 'Meta / eyebrow', spec: '600–800 · 12 · caps', family: 'Manrope', size: '12px', weight: 700, ls: '.08em', sample: 'CUIDADO DE LA PIEL' },
+      ],
+      shapeRules: [
+        { title: 'Espaciado', text: 'Escala de 4px. Secciones de tienda separadas 48–88px con clamp(); dentro de tarjetas 12–20px.', code: 'gap: 4 · 8 · 12 · 16 · 24 · 40' },
+        { title: 'Radios', text: 'Botones tienda píldora; imágenes 18px; bloques 28px; admin tarjetas 18px, controles 10–12px.', code: '--radius: 0.75rem → 1.125rem' },
+        { title: 'Bordes y sombras', text: 'Bordes suaves #ECEAF3 en lugar de sombras. Sombra solo en el CTA primario y elementos flotantes.', code: 'shadow: 0 8px 24px -8px violet/55' },
+        { title: 'Movimiento', text: 'Zoom 1.04 en imagen al hover (600ms), transiciones de color 150ms. Nada de animaciones al hacer scroll.', code: 'cubic-bezier(.2,.7,.2,1)' },
+      ],
+      statuses: ['Por confirmar|#FEFCE8|#A16207', 'Pendiente de pago|#FFF7ED|#C2410C', 'Pagada|#F0FDF4|#15803D', 'Procesando|#EFF6FF|#1D4ED8', 'Enviada|#EEF2FF|#4338CA', 'Entregada|#ECFDF5|#047857', 'Cancelada|#FEF2F2|#B91C1C'].map(s => { const [label, bg, fg] = s.split('|'); return { label, bg, fg }; }),
+      responsive: [
+        { title: 'Dos layouts, no cinco', text: 'Móvil (< 820px) y escritorio. Lo intermedio se resuelve con grids auto-fit/minmax, no con breakpoints sueltos.' },
+        { title: 'Zona del pulgar', text: 'Navegación principal abajo en móvil (tienda y admin). Objetivos táctiles de 44px mínimo.' },
+        { title: 'Tipografía fluida', text: 'Títulos con clamp(min, vw, max): nunca saltos bruscos entre sm/md/lg/xl.' },
+        { title: 'Tablas → tarjetas', text: 'En móvil cada fila del admin pasa a tarjeta con estado + acción; nunca scroll horizontal de tablas.' },
+        { title: 'Scroll horizontal con pista', text: 'Carruseles con scroll-snap y la siguiente tarjeta asomando; sin barra visible.' },
+        { title: 'Inputs a 16px', text: 'Evita el zoom forzado en iOS al enfocar el buscador o el formulario de pedido.' },
+      ],
+      steps: [
+        { n: '1', title: 'Cambiar la fuente', text: 'Sustituir Sora por Manrope + Instrument Serif en el layout raíz.', code: `// src/app/layout.tsx\nimport { Manrope, Instrument_Serif } from "next/font/google";\nconst sans = Manrope({ subsets: ["latin"], variable: "--font-sans" });\nconst display = Instrument_Serif({ subsets: ["latin"], weight: "400", style: ["normal", "italic"], variable: "--font-display" });\n<html lang="es" className={\`\${sans.variable} \${display.variable}\`}>` },
+        { n: '2', title: 'Ajustar tokens', text: 'Mismos colores; se agregan crema, violeta 950 y la fuente display. Radio base más suave.', code: `// tailwind.config.ts → theme.extend\nfontFamily: { sans: ["var(--font-sans)"], display: ["var(--font-display)"] },\ncolors: { cream: "#FFF8EE", ink: "#111827", primary: { 950: "#2E1065", /* resto igual */ } },\n\n/* globals.css */\n--background: 240 20% 98%;   /* #FAFAFC */\n--border: 254 27% 94%;       /* #ECEAF3 */\n--radius: 1.125rem;` },
+        { n: '3', title: 'Componentes base', text: 'buttonVariants (píldora + size "xl" 52px), badgeVariants (new_product/featured/best_sale neutros, discount ámbar), input a 16px en móvil, formatCUP() en lib/utils.', code: `export const formatCUP = (n: number) =>\n  Math.round(n).toLocaleString("es-CU").replace(/,/g, ".") + " CUP";` },
+        { n: '4', title: 'Shells', text: 'Tienda: MainNavbar con categorías visibles + MobileTabBar. Admin: AdminLayout con sidebar agrupado/colapsable + AdminTabBar en móvil (reemplaza el aside oculto).', code: '' },
+        { n: '5', title: 'Pantallas clave', text: 'Inicio y Dashboard según los mocks. Después: ficha de producto, carrito y checkout por WhatsApp (heredan casi todo de los pasos 1–4).', code: '' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

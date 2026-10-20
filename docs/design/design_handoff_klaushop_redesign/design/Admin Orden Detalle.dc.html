@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;background:#F6F5FA;}
+*{box-sizing:border-box;}
+body{font-family:'Manrope',system-ui,sans-serif;color:#111827;-webkit-font-smoothing:antialiased;}
+a{color:#5B21B6;text-decoration:none;}
+a:hover{color:#4C1D95;}
+img{display:block;}
+.ks-scroll::-webkit-scrollbar{display:none;}
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;background:#F6F5FA;">
+  <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+    <aside style="position:sticky;top:0;height:100vh;width:248px;flex-shrink:0;display:flex;flex-direction:column;background:#fff;border-right:1px solid #ECEAF3;padding:16px 12px;">
+      <div style="display:flex;align-items:center;gap:10px;height:48px;padding:0 6px;margin-bottom:12px;">
+        <img src="assets/isotipo.svg" alt="" style="width:34px;height:34px;">
+        <span style="display:flex;flex-direction:column;line-height:1.1;"><span style="font-size:15px;font-weight:800;">Klau's Shop</span><span style="font-size:12px;font-weight:600;color:#6B7280;">Administración</span></span>
+      </div>
+      <nav style="flex:1;display:flex;flex-direction:column;gap:18px;">
+        <sc-for list="{{ navGroups }}" as="g" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <span style="padding:0 10px 6px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6B7280;">{{ g.title }}</span>
+            <sc-for list="{{ g.items }}" as="it">
+              <a href="{{ it.href }}" style="display:flex;align-items:center;gap:12px;height:40px;padding:0 10px;border-radius:10px;font-size:14px;font-weight:600;background:{{ it.bg }};color:{{ it.fg }};" style-hover="background:#F5F3FF;">
+                <span style="width:19px;height:19px;flex-shrink:0;background:currentColor;-webkit-mask:url({{ it.icon }}) center/contain no-repeat;mask:url({{ it.icon }}) center/contain no-repeat;"></span>
+                <span style="flex:1;">{{ it.label }}</span>
+                <sc-if value="{{ it.count }}"><span style="min-width:22px;height:20px;padding:0 6px;border-radius:999px;background:#F59E0B;color:#111827;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;">{{ it.count }}</span></sc-if>
+              </a>
+            </sc-for>
+          </div>
+        </sc-for>
+      </nav>
+    </aside>
+  </sc-if>
+
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column;padding-bottom:{{ bottomPad }};">
+    <header style="position:sticky;top:0;z-index:30;background:rgba(246,245,250,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid #ECEAF3;">
+      <div style="max-width:1400px;margin:0 auto;padding:12px clamp(16px,2.4vw,32px);display:flex;align-items:center;gap:12px;">
+        <a href="Admin Ordenes.dc.html" aria-label="Volver a órdenes" style="width:42px;height:42px;border-radius:12px;border:1px solid #E7E4EF;background:#fff;display:flex;align-items:center;justify-content:center;color:#111827;flex-shrink:0;">
+          <span style="width:18px;height:18px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/arrow-left.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/arrow-left.svg) center/contain no-repeat;"></span>
+        </a>
+        <span style="font-size:14px;font-weight:600;color:#6B7280;display:flex;gap:6px;align-items:center;min-width:0;"><a href="Admin Ordenes.dc.html" style="color:#6B7280;">Órdenes</a><span>/</span><span style="color:#111827;font-weight:700;">KS-1058</span></span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+          <span style="width:42px;height:42px;border-radius:12px;background:#6D28D9;color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;">KL</span>
+        </div>
+      </div>
+    </header>
+
+    <main style="width:100%;max-width:1400px;margin:0 auto;padding:clamp(20px,2.4vw,32px) clamp(16px,2.4vw,32px) 40px;display:flex;flex-direction:column;gap:18px;">
+
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;">
+        <h1 style="margin:0;font-size:clamp(24px,2.4vw,32px);font-weight:800;letter-spacing:-.02em;">Orden KS-1058</h1>
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-size:13px;font-weight:700;background:{{ st.bg }};color:{{ st.fg }};"><span style="width:7px;height:7px;border-radius:50%;background:currentColor;"></span>{{ st.label }}</span>
+        <span style="font-size:14px;color:#6B7280;">20 de octubre de 2026 · 10:42</span>
+      </div>
+
+      <!-- Stepper -->
+      <div class="ks-scroll" style="background:#fff;border:1px solid #ECEAF3;border-radius:18px;padding:16px 18px;overflow-x:auto;">
+        <div style="display:flex;align-items:center;min-width:640px;">
+          <sc-for list="{{ steps }}" as="s" hint-placeholder-count="6">
+            <div style="flex:1;display:flex;align-items:center;gap:10px;">
+              <span style="width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;background:{{ s.bg }};color:{{ s.fg }};border:2px solid {{ s.ring }};">{{ s.mark }}</span>
+              <span style="font-size:13px;font-weight:700;color:{{ s.label_c }};white-space:nowrap;">{{ s.label }}</span>
+              <sc-if value="{{ s.notLast }}"><span style="flex:1;height:2px;min-width:16px;background:{{ s.line }};margin-right:10px;border-radius:2px;"></span></sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start;flex-direction:{{ colDir }};">
+        <!-- Main -->
+        <div style="flex:2 1 520px;min-width:0;display:flex;flex-direction:column;gap:18px;">
+          <section style="background:#fff;border:1px solid #ECEAF3;border-radius:18px;overflow:hidden;">
+            <div style="padding:16px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #F1EFF6;">
+              <h2 style="margin:0;font-size:15px;font-weight:800;">Productos <span style="color:#6B7280;font-weight:600;">(2)</span></h2>
+              <span style="font-size:12px;font-weight:700;color:#6B7280;">Stock reservado</span>
+            </div>
+            <sc-for list="{{ lines }}" as="l" hint-placeholder-count="2">
+              <div style="display:flex;gap:14px;align-items:center;padding:14px 20px;border-bottom:1px solid #F1EFF6;">
+                <img src="{{ l.img }}" alt="" style="width:60px;height:72px;border-radius:12px;object-fit:cover;background:#F1EEF7;flex-shrink:0;">
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;">
+                  <a href="#" style="font-size:14px;font-weight:700;color:#111827;">{{ l.name }}</a>
+                  <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                    <sc-for list="{{ l.attrs }}" as="a"><span style="padding:2px 8px;border-radius:6px;background:#F3F2F7;font-size:12px;font-weight:600;color:#374151;">{{ a }}</span></sc-for>
+                  </div>
+                </div>
+                <div style="text-align:right;flex-shrink:0;">
+                  <span style="display:block;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;">{{ l.total }}</span>
+                  <span style="font-size:12px;color:#6B7280;">{{ l.unit }}</span>
+                </div>
+              </div>
+            </sc-for>
+            <div style="padding:16px 20px;display:flex;flex-direction:column;gap:10px;background:#FAFAFC;">
+              <div style="display:flex;justify-content:space-between;font-size:14px;color:#4B5563;"><span>Subtotal</span><span style="font-variant-numeric:tabular-nums;">9.500 CUP</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:14px;color:#4B5563;"><span>Envío · Santa Clara</span><span style="font-weight:700;color:{{ shipColor }};">{{ shipText }}</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:800;padding-top:10px;border-top:1px solid #ECEAF3;"><span>Total</span><span style="font-variant-numeric:tabular-nums;">{{ totalText }}</span></div>
+            </div>
+          </section>
+
+          <!-- Shipping form -->
+          <section style="background:#fff;border:1px solid {{ shipBorder }};border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <span style="width:38px;height:38px;border-radius:11px;background:#F5F3FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <span style="width:18px;height:18px;background:#6D28D9;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/truck.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/truck.svg) center/contain no-repeat;"></span>
+              </span>
+              <div>
+                <h2 style="margin:0 0 2px;font-size:15px;font-weight:800;">Costo de envío</h2>
+                <p style="margin:0;font-size:13px;color:#6B7280;line-height:1.5;">Usa 0 si es gratis. Así el cliente recibe el total correcto. No se puede cambiar una vez pagada.</p>
+              </div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+              <sc-for list="{{ presets }}" as="p" hint-placeholder-count="4">
+                <button onClick="{{ p.select }}" style="height:36px;padding:0 14px;border-radius:999px;border:1px solid {{ p.border }};background:{{ p.bg }};color:{{ p.fg }};font:inherit;font-size:13px;font-weight:700;cursor:pointer;">{{ p.label }}</button>
+              </sc-for>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;">
+              <label style="flex:1 1 200px;display:flex;flex-direction:column;gap:6px;">
+                <span style="font-size:13px;font-weight:700;">Monto (CUP)</span>
+                <input inputmode="numeric" value="{{ shipInput }}" onInput="{{ onShip }}" placeholder="Ej. 300" style="height:46px;padding:0 14px;border-radius:12px;border:1px solid {{ inputBorder }};font:inherit;font-size:16px;font-weight:700;outline:none;font-variant-numeric:tabular-nums;" style-focus="border-color:#6D28D9;box-shadow:0 0 0 4px #EDE9FE;">
+              </label>
+              <button onClick="{{ saveShip }}" style="height:46px;padding:0 20px;border-radius:12px;border:0;background:#111827;color:#fff;font:inherit;font-size:14px;font-weight:800;cursor:pointer;">Guardar envío</button>
+            </div>
+            <sc-if value="{{ shipError }}"><span style="font-size:13px;font-weight:700;color:#B91C1C;">{{ shipError }}</span></sc-if>
+          </section>
+        </div>
+
+        <!-- Side -->
+        <div style="flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:18px;">
+          <section style="background:#fff;border:1px solid #ECEAF3;border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:12px;">
+            <h2 style="margin:0;font-size:15px;font-weight:800;">Siguiente paso</h2>
+            <p style="margin:0;font-size:14px;color:#4B5563;line-height:1.5;">{{ nextDesc }}</p>
+            <sc-if value="{{ needsShip }}">
+              <div style="padding:10px 12px;border-radius:12px;background:#FFF7ED;color:#C2410C;font-size:13px;font-weight:700;line-height:1.45;">Primero define el costo de envío (usa 0 si es gratis).</div>
+            </sc-if>
+            <sc-if value="{{ nextLabel }}">
+              <button onClick="{{ advance }}" style="height:50px;border-radius:12px;border:0;background:{{ advBg }};color:#fff;font:inherit;font-size:15px;font-weight:800;cursor:{{ advCursor }};" style-hover="filter:brightness(.95);">{{ nextLabel }}</button>
+            </sc-if>
+            <sc-if value="{{ canCancel }}">
+              <button onClick="{{ cancel }}" style="height:44px;border-radius:12px;border:1px solid #FECACA;background:#fff;color:#B91C1C;font:inherit;font-size:14px;font-weight:800;cursor:pointer;">Cancelar orden · libera el stock</button>
+            </sc-if>
+            <sc-if value="{{ isFinal }}"><span style="font-size:13px;font-weight:700;color:#6B7280;">Estado final: no admite más cambios.</span></sc-if>
+          </section>
+
+          <section style="background:#fff;border:1px solid #ECEAF3;border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="width:44px;height:44px;border-radius:50%;background:#EDE9FE;color:#5B21B6;font-weight:800;display:flex;align-items:center;justify-content:center;">DP</span>
+              <span style="flex:1;min-width:0;"><span style="display:block;font-size:15px;font-weight:800;">Daniela Pérez</span><span style="font-size:13px;color:#6B7280;">Cliente registrada · 3 pedidos</span></span>
+            </div>
+            <a href="#" style="display:flex;align-items:center;justify-content:center;gap:10px;height:46px;border-radius:12px;background:#ECFDF5;color:#047857;font-size:14px;font-weight:800;" style-hover="background:#D1FAE5;color:#047857;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"></path></svg>
+              Escribir por WhatsApp
+            </a>
+            <dl style="margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 16px;font-size:14px;">
+              <dt style="color:#6B7280;font-weight:600;">Teléfono</dt><dd style="margin:0;font-weight:700;">+53 5234 1187</dd>
+              <dt style="color:#6B7280;font-weight:600;">Zona</dt><dd style="margin:0;font-weight:700;">Santa Clara</dd>
+              <dt style="color:#6B7280;font-weight:600;">Dirección</dt><dd style="margin:0;line-height:1.5;">Calle Independencia #214 e/ Maceo y Unión</dd>
+              <dt style="color:#6B7280;font-weight:600;">Email</dt><dd style="margin:0;overflow:hidden;text-overflow:ellipsis;">daniela.perez@nauta.cu</dd>
+            </dl>
+            <div style="padding:12px 14px;border-radius:12px;background:#FFF8EE;font-size:13px;line-height:1.5;color:#374151;"><strong style="display:block;color:#111827;margin-bottom:2px;">Nota del cliente</strong>Si es posible, entregar después de las 5 pm.</div>
+          </section>
+
+          <section style="background:#fff;border:1px solid #ECEAF3;border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:10px;">
+            <h2 style="margin:0;font-size:15px;font-weight:800;">Pago</h2>
+            <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:#6B7280;font-weight:600;">Método</span><span style="font-weight:700;">Transferencia</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:#6B7280;font-weight:600;">Estado</span><span style="font-weight:800;color:{{ payFg }};">{{ payLabel }}</span></div>
+          </section>
+
+          <button style="height:44px;border-radius:12px;border:0;background:transparent;color:#B91C1C;font:inherit;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;" style-hover="background:#FEF2F2;">
+            <span style="width:16px;height:16px;background:currentColor;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/trash-2.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/trash-2.svg) center/contain no-repeat;"></span>Eliminar orden
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+    <nav style="position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(255,255,255,.95);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid #ECEAF3;display:grid;grid-template-columns:repeat(5,1fr);padding:6px 6px calc(6px + env(safe-area-inset-bottom));">
+      <sc-for list="{{ tabBar }}" as="n" hint-placeholder-count="5">
+        <a href="{{ n.href }}" style="height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:700;color:{{ n.color }};">
+          <span style="width:22px;height:22px;background:currentColor;-webkit-mask:url({{ n.icon }}) center/contain no-repeat;mask:url({{ n.icon }}) center/contain no-repeat;"></span>{{ n.label }}
+        </a>
+      </sc-for>
+    </nav>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const ICON = n => 'https://unpkg.com/lucide-static@0.460.0/icons/' + n + '.svg';
+const IMG = k => 'https://bhwyagfoyylgrdgyngrm.supabase.co/storage/v1/object/public/klaushop/public/' + k;
+const fmt = n => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' CUP';
+const STATUS = {
+  pending_confirmation: { label: 'Por confirmar', bg: '#FEFCE8', fg: '#A16207' },
+  pending_payment: { label: 'Pendiente de pago', bg: '#FFF7ED', fg: '#C2410C' },
+  paid: { label: 'Pagada', bg: '#F0FDF4', fg: '#15803D' },
+  processing: { label: 'Procesando', bg: '#EFF6FF', fg: '#1D4ED8' },
+  shipped: { label: 'Enviada', bg: '#EEF2FF', fg: '#4338CA' },
+  delivered: { label: 'Entregada', bg: '#ECFDF5', fg: '#047857' },
+  cancelled: { label: 'Cancelada', bg: '#FEF2F2', fg: '#B91C1C' },
+};
+const FLOW = ['pending_confirmation', 'pending_payment', 'paid', 'processing', 'shipped', 'delivered'];
+const ACTIONS = {
+  pending_confirmation: ['pending_payment', 'Confirmar orden', 'Aceptar el pedido; queda pendiente de pago.'],
+  pending_payment: ['paid', 'Marcar como pagada', 'Pago recibido; descuenta el stock.'],
+  paid: ['processing', 'Empezar a preparar', 'El pedido pasa a preparación.'],
+  processing: ['shipped', 'Marcar como enviada', 'El pedido va en camino al cliente.'],
+  shipped: ['delivered', 'Marcar como entregada', 'El cliente recibió el pedido.'],
+};
+
+class Component extends DCLogic {
+  state = { vw: typeof window !== 'undefined' ? window.innerWidth : 1440, s: 'pending_confirmation', ship: null, input: '', err: '' };
+  componentDidMount() { this.onR = () => this.setState({ vw: window.innerWidth }); window.addEventListener('resize', this.onR); }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); }
+  renderVals() {
+    const { vw, s, ship, input, err } = this.state;
+    const mobile = vw < 900;
+    const idx = FLOW.indexOf(s);
+    const act = ACTIONS[s];
+    const shipLocked = !['pending_confirmation', 'pending_payment'].includes(s);
+    const needsShip = !!act && ['pending_confirmation', 'pending_payment'].includes(s) && ship === null;
+    const nav = (label, icon, href, active, count) => ({ label, icon: ICON(icon), href, bg: active ? '#F5F3FF' : 'transparent', fg: active ? '#5B21B6' : '#374151', count: count || 0 });
+    return {
+      isDesktop: !mobile, isMobile: mobile, bottomPad: mobile ? '76px' : '0',
+      colDir: mobile ? 'column-reverse' : 'row',
+      navGroups: [
+        { title: 'General', items: [nav('Dashboard', 'layout-dashboard', 'Admin Dashboard.dc.html'), nav('Órdenes', 'receipt', 'Admin Ordenes.dc.html', true, 2)] },
+        { title: 'Catálogo', items: [nav('Productos', 'shopping-cart', '#'), nav('Colecciones', 'folder', '#'), nav('Multimedia', 'image', '#')] },
+        { title: 'Clientes y envíos', items: [nav('Usuarios', 'user', '#'), nav('Zonas de envío', 'truck', '#')] },
+      ],
+      st: STATUS[s],
+      steps: FLOW.map((f, i) => {
+        const done = s !== 'cancelled' && i < idx, cur = i === idx;
+        return { label: STATUS[f].label, mark: done ? '✓' : String(i + 1), bg: done ? '#6D28D9' : cur ? '#fff' : '#F3F2F7', fg: done ? '#fff' : cur ? '#6D28D9' : '#9CA3AF', ring: done || cur ? '#6D28D9' : '#F3F2F7', label_c: done || cur ? '#111827' : '#9CA3AF', line: done ? '#6D28D9' : '#ECEAF3', notLast: i < FLOW.length - 1 };
+      }),
+      lines: [
+        { name: 'Vestido Negro Ajustado con Falda Acampanada', attrs: ['Talla M', 'Cant. 1'], img: IMG('1MhUGz7WEZy-_8xmlsy_C.jpeg'), total: fmt(5000), unit: '5.000 c/u' },
+        { name: 'Pantalón Blanco Hueso de Hilo', attrs: ['Talla L', 'Cant. 1', '-10%'], img: IMG('1J9yxbOSfjm46i2urf-XH.jpeg'), total: fmt(4500), unit: '4.500 c/u' },
+      ],
+      shipText: ship === null ? 'Por acordar' : ship === 0 ? 'Gratis' : fmt(ship), shipColor: ship === null ? '#B45309' : '#111827',
+      totalText: fmt(9500 + (ship || 0)) + (ship === null ? ' + envío' : ''),
+      shipBorder: needsShip ? '#FED7AA' : '#ECEAF3',
+      presets: [['Gratis', '0'], ['300', '300'], ['500', '500'], ['600', '600']].map(([label, v]) => ({ label: label === 'Gratis' ? label : label + ' CUP', border: input === v ? '#6D28D9' : '#E5E7EB', bg: input === v ? '#F5F3FF' : '#fff', fg: input === v ? '#5B21B6' : '#374151', select: () => !shipLocked && this.setState({ input: v, err: '' }) })),
+      shipInput: input, onShip: e => this.setState({ input: e.target.value.replace(/[^\d]/g, ''), err: '' }),
+      inputBorder: err ? '#FCA5A5' : '#D1D5DB',
+      saveShip: () => {
+        if (shipLocked) return this.setState({ err: 'La orden ya está pagada: el envío es definitivo.' });
+        if (input === '') return this.setState({ err: 'Escribe un monto (0 si es gratis).' });
+        this.setState({ ship: Number(input), err: '' });
+      },
+      shipError: err,
+      needsShip,
+      nextDesc: act ? act[2] : s === 'cancelled' ? 'La orden fue cancelada y el stock reservado se liberó.' : 'El cliente recibió el pedido.',
+      nextLabel: act ? act[1] : '',
+      advBg: needsShip ? '#C4B5FD' : '#6D28D9', advCursor: needsShip ? 'not-allowed' : 'pointer',
+      advance: () => { if (!act || needsShip) return; this.setState({ s: act[0] }); },
+      canCancel: !['delivered', 'cancelled', 'shipped'].includes(s),
+      cancel: () => this.setState({ s: 'cancelled' }),
+      isFinal: s === 'delivered' || s === 'cancelled',
+      payLabel: s === 'cancelled' ? 'Cancelado' : idx >= 2 ? 'Pagado' : 'No pagado', payFg: s === 'cancelled' ? '#6B7280' : idx >= 2 ? '#15803D' : '#B91C1C',
+      tabBar: [
+        { label: 'Inicio', icon: ICON('layout-dashboard'), color: '#6B7280', href: 'Admin Dashboard.dc.html' },
+        { label: 'Órdenes', icon: ICON('receipt'), color: '#6D28D9', href: 'Admin Ordenes.dc.html' },
+        { label: 'Productos', icon: ICON('shopping-cart'), color: '#6B7280', href: '#' },
+        { label: 'Clientes', icon: ICON('user'), color: '#6B7280', href: '#' },
+        { label: 'Más', icon: ICON('menu'), color: '#6B7280', href: '#' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>
