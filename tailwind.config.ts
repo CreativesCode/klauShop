@@ -29,7 +29,8 @@ const config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-sora)"],
+        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "Georgia", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -47,8 +48,8 @@ const config = {
           600: "#6D28D9",
           700: "#5B21B6",
           800: "#4C1D95",
-          900: "#4338CA",
-          950: "#312E81",
+          900: "#4338CA", // indigo: not part of the redesign palette
+          950: "#2E1065",
           DEFAULT: "#6D28D9",
           foreground: "#FFFFFF",
         },
@@ -77,7 +78,8 @@ const config = {
           900: "#78350F",
           950: "#451A03",
           DEFAULT: "#F59E0B",
-          foreground: "#FFFFFF",
+          // Text on amber is always ink (white on amber fails contrast)
+          foreground: "#111827",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -100,11 +102,40 @@ const config = {
           900: "#111827",
           950: "#030712",
         },
+        ink: "#111827",
+        cream: { DEFAULT: "#FFF8EE", border: "#F3E6CF", strong: "#E7DCC8" },
+        line: { DEFAULT: "#ECEAF3", soft: "#F1EFF6", header: "#EEEAF6" },
+        surface: {
+          muted: "#F4F2F8",
+          tint: "#F1EEF7",
+          admin: "#F6F5FA",
+          hover: "#FAF9FD",
+          soft: "#F3F2F7",
+        },
+      },
+      maxWidth: {
+        store: "1320px",
+        admin: "1400px",
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        "4xl": "28px",
+      },
+      boxShadow: {
+        cta: "0 8px 24px -8px rgba(109,40,217,.55)",
+        drawer: "-20px 0 60px -20px rgba(17,24,39,.35)",
+        toast: "0 12px 32px -8px rgba(17,24,39,.4)",
+        seg: "0 1px 3px rgba(17,24,39,.12)",
+      },
+      transitionTimingFunction: {
+        soft: "cubic-bezier(.2,.7,.2,1)",
+      },
+      gridTemplateColumns: {
+        // At most 4 columns, min 156px (2 columns on a 390px phone)
+        products:
+          "repeat(auto-fill, minmax(max(156px, calc((100% - 72px) / 4)), 1fr))",
       },
       keyframes: {
         "accordion-down": {

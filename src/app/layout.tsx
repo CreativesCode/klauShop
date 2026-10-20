@@ -1,13 +1,23 @@
 import { Toaster } from "@/components/ui/toaster";
 import { getPageMetadata } from "@/config/site";
 import type { Metadata } from "next";
-import { Sora } from "next/font/google";
+import { Instrument_Serif, Manrope } from "next/font/google";
 import CustomProvider from "../providers/CustomProvider";
 import "./globals.css";
 
-const sora = Sora({
+const sans = Manrope({
   subsets: ["latin"],
-  variable: "--font-sora",
+  variable: "--font-sans",
+  display: "swap",
+});
+
+// Editorial store headings only (hero, banners, special orders). Never in the admin.
+const display = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-display",
+  display: "swap",
 });
 
 export const metadata: Metadata = getPageMetadata();
@@ -18,9 +28,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={sora.variable}>
+    <html lang="es" className={`${sans.variable} ${display.variable}`}>
       <CustomProvider>
-        <body className={sora.className}>
+        <body className="font-sans antialiased">
           {children}
           <Toaster />
         </body>
