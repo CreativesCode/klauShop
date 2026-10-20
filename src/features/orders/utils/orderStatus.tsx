@@ -11,6 +11,10 @@ import {
 
 export type OrderStatusInfo = {
   label: string;
+  /** Compact label for status pills ("Por confirmar") */
+  shortLabel: string;
+  /** Hex of the status dot / chart segment */
+  dot: string;
   description: string;
   icon: React.ComponentType<any>;
   color: string;
@@ -21,6 +25,8 @@ export type OrderStatusInfo = {
 export const ORDER_STATUS_INFO: Record<OrderStatus, OrderStatusInfo> = {
   pending_confirmation: {
     label: "Pendiente de Confirmación",
+    shortLabel: "Por confirmar",
+    dot: "#EAB308",
     description: "Orden creada, esperando confirmación del admin",
     icon: Clock,
     color: "text-yellow-700",
@@ -29,6 +35,8 @@ export const ORDER_STATUS_INFO: Record<OrderStatus, OrderStatusInfo> = {
   },
   pending_payment: {
     label: "Pendiente de Pago",
+    shortLabel: "Pendiente de pago",
+    dot: "#F97316",
     description: "Esperando confirmación de pago",
     icon: CreditCard,
     color: "text-orange-700",
@@ -37,6 +45,8 @@ export const ORDER_STATUS_INFO: Record<OrderStatus, OrderStatusInfo> = {
   },
   paid: {
     label: "Pagada",
+    shortLabel: "Pagada",
+    dot: "#22C55E",
     description: "Pago confirmado, listo para procesar",
     icon: CheckCircle2,
     color: "text-green-700",
@@ -45,6 +55,8 @@ export const ORDER_STATUS_INFO: Record<OrderStatus, OrderStatusInfo> = {
   },
   processing: {
     label: "Procesando",
+    shortLabel: "Procesando",
+    dot: "#3B82F6",
     description: "Preparando el pedido",
     icon: Package,
     color: "text-blue-700",
@@ -53,6 +65,8 @@ export const ORDER_STATUS_INFO: Record<OrderStatus, OrderStatusInfo> = {
   },
   shipped: {
     label: "Enviado",
+    shortLabel: "Enviada",
+    dot: "#6366F1",
     description: "En camino al cliente",
     icon: Truck,
     color: "text-indigo-700",
@@ -61,6 +75,8 @@ export const ORDER_STATUS_INFO: Record<OrderStatus, OrderStatusInfo> = {
   },
   delivered: {
     label: "Entregado",
+    shortLabel: "Entregada",
+    dot: "#10B981",
     description: "Orden entregada al cliente",
     icon: PackageCheck,
     color: "text-emerald-700",
@@ -69,6 +85,8 @@ export const ORDER_STATUS_INFO: Record<OrderStatus, OrderStatusInfo> = {
   },
   cancelled: {
     label: "Cancelada",
+    shortLabel: "Cancelada",
+    dot: "#EF4444",
     description: "Orden cancelada",
     icon: XCircle,
     color: "text-red-700",

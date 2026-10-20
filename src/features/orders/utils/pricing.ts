@@ -1,5 +1,5 @@
 import { isPickupZone } from "@/features/shipping/utils/matchShippingZone";
-import { formatPrice } from "@/lib/utils";
+import { formatCUP } from "@/lib/utils";
 
 /**
  * Unit price after applying the product's percentage discount, rounded to
@@ -29,7 +29,7 @@ export function formatShipping(
 ): string {
   if (shippingCost === null) return "A acordar por WhatsApp";
   if (shippingCost === 0 && isPickupZone(zone)) return "Recogida en tienda";
-  return formatPrice(shippingCost);
+  return formatCUP(shippingCost);
 }
 
 /** Total line: while shipping is not set, the amount is only the subtotal. */
@@ -38,8 +38,8 @@ export function formatOrderTotal(
   shippingCost: number | null,
 ): string {
   return shippingCost === null
-    ? `${formatPrice(total)} + envío`
-    : formatPrice(total);
+    ? `${formatCUP(total)} + envío`
+    : formatCUP(total);
 }
 
 /**

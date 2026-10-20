@@ -4,3 +4,4 @@ export { default as OrderLinePrice } from "./OrderLinePrice";
 export { default as OrderProgress } from "./OrderProgress";
 export { default as OrdersList } from "./OrdersList";
 export { default as WhatsAppCheckoutButton } from "./WhatsAppCheckoutButton";
+export { StalePill, StatusPill } from "./StatusPill";

@@ -1,6 +1,6 @@
 "use client";
 import { DocumentType, gql } from "@/gql";
-import { keytoUrl } from "@/lib/utils";
+import { formatCUP, keytoUrl } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardHeader } from "../../../components/ui/card";
@@ -70,14 +70,14 @@ function BuyAgainCard({ products }: BuyAgainCardProps) {
                   {hasDiscount ? (
                     <>
                       <p className="font-bold text-red-600">
-                        {discountedPrice.toFixed(2)} CUP
+                        {formatCUP(discountedPrice)}
                       </p>
                       <p className="text-sm text-gray-500 line-through">
-                        {priceValue.toFixed(2)} CUP
+                        {formatCUP(priceValue)}
                       </p>
                     </>
                   ) : (
-                    <p className="font-bold">{priceValue.toFixed(2)} CUP</p>
+                    <p className="font-bold">{formatCUP(priceValue)}</p>
                   )}
                 </div>
               </div>

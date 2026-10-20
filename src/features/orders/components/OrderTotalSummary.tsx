@@ -1,5 +1,5 @@
 import { Separator } from "@/components/ui/separator";
-import { formatPrice } from "@/lib/utils";
+import { formatCUP } from "@/lib/utils";
 import {
   formatOrderTotal,
   formatShipping,
@@ -26,7 +26,7 @@ export function OrderTotalSummary({
     <div className="rounded-md border p-3 space-y-2">
       <div className="flex justify-between text-sm">
         <span className="text-muted-foreground">Subtotal</span>
-        <span>{formatPrice(subtotal)}</span>
+        <span>{formatCUP(subtotal)}</span>
       </div>
       <div className="flex justify-between text-sm">
         <span className="text-muted-foreground">Envío</span>

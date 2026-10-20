@@ -7,7 +7,7 @@ function SearchProductsGridSkeleton() {
     <div>
       <Skeleton className="mb-5" />
 
-      <section className="grid grid-cols-2 lg:grid-cols-4 w-full gap-y-8 gap-x-3 py-5">
+      <section className="grid grid-cols-products gap-x-3 gap-y-6 md:gap-x-6 md:gap-y-10 w-full py-5">
         {[...Array(24)].map((_, index) => (
           <ProductCardSkeleton key={index} />
         ))}

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { formatPrice } from "@/lib/utils";
+import { formatCUP } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
@@ -49,7 +49,7 @@ export default function ShippingCostEditor({
         description:
           shippingCost === null
             ? "Envío marcado como a acordar."
-            : `Envío guardado: ${formatPrice(shippingCost)}`,
+            : `Envío guardado: ${formatCUP(shippingCost)}`,
       });
 
       router.refresh();

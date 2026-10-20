@@ -4,23 +4,26 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center rounded-full px-2.5 py-1 text-[11px] sm:text-xs font-extrabold tracking-[.02em] transition-colors",
   {
     variants: {
       variant: {
-        default:
-          "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
-        secondary:
-          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive:
-          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        new_product:
-          "border-transparent bg-[#ff0000] text-destructive-foreground hover:bg-destructive/80",
+        default: "bg-primary text-white",
+        secondary: "bg-surface-soft text-neutral-700",
+        destructive: "bg-red-50 text-red-700",
+        // "Nuevo" (white over images)
+        new_product: "bg-white text-primary-700",
+        // "Destacado"
         featured:
-          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        best_sale:
-          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        outline: "text-foreground",
+          "bg-white text-primary-700 ring-1 ring-inset ring-primary-200",
+        // "Mejor venta"
+        best_sale: "bg-ink text-white",
+        // "-10%"
+        discount: "bg-accent text-ink",
+        // Nav / cart counters
+        count:
+          "min-w-[20px] h-5 justify-center px-1.5 py-0 text-[11px] bg-accent text-ink",
+        outline: "bg-white text-ink ring-1 ring-inset ring-line",
       },
     },
     defaultVariants: {
@@ -30,13 +33,19 @@ const badgeVariants = cva(
 );
 
 export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends React.HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof badgeVariants> {}
 
 function Badge({ className, variant, ...props }: BadgeProps) {
   return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+    <span className={cn(badgeVariants({ variant }), className)} {...props} />
   );
 }
+
+export const BADGE_LABEL: Record<string, string> = {
+  new_product: "Nuevo",
+  best_sale: "Mejor venta",
+  featured: "Destacado",
+};
 
 export { Badge, badgeVariants };

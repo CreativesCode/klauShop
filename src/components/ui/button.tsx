@@ -4,32 +4,39 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+// Store: lg/xl sizes are pills. Admin: sm/default are rounded-[10px].
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-100 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-primary text-white hover:bg-primary-700",
+        dark: "bg-ink text-white hover:bg-primary-950",
+        outline: "border border-neutral-300 bg-white text-ink hover:border-ink",
+        outlineDark:
+          "border-[1.5px] border-ink bg-transparent text-ink hover:bg-ink hover:text-white",
+        accent: "bg-accent text-ink font-extrabold hover:bg-accent-400",
+        soft: "bg-surface-soft text-ink font-extrabold hover:bg-line",
+        secondary: "bg-surface-soft text-ink hover:bg-line",
+        destructiveSoft:
+          "border border-red-200 bg-white text-red-700 font-extrabold hover:bg-red-50",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline:
-          "border border-input bg-transparent hover:bg-accent/20 hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "",
-        link: "text-primary underline-offset-4 hover:underline",
+        ghost: "bg-transparent hover:bg-surface-muted",
+        link: "text-primary-700 underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-10 px-5 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
+        sm: "h-8 rounded-[9px] px-3 text-xs font-extrabold",
+        default: "h-10 rounded-[10px] px-4 text-[13px] font-extrabold",
+        lg: "h-12 rounded-full px-6 text-[15px]",
+        xl: "h-[52px] rounded-full px-[26px] text-[15px] font-extrabold",
+        icon: "size-11 rounded-full",
+        iconAdmin:
+          "size-[42px] rounded-xl border border-[#E7E4EF] bg-white text-ink hover:bg-primary-50",
       },
+      elevated: { true: "shadow-cta", false: "" },
     },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
+    defaultVariants: { variant: "default", size: "default", elevated: false },
   },
 );
 
@@ -40,11 +47,11 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, elevated, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(buttonVariants({ variant, size, elevated, className }))}
         ref={ref}
         {...props}
       />

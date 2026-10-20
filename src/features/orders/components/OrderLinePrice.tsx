@@ -1,4 +1,4 @@
-import { cn, formatPrice } from "@/lib/utils";
+import { cn, formatCUP } from "@/lib/utils";
 
 type OrderLinePriceProps = {
   price: number | string;
@@ -25,12 +25,12 @@ export default function OrderLinePrice({
       className={cn("inline-flex flex-wrap items-center gap-1.5", className)}
     >
       <span className={cn(hasDiscount && "text-red-600")}>
-        {formatPrice(price)}
+        {formatCUP(price)}
       </span>
       {hasDiscount && (
         <>
           <span className="text-xs text-muted-foreground line-through">
-            {formatPrice(listPrice)}
+            {formatCUP(listPrice)}
           </span>
           <span className="text-xs bg-red-500 text-white px-1.5 py-0.5 rounded">
             -{discountValue}%

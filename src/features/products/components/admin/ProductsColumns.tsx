@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DocumentType, gql } from "@/gql";
-import { formatPrice, keytoUrl } from "@/lib/utils";
+import { formatCUP, keytoUrl } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { CheckCircle2, MoreHorizontal, Tag, XCircle } from "lucide-react";
 import Image from "next/image";
@@ -219,15 +219,15 @@ const ProductsColumns: ColumnDef<{
           {hasDiscount ? (
             <>
               <div className="font-medium text-xs sm:text-base text-gray-500 line-through">
-                {formatPrice(priceValue)}
+                {formatCUP(priceValue)}
               </div>
               <div className="font-bold text-xs sm:text-base text-green-600 dark:text-green-400">
-                {formatPrice(finalPrice)}
+                {formatCUP(finalPrice)}
               </div>
             </>
           ) : (
             <div className="font-medium text-xs sm:text-base">
-              {formatPrice(priceValue)}
+              {formatCUP(priceValue)}
             </div>
           )}
         </div>

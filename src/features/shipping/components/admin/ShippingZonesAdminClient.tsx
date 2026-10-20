@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
-import { formatPrice } from "@/lib/utils";
+import { formatCUP } from "@/lib/utils";
 import { useMemo, useState } from "react";
 
 export type ShippingZoneRow = {
@@ -235,7 +235,7 @@ export default function ShippingZonesAdminClient({ initialZones }: Props) {
                       disabled={isSubmitting}
                     />
                     <div className="text-xs text-muted-foreground">
-                      Vista: {formatPrice(Number(z.cost || 0))}
+                      Vista: {formatCUP(Number(z.cost || 0))}
                     </div>
                   </div>
                 </TableCell>

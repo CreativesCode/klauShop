@@ -15,7 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { keytoUrl, stripHtml } from "@/lib/utils";
+import { formatCUP, keytoUrl, stripHtml } from "@/lib/utils";
 import Link from "next/link";
 import { Icons } from "../../../components/layouts/icons";
 import { Button } from "../../../components/ui/button";
@@ -151,17 +151,17 @@ function CartItemCard({
           {hasDiscount ? (
             <>
               <p className="text-lg font-bold text-red-600">
-                {discountedPrice.toFixed(2)} CUP
+                {formatCUP(discountedPrice)}
               </p>
               <p className="text-sm text-gray-500 line-through">
-                {priceValue.toFixed(2)} CUP
+                {formatCUP(priceValue)}
               </p>
               <span className="text-xs bg-red-500 text-white px-2 py-0.5 rounded">
                 -{discountValue}%
               </span>
             </>
           ) : (
-            <p className="text-lg font-bold">{priceValue.toFixed(2)} CUP</p>
+            <p className="text-lg font-bold">{formatCUP(priceValue)}</p>
           )}
         </div>
 

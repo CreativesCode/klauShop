@@ -11,6 +11,7 @@ import useWishlistStore from "../useWishlistStore";
 
 type Props = {
   productId: string;
+  className?: string;
 };
 
 const AddProductToWishList = gql(/* GraphQL */ `
@@ -42,7 +43,7 @@ const RemoveWishlistItemMutation = gql(/* GraphQL */ `
   }
 `);
 
-function AddToWishListButton({ productId }: Props) {
+function AddToWishListButton({ productId, className }: Props) {
   const router = useRouter();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -67,19 +68,24 @@ function AddToWishListButton({ productId }: Props) {
       toggleWishlist(productId);
     }
   };
+  const isSaved = !!wishlist[productId];
   return (
     <Button
-      className="rounded-full p-0 md:p-1 bg-primary-50 justify-center shadow-md"
-      variant="secondary"
+      className={cn(
+        "size-10 rounded-full bg-white/90 p-0 text-ink backdrop-blur hover:bg-white",
+        className,
+      )}
+      variant="ghost"
       size="icon"
+      aria-label={isSaved ? "Quitar de favoritos" : "Añadir a favoritos"}
+      aria-pressed={isSaved}
       onClick={onClickHandler}
     >
       <Icons.heart
+        aria-hidden
         className={cn(
-          "md:w-6 md:h-6 w-4 h-4",
-          wishlist[productId]
-            ? "fill-primary stroke-primary"
-            : "fill-none stroke-primary",
+          "size-[19px]",
+          isSaved ? "fill-primary stroke-primary" : "fill-none stroke-current",
         )}
       />
     </Button>

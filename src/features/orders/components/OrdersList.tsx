@@ -1,7 +1,7 @@
 "use client";
 import { DocumentType, gql } from "@/gql";
 import { OrderStatus } from "@/lib/supabase/schema";
-import { cn, formatPrice, keytoUrl } from "@/lib/utils";
+import { cn, formatCUP, keytoUrl } from "@/lib/utils";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
 import Image from "next/image";
@@ -125,7 +125,7 @@ function OrdersList({ orders, pageInfo }: OrdersListProps) {
                 <div className="flex flex-col gap-1 min-w-0">
                   <p className="font-medium text-xs whitespace-nowrap">Total</p>
                   <p className="text-xs sm:text-sm truncate">
-                    {formatPrice(order.amount)}
+                    {formatCUP(order.amount)}
                   </p>
                 </div>
 
@@ -212,7 +212,7 @@ function OrdersList({ orders, pageInfo }: OrdersListProps) {
                               <p>
                                 Total:{" "}
                                 <span className="font-medium text-foreground">
-                                  {formatPrice(
+                                  {formatCUP(
                                     Number(node.price) * node.quantity,
                                   )}
                                 </span>
@@ -260,7 +260,7 @@ function OrdersList({ orders, pageInfo }: OrdersListProps) {
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Subtotal</span>
                         <span className="font-medium">
-                          {formatPrice(subtotal)}
+                          {formatCUP(subtotal)}
                         </span>
                       </div>
                       <div className="flex justify-between">

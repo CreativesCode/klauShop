@@ -34,7 +34,7 @@ import {
   useShippingZones,
 } from "@/features/shipping";
 import type { SelectProducts } from "@/lib/supabase/schema";
-import { formatPrice } from "@/lib/utils";
+import { formatCUP } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -233,7 +233,7 @@ export default function AdminOrderCreateForm({
                         <div className="font-medium truncate">{p.name}</div>
                         <div className="text-sm text-muted-foreground flex gap-2">
                           <span>
-                            {formatPrice(
+                            {formatCUP(
                               getDiscountedUnitPrice(p.price, p.discount),
                             )}
                           </span>
@@ -301,7 +301,7 @@ export default function AdminOrderCreateForm({
                               </div>
                               <div className="text-sm text-muted-foreground">
                                 {p
-                                  ? formatPrice(
+                                  ? formatCUP(
                                       getDiscountedUnitPrice(
                                         p.price,
                                         p.discount,

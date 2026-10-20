@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { formatPrice } from "@/lib/utils";
+import { formatCUP } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useShippingZones } from "../hooks/useShippingZones";
 import {
@@ -134,7 +134,7 @@ export function ShippingZoneSelect({
             return (
               <SelectItem key={z.id} value={z.id}>
                 {z.name}
-                {cost !== null ? ` — ${formatPrice(cost)}` : ""}
+                {cost !== null ? ` — ${formatCUP(cost)}` : ""}
               </SelectItem>
             );
           })}
@@ -195,7 +195,7 @@ export function ShippingZoneSelect({
       {selectedZone && selectedCost !== null && (
         <p className="text-sm text-muted-foreground">
           Costo de envío para <b>{selectedZone.name}</b>:{" "}
-          <b>{formatPrice(selectedCost)}</b>
+          <b>{formatCUP(selectedCost)}</b>
         </p>
       )}
     </div>

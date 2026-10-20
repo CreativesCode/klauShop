@@ -34,7 +34,7 @@ function useCartActions(user: User | null, productId: string) {
     color?: string | null,
     size?: string | null,
     material?: string | null,
-  ) => {
+  ): Promise<boolean> => {
     try {
       setIsLoading(true);
 
@@ -65,7 +65,7 @@ function useCartActions(user: User | null, productId: string) {
           description: `Solo hay ${stockCheck.availableStock} unidades disponibles. Ya tienes ${existedItem?.quantity || 0} en tu carrito.`,
           variant: "destructive",
         });
-        return;
+        return false;
       }
 
       if (existedItem) {
@@ -87,6 +87,7 @@ function useCartActions(user: User | null, productId: string) {
 
       // Refrescar el carrito (se hará mediante el componente padre)
       window.dispatchEvent(new Event("cart-updated"));
+      return true;
     } catch (err) {
       console.error("Error adding to cart:", err);
       toast({
@@ -94,6 +95,7 @@ function useCartActions(user: User | null, productId: string) {
         description: "No se pudo agregar el producto al carrito.",
         variant: "destructive",
       });
+      return false;
     } finally {
       setIsLoading(false);
     }
@@ -107,6 +109,7 @@ function useCartActions(user: User | null, productId: string) {
   ) => {
     addProductStorage(productId, quantity, color, size, material);
     toastAdded();
+    return true;
   };
 
   const addProductToCart = (
@@ -114,7 +117,7 @@ function useCartActions(user: User | null, productId: string) {
     color?: string | null,
     size?: string | null,
     material?: string | null,
-  ) =>
+  ): Promise<boolean> | boolean =>
     !user
       ? guestAddProduct(quantity, color, size, material)
       : authAddOrUpdateProduct(quantity, color, size, material);

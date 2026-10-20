@@ -4,7 +4,7 @@ import { ProductCard } from "@/features/products";
 import { gql } from "@/gql";
 import { useQuery } from "@urql/next";
 import React from "react";
-import ProductCardSkeleton from "./RecommendationProductsSkeleton";
+import ProductCardSkeleton from "./ProductCardSkeleton";
 
 export type RecommendationProductsProps =
   React.HTMLAttributes<HTMLDivElement> & {};
@@ -36,8 +36,8 @@ function RecommendationProducts({}: RecommendationProductsProps) {
   if (fetching)
     return (
       <Header heading={`Te puede interesar`}>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4">
-          {[...Array(6)].map((_, index) => (
+        <div className="grid grid-cols-products gap-x-3 gap-y-6 md:gap-x-6 md:gap-y-10">
+          {[...Array(4)].map((_, index) => (
             <ProductCardSkeleton key={index} />
           ))}
         </div>
@@ -48,7 +48,7 @@ function RecommendationProducts({}: RecommendationProductsProps) {
 
   return (
     <Header heading={`Te puede interesar`}>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4">
+      <div className="grid grid-cols-products gap-x-3 gap-y-6 md:gap-x-6 md:gap-y-10">
         {data.recommendations &&
           data.recommendations.edges.map(({ node }) => (
             <ProductCard key={node.id} product={node} />

@@ -27,7 +27,7 @@ import {
   orders,
   products,
 } from "@/lib/supabase/schema";
-import { cn, formatPrice, keytoUrl } from "@/lib/utils";
+import { cn, formatCUP, keytoUrl } from "@/lib/utils";
 import { eq } from "drizzle-orm";
 import Image from "next/image";
 import Link from "next/link";
@@ -270,7 +270,7 @@ export default async function AdminOrderDetailPage({
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>{formatPrice(subtotal)}</span>
+                  <span>{formatCUP(subtotal)}</span>
                 </div>
 
                 <div className="flex justify-between text-sm">

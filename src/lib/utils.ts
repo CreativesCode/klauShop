@@ -31,6 +31,35 @@ export function formatPrice(price: number | string) {
   return `${Number(price || 0).toFixed(2)} CUP`;
 }
 
+// UI price: "4.500 CUP" (no decimals, dot thousands separator).
+// WhatsApp messages and exports keep formatPrice().
+export function formatCUP(
+  value: number | string,
+  opts: { unit?: boolean } = {},
+) {
+  const n = Math.round(Number(value || 0));
+  const s = Math.abs(n)
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  const signed = n < 0 ? `-${s}` : s;
+  return opts.unit === false ? signed : `${signed} CUP`;
+}
+
+// "Hace 12 min", "Hace 2 h", "Ayer", "18 oct" for admin lists
+export function relativeTimeEs(date: Date | string, now = new Date()) {
+  const d = new Date(date);
+  const min = Math.floor((now.getTime() - d.getTime()) / 60000);
+  if (min < 60) return `Hace ${Math.max(1, min)} min`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `Hace ${h} h`;
+  if (h < 48) return "Ayer";
+  return d.toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "short",
+    timeZone: "America/Havana",
+  });
+}
+
 export function formatDate(date: Date) {
   return dayjs(date).format("MMMM D, YYYY");
 }

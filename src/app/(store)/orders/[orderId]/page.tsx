@@ -25,7 +25,7 @@ import {
   products,
 } from "@/lib/supabase/schema";
 import { createClient } from "@/lib/supabase/server";
-import { cn, formatPrice, keytoUrl } from "@/lib/utils";
+import { cn, formatCUP, keytoUrl } from "@/lib/utils";
 import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import Image from "next/image";
@@ -228,7 +228,7 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
                   </div>
                   <div className="text-right">
                     <p className="font-semibold">
-                      {formatPrice(Number(item.price) * item.quantity)}
+                      {formatCUP(Number(item.price) * item.quantity)}
                     </p>
                   </div>
                 </div>
@@ -282,7 +282,7 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
             <CardContent className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal:</span>
-                <span>{formatPrice(subtotal)}</span>
+                <span>{formatCUP(subtotal)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Envío:</span>

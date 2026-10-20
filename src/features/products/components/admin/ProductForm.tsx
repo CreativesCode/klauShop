@@ -33,7 +33,7 @@ import {
   SelectProducts,
   products,
 } from "@/lib/supabase/schema";
-import { formatPrice, slugify } from "@/lib/utils";
+import { formatCUP, slugify } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@urql/next";
 import { createInsertSchema } from "drizzle-zod";
@@ -547,7 +547,7 @@ function ProductFrom({
                         Precio final con descuento:
                       </span>
                       <span className="ml-2 text-lg font-bold">
-                        {formatPrice(finalPrice)}
+                        {formatCUP(finalPrice)}
                       </span>
                     </div>
                     <div className="text-xs text-green-600 dark:text-green-300 mt-1">
