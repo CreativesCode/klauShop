@@ -33,6 +33,8 @@ Commits locales en `main`, **sin push** (cada fase deja el sitio funcionando; li
 | Fix clase ambigua `duration-[600ms]` (choca con tailwindcss-animate) | `5830abf` | Hecha |
 | **Push a `main` = deploy a producción** (dueño aprobó) | `5163ca9..5830abf` | Hecho 2026-10-20 |
 | Comprobaciones finales | — | Smoke test en prod OK; Lighthouse oficial pendiente (ver abajo) |
+| Fix desplegable de categorías (se abría a la izquierda, inalcanzable con el ratón) | `60d3bbc` | Hecha, en `origin/main` |
+| Fix tabla de órdenes: anchos de columna fijos (`table-fixed`), tarjetas bajo `xl` | `f3d75c1` | Hecha, en `origin/main` |
 
 ### Pendiente
 - [ ] Lighthouse oficial: la API de PageSpeed sin clave agotó la cuota diaria y no se instaló Lighthouse en local
@@ -40,6 +42,11 @@ Commits locales en `main`, **sin push** (cada fase deja el sitio funcionando; li
       optimista): LCP / 1,3 s · /shop 2,1 s · ficha 1,3 s · /cart 0,9 s · /sign-in 1,0 s; CLS 0 (sign-in 0,017);
       `lang="es"`; ninguna imagen sin `alt`; ningún texto < 11px.
 - [ ] Probar con una sesión admin real guardar un usuario editado (no se probó: modificaría datos de producción).
+
+### Diferencias conscientes con el handoff (el dueño puede pedir que se hagan tal cual)
+- Carrito lateral: zona de entrega y envío del pedido NO dentro del panel (van en `/cart`, flujo probado en iOS).
+- Órdenes admin: sin "Exportar" en la barra de selección (sí en el encabezado).
+- Sin el aviso opcional "Producto añadido" dentro del panel.
 
 ### Hallazgos resueltos (pedido del dueño 2026-10-20)
 - Editar usuario no guardaba (submit comentado) → `updateUserAction` (nombre, correo, contraseña opcional; sincroniza
@@ -88,6 +95,10 @@ commit se excluyeron los dos layouts; al parar se revirtió. Comprobar siempre c
 solo contienen el parche: `git checkout --` de ambos.
 
 ## Aprendizajes
+- Tablas admin con columnas de contenido variable: `table-fixed` + anchos por id de columna; si no caben, tarjetas
+  (en Órdenes, bajo `xl`). Con layout automático los anchos cambian al ordenar o paginar.
+- `NavigationMenu` de Radix pinta el contenido en un único viewport: hay que moverlo bajo el ítem
+  (`viewportOffset` en `components/ui/navigation-menu.tsx`).
 - Antes de cada push: `npm run build` (para el dev server antes: comparte `.next`). Los avisos "Dynamic server usage"
   de `/api/admin/dashboard/export` son informativos y vienen de antes.
 - El conector de Vercel de esta máquina es de otra cuenta (no ve klauShop): el deploy se verifica contra

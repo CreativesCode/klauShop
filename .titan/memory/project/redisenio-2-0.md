@@ -4,7 +4,8 @@ Spec: `docs/design/design_handoff_klaushop_redesign/` (el dueño lo aportó; aú
 Plan y estado detallado: `.titan/plans/redisenio-2-0.md`.
 
 **Estado 2026-10-20:** Fases 0–4 hechas (todas las vistas de tienda, auth y admin). Commits en `main`,
-**publicado en producción** (push a `main` 2026-10-20, aprobado por el dueño). Queda: Lighthouse oficial.
+**publicado en producción** (push a `main` 2026-10-20, aprobado por el dueño). Dos fixes posteriores
+(desplegable de categorías, anchos de la tabla de órdenes) también en `origin/main`. Queda: Lighthouse oficial.
 Detalle en el plan.
 
 ## Reglas nuevas (respetarlas en código nuevo)
@@ -23,3 +24,4 @@ Detalle en el plan.
 - Auth: `AuthCard` (`@/features/auth`). `PasswordInput` ya usa 16px en móvil.
 - Carrito: `CartDrawer` (estado `useCartDrawer`). El checkout NO se mete en el panel: el panel enlaza a
   `/cart?checkout=1` (`WhatsAppCheckoutButton defaultOpen`). No anidar el diálogo de checkout en el Sheet.
+- Tablas admin: `table-fixed` + anchos fijos por columna (ver `COLUMN_WIDTHS` en `OrdersDataTable`).
