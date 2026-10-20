@@ -3,9 +3,9 @@
 Spec: `docs/design/design_handoff_klaushop_redesign/` (el dueño lo aportó; aún sin commitear en git).
 Plan y estado detallado: `.titan/plans/redisenio-2-0.md`.
 
-**Estado 2026-10-20:** Fases 0–3 hechas y Fase 4 a medias (tienda parte 1). Commits locales en `main`, **sin push**.
-Pendiente: resto de tienda (confirmación, encargos, sobre nosotros, settings, 404), auth y todas las listas/formularios
-del admin (productos, colecciones, multimedia, usuarios, zonas, nueva orden).
+**Estado 2026-10-20:** Fases 0–4 hechas (todas las vistas de tienda, auth y admin). Commits locales en `main`,
+**sin push** (push = deploy a producción; lo decide el dueño). Queda: Lighthouse sobre el deploy, decidir push y si se
+commitea `docs/design/`. Detalle y hallazgos en el plan.
 
 ## Reglas nuevas (respetarlas en código nuevo)
 - Precios visibles: `formatCUP()` de `src/lib/utils.ts` ("4.500 CUP"). WhatsApp/JSON-LD/exports: `formatPrice()`.
@@ -18,3 +18,6 @@ del admin (productos, colecciones, multimedia, usuarios, zonas, nueva orden).
 - Contenedor de página de tienda: `Shell`. Encabezado de página admin: `AdminShell` (`actions`, `breadcrumb`).
 - Manrope = archivos estáticos de `@fontsource/manrope` (no Google variable): ver plan.
 - El admin ya no reduce `html` a 14px.
+- Listas admin: `AdminSearchField` / `adminChip` / `AdminTableView` de `components/admin/AdminTable.tsx`.
+- Formularios admin: tarjetas 2fr/1fr + barra "Guardar" `sticky bottom-[calc(65px+env(safe-area-inset-bottom))] lg:bottom-0`.
+- Auth: `AuthCard` (`@/features/auth`). `PasswordInput` ya usa 16px en móvil.

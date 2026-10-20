@@ -17,20 +17,36 @@ Commits locales en `main`, **sin push** (cada fase deja el sitio funcionando; li
 | 3 Pantallas clave tienda (inicio, ficha, carrito) | `4bed0ab` | Hecha |
 | 3 Pantallas clave admin (dashboard, órdenes, detalle de orden) | `26f121d` | Hecha |
 | 4 Propagación — tienda parte 1 (Shell, colección, filtros, búsqueda, favoritos, mis órdenes, detalle cliente) | `fd95b1c` | Hecha |
-| 4 Propagación — resto | — | **Pendiente** (ver lista) |
-| Comprobaciones finales (Lighthouse, grep de restos) | — | Pendiente |
+| 4 Propagación — tienda parte 2 (confirmación, encargos, sobre nosotros, ajustes, direcciones, 404) | `59d6110` | Hecha |
+| 4 Auth (AuthCard compartida; PasswordInput a 46px/16px) | `3f79369` | Hecha |
+| 4 Admin productos (lista + formulario en tarjetas) | `08c847e` | Hecha |
+| 4 Admin colecciones | `d791852` | Hecha |
+| 4 Admin multimedia | `33447a4` | Hecha |
+| 4 Admin usuarios (y copy en inglés traducido) | `4f8e658` | Hecha |
+| 4 Admin zonas de envío | `e88d0ec` | Hecha |
+| 4 Admin nueva orden | `e53c896` | Hecha |
+| Textos en inglés (carousel, multi-select) | `8ea5599` | Hecha |
+| Comprobaciones finales (Lighthouse) | — | Pendiente: hacerlo sobre el deploy (preview/prod) |
 
-### Fase 4 — pendiente
-- [ ] Tienda: `orders/confirmation` (¡no tocar la lógica del botón WhatsApp de iOS!), `special-orders`, `about-us`,
-      `setting/*` (perfil, cuenta, direcciones + `AddressCard/Form/List`), `not-found.tsx`.
-- [ ] Auth: `sign-in`, `sign-up`, `reset-password`, `error` (tarjeta 420px rounded-[28px], botones xl, inputs 46px).
-- [ ] Admin: productos (lista `ProductsDataTable/Columns` + `ProductForm`), colecciones (lista + `CollectionForm`, mantener
-      `<Suspense>`), multimedia (`ImageGrid` tiene `text-[10px]`, `UploadMediaContainer`, `ImageDialog` mantener
-      `max-h-[90dvh]`), usuarios (lista, `AdminUserForm`/`UpdateUserForm` con placeholders en inglés), zonas de envío,
-      nueva orden (`AdminOrderCreateForm`). Patrón: AdminShell (H1 + descripción + acciones) + tarjeta blanca con toolbar
-      + tabla; en < lg filas → tarjetas; formularios en tarjetas 2fr/1fr con barra fija "Guardar" en móvil.
-- [ ] Textos en inglés restantes: `FilterSheet.tsx` (¿se usa?), `carousel.tsx` sr-only, `multi-select.tsx`.
-- [ ] Comprobaciones finales del handoff (§ Comprobaciones finales de `docs/04-PLAN.md`).
+### Pendiente
+- [ ] Lighthouse móvil sobre el deploy (no tiene sentido sobre `next dev`).
+- [ ] Push a `main` (= deploy a producción): lo decide el dueño.
+- [ ] `docs/design/` sigue sin commitear: lo decide el dueño.
+- [ ] Revisar con una sesión admin real `/admin/users` (la vista previa sin sesión no puede listar usuarios:
+      `listUsers` exige admin en el servidor).
+
+### Hallazgos (no tocados, avisar)
+- `UpdateUserForm` (editar usuario) no guarda nada: su `onSubmit` está comentado. Solo se rediseñó.
+- Código muerto: `FilterSheet.tsx` (no se importa; tiene textos en inglés), `CartSheet`, `ShipReturns`, `RecentSales`,
+  `AdminUserNav` (ya no se usa en la página de usuarios).
+
+### Patrones nuevos de la Fase 4
+- Listas admin: `components/admin/AdminTable.tsx` → `AdminSearchField`, `adminChip(active)`, `AdminTableView`
+  (tabla ≥ lg + `renderMobileRow` para tarjetas en móvil) dentro de la tarjeta `rounded-[18px] border-line bg-white`,
+  con `DataTablePagination itemLabel`.
+- Formularios admin: tarjetas `flex-[2_1_520px]` / `flex-[1_1_320px]` y barra fija
+  `sticky bottom-[calc(65px+env(safe-area-inset-bottom))] lg:bottom-0` (queda justo encima de la tab bar admin).
+- Auth: `AuthCard` de `@/features/auth`.
 
 ## Decisiones tomadas (avisar al dueño)
 - **Manrope sale de `@fontsource/manrope` (archivos estáticos por peso) con `next/font/local`**, no de Google: Google
@@ -60,7 +76,9 @@ Commits locales en `main`, **sin push** (cada fase deja el sitio funcionando; li
 La cuenta admin de la QA es real y de producción: no se usa su contraseña. Para capturas se aplicó un parche temporal
 (nunca commiteado) que salta el guard de admin solo con `NODE_ENV=development` y `ADMIN_UI_PREVIEW=1`. Antes de cada
 commit se excluyeron los dos layouts; al parar se revirtió. Comprobar siempre con
-`git grep TEMP-ADMIN-PREVIEW HEAD -- src` (debe salir vacío).
+`git grep TEMP-ADMIN-PREVIEW HEAD -- src` (debe salir vacío) y, para el árbol de trabajo, `grep -rn TEMP-ADMIN src`
+(`git grep` sin `HEAD` no lo detectó con las rutas con paréntesis). Si `git apply -R` falla por CRLF, los dos layouts
+solo contienen el parche: `git checkout --` de ambos.
 
 ## Aprendizajes
 - Los heredocs con comillas raras fallan en el Bash de esta máquina: escribir scripts/fragmentos con la herramienta Write
