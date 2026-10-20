@@ -7,8 +7,12 @@ type Props = {};
 async function NewProjectPage({}: Props) {
   return (
     <AdminShell
-      heading="Agregar Colección"
-      description="Ingrese los campos a continuación, después de eso presione el botón Agregar Colección para guardar la colección."
+      heading="Nueva colección"
+      description="Completa los datos y pulsa «Crear colección»."
+      breadcrumb={[
+        { label: "Colecciones", href: "/admin/collections" },
+        { label: "Nueva" },
+      ]}
     >
       {/* CollectionForm suspends on its urql query; without a boundary it refetched in a loop */}
       <Suspense>

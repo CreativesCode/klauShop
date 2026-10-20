@@ -39,8 +39,12 @@ async function EditCollectionPage({
 
   return (
     <AdminShell
-      heading="Editar Colección"
-      description="Modifique los campos y presione el botón para guardar la colección."
+      heading="Editar colección"
+      description="Los cambios se ven en la tienda al guardar."
+      breadcrumb={[
+        { label: "Colecciones", href: "/admin/collections" },
+        { label: data.collectionsCollection.edges[0].node.label },
+      ]}
     >
       <div className="">
         {/* CollectionForm suspends on its urql query; without a boundary it refetched in a loop */}

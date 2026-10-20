@@ -46,15 +46,15 @@ const CollectionsColumns: ColumnDef<{
       return (
         <Link
           href={`/admin/collections/${collection.id}`}
-          className="text-left font-medium capitalize hover:underline flex items-center gap-2"
+          className="flex items-center gap-2 text-left font-bold capitalize text-ink hover:text-primary-700"
         >
           {collection.label}
           {collection.show_in_home && (
             <span
               className="inline-flex items-center"
-              aria-label="Visible en el home"
+              aria-label="Visible en el inicio"
             >
-              <Home className="h-4 w-4 text-primary" />
+              <Home className="size-4 text-primary" aria-hidden />
             </span>
           )}
         </Link>
@@ -70,7 +70,9 @@ const CollectionsColumns: ColumnDef<{
     cell: ({ row }) => {
       const collection = row.original.node;
 
-      return <div className="font-medium">{collection.slug}</div>;
+      return (
+        <div className="text-[13px] text-neutral-500">{collection.slug}</div>
+      );
     },
   },
   {
@@ -82,7 +84,7 @@ const CollectionsColumns: ColumnDef<{
     cell: ({ row }) => {
       const collection = row.original.node;
 
-      return <p className="font-medium">{collection.title}</p>;
+      return <p className="text-neutral-700">{collection.title}</p>;
     },
   },
   {
@@ -99,12 +101,12 @@ const CollectionsColumns: ColumnDef<{
           {collection.collections ? (
             <Link
               href={`/admin/collections/${collection.collections.id}`}
-              className="text-left font-medium capitalize hover:underline"
+              className="text-left font-semibold capitalize text-neutral-700 hover:text-primary-700"
             >
               {collection.collections.label}
             </Link>
           ) : (
-            <span className="text-muted-foreground">-</span>
+            <span className="text-neutral-400">—</span>
           )}
         </div>
       );
@@ -112,22 +114,22 @@ const CollectionsColumns: ColumnDef<{
   },
   {
     id: "actions",
-    header: () => <div className="text-center capitalize">Acc</div>,
+    header: () => <span className="sr-only">Acciones</span>,
     cell: ({ row }) => {
       const collection = row.original.node;
 
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button variant="ghost" size="iconAdmin">
               <span className="sr-only">Abrir menú</span>
-              <MoreHorizontal className="h-4 w-4" />
+              <MoreHorizontal className="size-4" aria-hidden />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
+          <DropdownMenuContent align="end">
             <DropdownMenuItem asChild>
               <Link href={`/admin/collections/${collection.id}`}>
-                Editar Colección
+                Editar colección
               </Link>
             </DropdownMenuItem>
             <DeleteCollectionDialog

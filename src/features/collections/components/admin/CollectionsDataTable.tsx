@@ -4,7 +4,6 @@ import {
   ColumnFiltersState,
   SortingState,
   VisibilityState,
-  flexRender,
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
@@ -15,59 +14,25 @@ import {
 } from "@tanstack/react-table";
 import * as React from "react";
 
-import { DataTablePagination } from "@/components/ui/data-table-pagination";
-import { Input } from "@/components/ui/input";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Search } from "lucide-react";
+  AdminSearchField,
+  AdminTableView,
+} from "@/components/admin/AdminTable";
+import { Icons } from "@/components/layouts/icons";
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
+import { DocumentType } from "@/gql";
+import Link from "next/link";
+import { CollectionColumnsFragment } from "../CollectionsColumns";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-// Hook para detectar si es vista móvil
-function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState(false);
-
-  React.useEffect(() => {
-    // Verificar que estamos en el cliente
-    if (typeof window === "undefined") return;
-
-    // Usar el breakpoint md de Tailwind (768px)
-    const mediaQuery = window.matchMedia("(max-width: 768px)");
-
-    // Establecer el valor inicial
-    setIsMobile(mediaQuery.matches);
-
-    // Función para actualizar el estado cuando cambie el tamaño
-    const handleChange = (event: MediaQueryListEvent) => {
-      setIsMobile(event.matches);
-    };
-
-    // Escuchar cambios
-    mediaQuery.addEventListener("change", handleChange);
-
-    // Limpiar listener al desmontar
-    return () => {
-      mediaQuery.removeEventListener("change", handleChange);
-    };
-  }, []);
-
-  return isMobile;
-}
-
 function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const isMobile = useIsMobile();
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -76,20 +41,6 @@ function DataTable<TData, TValue>({
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
-
-  // Actualizar visibilidad de columnas basado en el tamaño de pantalla
-  React.useEffect(() => {
-    if (isMobile) {
-      // En móvil, ocultar columnas menos importantes
-      setColumnVisibility({
-        slug: false,
-        title: false,
-      });
-    } else {
-      // En desktop, mostrar todas las columnas
-      setColumnVisibility({});
-    }
-  }, [isMobile]);
 
   // Función de filtro global personalizada
   const globalFilterFn = React.useCallback(
@@ -139,71 +90,55 @@ function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="space-y-4">
-      {/* Barra de búsqueda */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Buscar colecciones..."
-            value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            className="pl-9"
-          />
-        </div>
+    <div className="overflow-hidden rounded-[18px] border border-line bg-white">
+      <div className="flex flex-wrap items-center gap-2 p-3">
+        <AdminSearchField
+          value={globalFilter}
+          onChange={setGlobalFilter}
+          placeholder="Buscar por etiqueta, slug o colección padre"
+        />
       </div>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id} colSpan={header.colSpan}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  Sin resultados.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <DataTablePagination table={table} />
+      <AdminTableView
+        table={table}
+        emptyText="No hay colecciones con esta búsqueda."
+        renderMobileRow={(row) => {
+          const collection = (
+            row as { node: DocumentType<typeof CollectionColumnsFragment> }
+          ).node;
+          return (
+            <Link
+              href={`/admin/collections/${collection.id}`}
+              className="flex items-center gap-3 px-4 py-3.5"
+            >
+              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <span className="flex items-center gap-1.5 truncate text-[15px] font-extrabold capitalize text-ink">
+                  {collection.label}
+                  {collection.show_in_home && (
+                    <Icons.house
+                      className="size-4 shrink-0 text-primary"
+                      aria-label="Visible en el inicio"
+                    />
+                  )}
+                </span>
+                <span className="truncate text-xs text-neutral-500">
+                  {collection.collections
+                    ? `Dentro de ${collection.collections.label}`
+                    : "Colección raíz"}
+                  {" · "}
+                  {collection.slug}
+                </span>
+              </span>
+              <Icons.chevronRight
+                className="size-4 shrink-0 text-neutral-400"
+                aria-hidden
+              />
+            </Link>
+          );
+        }}
+      />
+
+      <DataTablePagination table={table} itemLabel="colecciones" />
     </div>
   );
 }

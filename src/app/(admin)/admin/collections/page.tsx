@@ -1,4 +1,5 @@
 import AdminShell from "@/components/admin/AdminShell";
+import { Icons } from "@/components/layouts/icons";
 import { buttonVariants } from "@/components/ui/button";
 import { DataTableSkeleton } from "@/features/cms";
 import {
@@ -7,7 +8,6 @@ import {
 } from "@/features/collections/admin";
 import { gql } from "@/gql";
 import { getClient } from "@/lib/urql";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -43,14 +43,14 @@ async function collectionsPage({}: AdminCollectionsPageProps) {
   return (
     <AdminShell
       heading="Colecciones"
-      description={"Edite las colecciones desde el dashboard. "}
-    >
-      <section className="flex justify-end items-center pb-5 w-full">
-        <Link href="/admin/collections/new" className={cn(buttonVariants())}>
-          Nueva Colección
+      description="Categorías de la tienda y lo que se muestra en el inicio."
+      actions={
+        <Link href="/admin/collections/new" className={buttonVariants()}>
+          <Icons.add className="size-4" aria-hidden />
+          Nueva colección
         </Link>
-      </section>
-
+      }
+    >
       <Suspense fallback={<DataTableSkeleton />}>
         <CollectionsDataTable
           columns={CollectionsColumns}
