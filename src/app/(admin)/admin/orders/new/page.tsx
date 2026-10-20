@@ -33,15 +33,13 @@ export default async function AdminNewOrderPage() {
 
   return (
     <AdminShell
-      heading="Nueva Orden"
-      description="Crea una orden manualmente desde el dashboard (WhatsApp)."
+      heading="Nueva orden"
+      description="Registra un pedido que llegó por WhatsApp o en persona."
+      breadcrumb={[
+        { label: "Órdenes", href: "/admin/orders" },
+        { label: "Nueva" },
+      ]}
     >
-      <div className="mb-6">
-        <Link href="/admin/orders">
-          <Button variant="outline">Volver a órdenes</Button>
-        </Link>
-      </div>
-
       <AdminOrderCreateForm
         products={productsData.map(({ reserved, ...p }) => ({
           ...p,

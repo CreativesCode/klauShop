@@ -205,10 +205,10 @@ export default function AdminOrderCreateForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={onSubmit} className="mb-6">
-        <div className="grid gap-6 lg:grid-cols-3">
+      <form onSubmit={onSubmit}>
+        <div className="flex flex-wrap items-start gap-[18px]">
           {/* Selector de productos */}
-          <Card className="lg:col-span-2">
+          <Card className="min-w-0 flex-[2_1_520px]">
             <CardHeader>
               <CardTitle>Productos</CardTitle>
             </CardHeader>
@@ -222,27 +222,33 @@ export default function AdminOrderCreateForm({
                 <Badge variant="secondary">{filteredProducts.length}</Badge>
               </div>
 
-              <div className="max-h-[360px] overflow-auto rounded-md border">
-                <div className="divide-y">
+              <div className="max-h-[360px] overflow-auto rounded-xl border border-line">
+                <div className="divide-y divide-line-soft">
                   {filteredProducts.map((p) => (
                     <div
                       key={p.id}
-                      className="flex items-center justify-between p-3"
+                      className="flex items-center justify-between gap-3 px-3.5 py-3"
                     >
                       <div className="min-w-0">
-                        <div className="font-medium truncate">{p.name}</div>
-                        <div className="text-sm text-muted-foreground flex gap-2">
+                        <div className="truncate text-sm font-bold text-ink">
+                          {p.name}
+                        </div>
+                        <div className="flex flex-wrap gap-x-2 text-xs text-neutral-500">
                           <span>
                             {formatCUP(
                               getDiscountedUnitPrice(p.price, p.discount),
                             )}
                           </span>
                           {Number(p.discount || 0) > 0 && (
-                            <span>-{Number(p.discount)}%</span>
+                            <span className="font-bold text-accent-700">
+                              -{Number(p.discount)}%
+                            </span>
                           )}
                           <span
                             className={
-                              p.available <= 0 ? "text-destructive" : undefined
+                              p.available <= 0
+                                ? "font-bold text-red-700"
+                                : undefined
                             }
                           >
                             Disponible: {p.available}
@@ -252,16 +258,18 @@ export default function AdminOrderCreateForm({
                       <Button
                         type="button"
                         variant="outline"
+                        size="sm"
+                        className="shrink-0"
                         onClick={() => addProduct(p.id)}
                       >
-                        <Icons.add className="h-4 w-4 mr-2" />
+                        <Icons.add className="size-3.5" aria-hidden />
                         Agregar
                       </Button>
                     </div>
                   ))}
 
                   {filteredProducts.length === 0 && (
-                    <div className="p-6 text-sm text-muted-foreground">
+                    <div className="p-6 text-center text-sm text-neutral-500">
                       No hay productos que coincidan con tu búsqueda.
                     </div>
                   )}
@@ -273,12 +281,14 @@ export default function AdminOrderCreateForm({
               {/* Items seleccionados */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="font-medium">Items seleccionados</div>
-                  <Badge variant="outline">{fields.length}</Badge>
+                  <div className="text-sm font-extrabold text-ink">
+                    Productos de la orden
+                  </div>
+                  <Badge variant="secondary">{fields.length}</Badge>
                 </div>
 
                 {fields.length === 0 ? (
-                  <div className="text-sm text-muted-foreground">
+                  <div className="rounded-xl bg-surface-hover px-3.5 py-3 text-sm text-neutral-500">
                     Agrega productos para armar la orden.
                   </div>
                 ) : (
@@ -292,14 +302,14 @@ export default function AdminOrderCreateForm({
                       return (
                         <div
                           key={field.id}
-                          className="rounded-md border p-3 space-y-3"
+                          className="space-y-3 rounded-xl border border-line p-3.5"
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0">
-                              <div className="font-medium truncate">
+                              <div className="truncate text-sm font-bold text-ink">
                                 {p?.name || "Producto"}
                               </div>
-                              <div className="text-sm text-muted-foreground">
+                              <div className="text-xs text-neutral-500">
                                 {p
                                   ? formatCUP(
                                       getDiscountedUnitPrice(
@@ -314,15 +324,15 @@ export default function AdminOrderCreateForm({
                             <Button
                               type="button"
                               variant="ghost"
-                              size="icon"
+                              size="iconAdmin"
                               onClick={() => remove(index)}
-                              aria-label="Eliminar producto"
+                              aria-label="Quitar producto"
                             >
-                              <Icons.close className="h-4 w-4" />
+                              <Icons.close className="size-4" aria-hidden />
                             </Button>
                           </div>
 
-                          <div className="grid gap-3 md:grid-cols-4">
+                          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
                             <FormField
                               control={control}
                               name={`cartItems.${index}.quantity`}
@@ -463,9 +473,9 @@ export default function AdminOrderCreateForm({
           </Card>
 
           {/* Formulario + resumen */}
-          <Card>
+          <Card className="min-w-0 flex-[1_1_320px]">
             <CardHeader>
-              <CardTitle>Cliente & Envío</CardTitle>
+              <CardTitle>Cliente y envío</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
@@ -560,7 +570,11 @@ export default function AdminOrderCreateForm({
                 zoneName={watch("customerData.zone")}
               />
 
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                className="h-[50px] w-full"
+                disabled={isSubmitting}
+              >
                 {isSubmitting ? "Creando..." : "Crear orden"}
               </Button>
 
