@@ -32,7 +32,7 @@ const UsersColumns: ColumnDef<User>[] = [
       return (
         <Link
           href={`/admin/users/${user.id}`}
-          className="font-medium hover:underline"
+          className="font-bold text-ink hover:text-primary-700"
         >
           {name}
         </Link>
@@ -46,7 +46,7 @@ const UsersColumns: ColumnDef<User>[] = [
     ),
     cell: ({ row }) => {
       const user = row.original;
-      return <p className="text-truncate sm:text-nowrap">{user.email}</p>;
+      return <p className="truncate text-neutral-600">{user.email}</p>;
     },
   },
   {
@@ -57,22 +57,20 @@ const UsersColumns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const user = row.original;
       const isAdmin = user.app_metadata?.isAdmin === true;
-      const displayRole = isAdmin ? "Admin" : "Usuario";
+      const displayRole = isAdmin ? "Admin" : "Cliente";
 
       return (
         <Badge
-          variant="outline"
+          variant="secondary"
           className={cn(
-            "rounded-md px-2 py-1 font-medium flex items-center gap-1.5 w-fit",
-            isAdmin
-              ? "text-blue-600 border-blue-600 bg-blue-50"
-              : "text-gray-600 border-gray-300",
+            "w-fit gap-1.5",
+            isAdmin && "bg-primary-50 text-primary-700",
           )}
         >
           {isAdmin ? (
-            <Shield className="h-3 w-3" />
+            <Shield className="size-3" aria-hidden />
           ) : (
-            <UserIcon className="h-3 w-3" />
+            <UserIcon className="size-3" aria-hidden />
           )}
           {displayRole}
         </Badge>
@@ -90,7 +88,7 @@ const UsersColumns: ColumnDef<User>[] = [
 
   {
     id: "actions",
-    header: () => <div className="text-center capitalize">Acc</div>,
+    header: () => <span className="sr-only">Acciones</span>,
     cell: ({ row }) => {
       const user = row.original;
       const { toast } = useToast();
@@ -107,7 +105,7 @@ const UsersColumns: ColumnDef<User>[] = [
 
           const { message } = await res.json();
           toast({
-            title: !res.ok ? "Error" : "Success",
+            title: !res.ok ? "Error" : "Listo",
             description: message,
           });
 
@@ -115,7 +113,7 @@ const UsersColumns: ColumnDef<User>[] = [
         } catch (err) {
           toast({
             title: "Error",
-            description: "Unexpected Error occured.",
+            description: "Ocurrió un error inesperado.",
           });
         }
       };
@@ -123,23 +121,20 @@ const UsersColumns: ColumnDef<User>[] = [
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button variant="ghost" size="iconAdmin">
               <span className="sr-only">Abrir menú</span>
-              <MoreHorizontal className="h-4 w-4" />
+              <MoreHorizontal className="size-4" aria-hidden />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="start"
-            className="flex flex-col items-start"
-          >
+          <DropdownMenuContent align="end">
             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
 
             <DropdownMenuItem asChild>
-              <Link href={`/admin/users/${user.id}`}>Editar Usuario</Link>
+              <Link href={`/admin/users/${user.id}`}>Editar usuario</Link>
             </DropdownMenuItem>
-            <Button onClick={() => promoteAdminHandler(user.id)}>
-              Promover a Admin
-            </Button>
+            <DropdownMenuItem onSelect={() => promoteAdminHandler(user.id)}>
+              Hacer administrador
+            </DropdownMenuItem>
             <DeleteUserDialog
               userId={user.id}
               userName={user.user_metadata?.name || user.email || "Usuario"}

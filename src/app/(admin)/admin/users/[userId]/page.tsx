@@ -11,9 +11,12 @@ async function UpdateUserPage({ params: { userId } }: UpdateUserPageProps) {
 
   return (
     <AdminShell
-      heading="Actualizar Usuario"
-      description="Edite el usuario por admin."
-      showBackButton={true}
+      heading="Editar usuario"
+      description="Correo y contraseña de la cuenta."
+      breadcrumb={[
+        { label: "Usuarios", href: "/admin/users" },
+        { label: user.email ?? "Usuario" },
+      ]}
     >
       <UpdateUserForm user={user} />
     </AdminShell>

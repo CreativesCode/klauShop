@@ -76,7 +76,7 @@ export function DeleteUserDialog({
             Eliminar Usuario
           </DropdownMenuItem>
         ) : (
-          <Button variant="destructive">Eliminar Usuario</Button>
+          <Button variant="destructiveSoft">Eliminar usuario</Button>
         )}
       </AlertDialogTrigger>
       <AlertDialogContent>

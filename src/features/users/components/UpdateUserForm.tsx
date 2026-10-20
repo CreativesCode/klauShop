@@ -70,22 +70,22 @@ function UpdateUserForm({ user }: AdminUserFormProps) {
     <Form {...form}>
       <form
         id="project-form"
-        className="gap-x-5 flex gap-y-5 flex-col"
+        className="flex flex-col gap-[18px]"
         onSubmit={onSubmit}
       >
-        <div className="flex flex-col gap-y-5 max-w-[480px] px-5">
+        <section className="flex max-w-xl flex-col gap-5 rounded-[18px] border border-line bg-white p-5">
           {/* <FormItem>
-            <FormLabel className="text-sm">Name*</FormLabel>
+            <FormLabel className="text-sm">Nombre*</FormLabel>
             <FormControl>
               <Input
                 defaultValue={user?.name || ""}
                 aria-invalid={!!form.formState.errors.name}
-                placeholder="Type User Name."
+                placeholder="Nombre del usuario"
                 {...register("name")}
               />
             </FormControl>
             <FormDescription>
-              This will shown when the user is logined.
+              Se muestra cuando el usuario inicia sesión.
             </FormDescription>
             <FormMessage />
           </FormItem> */}
@@ -101,7 +101,7 @@ function UpdateUserForm({ user }: AdminUserFormProps) {
               />
             </FormControl>
             <FormDescription>
-              User use email to login their account.
+              El usuario entra a su cuenta con este correo.
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -111,31 +111,31 @@ function UpdateUserForm({ user }: AdminUserFormProps) {
             name="password"
             render={({ field }) => (
               <FormItem className="">
-                <FormLabel>Password*</FormLabel>
+                <FormLabel>Contraseña*</FormLabel>
                 <FormControl>
                   <PasswordInput
                     aria-invalid={!!form.formState.errors}
-                    placeholder="Type Password."
+                    placeholder="Contraseña"
                     {...field}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormDescription>
-                    Create a password for this account.
+                    Crea una contraseña para esta cuenta.
                   </FormDescription>
                 </div>
               </FormItem>
             )}
           />
-        </div>
+        </section>
 
-        <div className="py-8 flex gap-x-5 items-center justify-between">
+        <div className="flex max-w-xl items-center justify-between gap-3">
           <div className="flex gap-x-5 items-center">
             <Link
               href="/admin/users"
               className={buttonVariants({ variant: "outline" })}
             >
-              Cancel
+              Cancelar
             </Link>
           </div>
           <div className="flex gap-x-5 items-center">
@@ -146,12 +146,9 @@ function UpdateUserForm({ user }: AdminUserFormProps) {
               />
             )}
             <Button disabled={isPending} form="project-form" type="submit">
-              {user ? "Update" : "Create"}
+              {user ? "Guardar cambios" : "Crear usuario"}
               {isPending && (
-                <Spinner
-                  className="mr-2 h-4 w-4 animate-spin ml-2"
-                  aria-hidden="true"
-                />
+                <Spinner className="size-4 animate-spin" aria-hidden="true" />
               )}
             </Button>
           </div>
