@@ -3,3 +3,9 @@ export { default as OrderStatusChanger } from "./components/admin/OrderStatusCha
 export * from "./components/admin/OrdersColumns";
 export { default as OrdersColumns } from "./components/admin/OrdersColumns";
 export { default as OrdersDataTable } from "./components/admin/OrdersDataTable";
+export {
+  OrderNextActionButton,
+  OrderQuickActions,
+} from "./components/admin/OrderQuickActions";
+export { RecentOrdersCard } from "./components/admin/RecentOrdersCard";
+export type { RecentOrderRow } from "./components/admin/RecentOrdersCard";

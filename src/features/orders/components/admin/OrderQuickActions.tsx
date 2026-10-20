@@ -10,16 +10,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
 import { OrderStatus } from "@/lib/supabase/schema";
+import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import {
   ORDER_STATUS_ACTIONS,
+  SHIPPING_REQUIRED_MESSAGE,
   getValidNextStatuses,
 } from "../../utils/orderStatus";
 import { needsRefund } from "../../utils/paymentStatus";
@@ -28,6 +31,8 @@ import { formatOrderNumber } from "../../utils/whatsapp";
 type QuickAction = {
   key: string;
   label: string;
+  /** Compact label for the row button ("Confirmar", "Preparar"…) */
+  shortLabel: string;
   // Shown in the confirmation dialog; actions without it run directly
   confirm?: string;
   run: () => Promise<Response>;
@@ -48,11 +53,11 @@ const post = (url: string, body?: unknown) =>
   });
 
 /**
- * Row menu shortcuts so the common path does not need the detail page:
+ * Shortcuts so the common path does not need the detail page:
  * confirm, mark paid, paid + delivered (one WhatsApp) and the next fulfilment step.
  * Cancelling stays in the detail page (it needs more context).
  */
-export function OrderQuickActions({
+function useOrderQuickActions({
   orderId,
   status,
   paymentStatus,
@@ -74,6 +79,7 @@ export function OrderQuickActions({
     actions.push({
       key: "confirm",
       label: ORDER_STATUS_ACTIONS.pending_payment.label,
+      shortLabel: "Confirmar",
       run: () =>
         post(`${base}/change-status`, { newStatus: "pending_payment" }),
     });
@@ -83,22 +89,30 @@ export function OrderQuickActions({
       {
         key: "paid",
         label: ORDER_STATUS_ACTIONS.paid.label,
+        shortLabel: "Marcar pagada",
         confirm: `Se descontará el stock de ${orderNumber}. No se puede deshacer.`,
         run: () => post(`${base}/mark-paid`),
       },
       {
         key: "paid-delivered",
         label: "Pagada y entregada",
+        shortLabel: "Pagada y entregada",
         confirm: `${orderNumber} quedará pagada y entregada y se descontará el stock. El cliente recibe un solo aviso. No se puede deshacer.`,
         run: () => post(`${base}/mark-paid`, { deliver: true }),
       },
     );
   }
+  const stepLabels = {
+    processing: "Preparar",
+    shipped: "Marcar enviada",
+    delivered: "Entregada",
+  } as const;
   for (const step of ["processing", "shipped", "delivered"] as const) {
     if (next.includes(step)) {
       actions.push({
         key: step,
         label: ORDER_STATUS_ACTIONS[step].label,
+        shortLabel: stepLabels[step],
         run: () => post(`${base}/change-status`, { newStatus: step }),
       });
     }
@@ -108,12 +122,11 @@ export function OrderQuickActions({
     actions.push({
       key: "refunded",
       label: "Marcar como reembolsado",
+      shortLabel: "Reembolsado",
       confirm: `Confirma que ya le devolviste el dinero al cliente de ${orderNumber}.`,
       run: () => post(`${base}/mark-refunded`),
     });
   }
-
-  if (actions.length === 0) return null;
 
   const execute = async (action: QuickAction) => {
     setIsRunning(true);
@@ -142,6 +155,47 @@ export function OrderQuickActions({
   const blocked = (key: string) =>
     shippingPending && ["confirm", "paid", "paid-delivered"].includes(key);
 
+  const trigger = (action: QuickAction) => {
+    if (action.confirm) setPending(action);
+    else execute(action);
+  };
+
+  const dialog = (
+    <AlertDialog
+      open={pending !== null}
+      onOpenChange={(open) => !open && setPending(null)}
+    >
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>¿{pending?.label}?</AlertDialogTitle>
+          <AlertDialogDescription>{pending?.confirm}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction
+            disabled={isRunning}
+            onClick={(e) => {
+              e.preventDefault();
+              if (pending) execute(pending);
+            }}
+          >
+            {isRunning ? "Actualizando..." : "Confirmar"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+
+  return { actions, isRunning, blocked, trigger, setPending, execute, dialog };
+}
+
+/** Row menu items (inside a DropdownMenuContent). */
+export function OrderQuickActions(props: OrderQuickActionsProps) {
+  const { actions, isRunning, blocked, setPending, execute, dialog } =
+    useOrderQuickActions(props);
+
+  if (actions.length === 0) return null;
+
   return (
     <>
       <DropdownMenuSeparator />
@@ -167,30 +221,47 @@ export function OrderQuickActions({
         </DropdownMenuItem>
       ))}
       <DropdownMenuSeparator />
+      {dialog}
+    </>
+  );
+}
 
-      <AlertDialog
-        open={pending !== null}
-        onOpenChange={(open) => !open && setPending(null)}
+/**
+ * Visible "next step" button of order rows (dashboard and orders table):
+ * primary while the order is pending, soft for the fulfilment steps.
+ */
+export function OrderNextActionButton({
+  className,
+  ...props
+}: OrderQuickActionsProps & { className?: string }) {
+  const { actions, isRunning, blocked, trigger, dialog } =
+    useOrderQuickActions(props);
+  const action = actions[0];
+  if (!action) return null;
+
+  const isPending =
+    props.status === "pending_confirmation" ||
+    props.status === "pending_payment";
+  const isBlocked = blocked(action.key);
+
+  return (
+    <>
+      <Button
+        size="sm"
+        variant={isPending ? "default" : "soft"}
+        disabled={isRunning || isBlocked}
+        title={isBlocked ? SHIPPING_REQUIRED_MESSAGE : action.label}
+        onClick={(e) => {
+          // Rows are links on some layouts
+          e.preventDefault();
+          e.stopPropagation();
+          trigger(action);
+        }}
+        className={cn(isBlocked && "disabled:bg-primary-300", className)}
       >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿{pending?.label}?</AlertDialogTitle>
-            <AlertDialogDescription>{pending?.confirm}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              disabled={isRunning}
-              onClick={(e) => {
-                e.preventDefault();
-                if (pending) execute(pending);
-              }}
-            >
-              {isRunning ? "Actualizando..." : "Confirmar"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        {action.shortLabel}
+      </Button>
+      {dialog}
     </>
   );
 }

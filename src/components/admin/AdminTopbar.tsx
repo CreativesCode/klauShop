@@ -54,7 +54,7 @@ export function AdminTopbar({ name, email, pendingCount = 0 }: Props) {
 
         <form
           role="search"
-          className="hidden h-[42px] max-w-[440px] flex-1 items-center gap-2.5 rounded-xl border border-[#E7E4EF] bg-white px-3.5 focus-within:border-primary-300 md:flex"
+          className="flex h-[42px] min-w-0 max-w-[440px] flex-1 items-center gap-2.5 rounded-xl border border-[#E7E4EF] bg-white px-3.5 focus-within:border-primary-300"
           onSubmit={(e) => {
             e.preventDefault();
             const q = searchRef.current?.value.trim();
@@ -74,7 +74,7 @@ export function AdminTopbar({ name, email, pendingCount = 0 }: Props) {
             type="search"
             enterKeyHint="search"
             aria-label="Buscar órdenes"
-            placeholder="Buscar órdenes por número, cliente o teléfono…"
+            placeholder="Buscar órdenes, clientes, teléfonos…"
             className="h-full min-w-0 flex-1 bg-transparent text-[16px] outline-none placeholder:text-neutral-500 md:text-sm [&::-webkit-search-cancel-button]:hidden"
           />
           <kbd className="hidden rounded-md border border-line px-1.5 text-[11px] font-bold text-neutral-500 lg:inline">

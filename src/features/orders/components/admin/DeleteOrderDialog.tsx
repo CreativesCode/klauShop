@@ -12,6 +12,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Icons } from "@/components/layouts/icons";
 import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
@@ -21,7 +22,7 @@ import { formatOrderNumber } from "../../utils/whatsapp";
 
 type DeleteOrderDialogProps = {
   orderId: string;
-  variant?: "dropdown" | "button";
+  variant?: "dropdown" | "button" | "text";
 };
 
 export function DeleteOrderDialog({
@@ -76,6 +77,14 @@ export function DeleteOrderDialog({
           >
             Eliminar Orden
           </DropdownMenuItem>
+        ) : variant === "text" ? (
+          <button
+            type="button"
+            className="flex h-11 items-center justify-center gap-2 rounded-xl px-3 text-[13px] font-extrabold text-red-700 transition-colors hover:bg-red-50"
+          >
+            <Icons.trash2 className="size-4" aria-hidden />
+            Eliminar orden
+          </button>
         ) : (
           <Button variant="destructive">Eliminar Orden</Button>
         )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { format, isValid, parseISO, startOfMonth } from "date-fns";
+import { es } from "date-fns/locale";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
 import { DateRange } from "react-day-picker";
@@ -17,7 +18,11 @@ import { cn } from "@/lib/utils";
 
 export function CalendarDateRangePicker({
   className,
-}: React.HTMLAttributes<HTMLDivElement>) {
+  active = false,
+}: React.HTMLAttributes<HTMLDivElement> & {
+  /** A custom range (not a preset) is selected */
+  active?: boolean;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -74,24 +79,24 @@ export function CalendarDateRangePicker({
         <PopoverTrigger asChild>
           <Button
             id="date"
-            variant={"outline"}
+            variant={active ? "dark" : "outline"}
             className={cn(
-              "w-[260px] justify-start text-left font-normal",
-              !date && "text-muted-foreground",
+              "h-10 justify-start border-[#E7E4EF] text-left",
+              active && "border-ink",
             )}
           >
-            <Icons.calendar className="mr-2 h-4 w-4" />
-            {date?.from ? (
+            <Icons.calendar className="size-4" aria-hidden />
+            {active && date?.from ? (
               date.to ? (
                 <>
-                  {format(date.from, "LLL dd, y")} -{" "}
-                  {format(date.to, "LLL dd, y")}
+                  {format(date.from, "d MMM", { locale: es })} –{" "}
+                  {format(date.to, "d MMM", { locale: es })}
                 </>
               ) : (
-                format(date.from, "LLL dd, y")
+                format(date.from, "d MMM", { locale: es })
               )
             ) : (
-              <span>Pick a date</span>
+              <span>Personalizado</span>
             )}
           </Button>
         </PopoverTrigger>
@@ -103,6 +108,7 @@ export function CalendarDateRangePicker({
             selected={date}
             onSelect={onSelect}
             numberOfMonths={2}
+            locale={es}
           />
         </PopoverContent>
       </Popover>

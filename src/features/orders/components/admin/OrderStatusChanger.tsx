@@ -11,15 +11,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { OrderStatus } from "@/lib/supabase/schema";
-import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import {
   ORDER_STATUS_ACTIONS,
+  SHIPPING_REQUIRED_MESSAGE,
   getOrderStatusInfo,
   getValidNextStatuses,
 } from "../../utils/orderStatus";
@@ -62,20 +60,6 @@ export default function OrderStatusChanger({
 
   const validNextStatuses = getValidNextStatuses(status);
 
-  // Función helper para obtener el color hover más fuerte basado en el bgColor
-  const getHoverColor = (bgColor: string): string => {
-    const colorMap: Record<string, string> = {
-      "bg-yellow-50": "hover:bg-yellow-100",
-      "bg-orange-50": "hover:bg-orange-100",
-      "bg-green-50": "hover:bg-green-100",
-      "bg-blue-50": "hover:bg-blue-100",
-      "bg-indigo-50": "hover:bg-indigo-100",
-      "bg-emerald-50": "hover:bg-emerald-100",
-      "bg-red-50": "hover:bg-red-100",
-    };
-    return colorMap[bgColor] || "hover:bg-opacity-80";
-  };
-
   const isPaid = payment === "paid";
 
   // Construir lista de estados disponibles
@@ -92,7 +76,6 @@ export default function OrderStatusChanger({
     bgColor: "bg-gray-50",
     borderColor: "border-gray-300",
   };
-  const CurrentIcon = currentStatusInfo.icon;
 
   // Pickup / delivered on the spot: paid and delivered in one step (one WhatsApp to the customer)
   const handlePaidAndDelivered = () => {
@@ -220,128 +203,102 @@ export default function OrderStatusChanger({
     }
   };
 
+  // Main action = the next step of the flow; the rest are alternatives
+  const forward = availableStatuses.filter((s) => s !== "cancelled");
+  const primary = forward[0];
+  const alternatives = forward.slice(1);
+  const canCancel = availableStatuses.includes("cancelled");
+  const blockedBy = (s: OrderStatus) =>
+    shippingPending && (s === "pending_payment" || s === "paid");
+
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Estado de la Orden</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Estado actual */}
-          <div>
-            <Label className="text-sm text-muted-foreground">
-              Estado Actual
-            </Label>
-            <div
-              className={cn(
-                "mt-2 flex items-center gap-3 p-3 rounded-lg border",
-                currentStatusInfo.borderColor,
-                currentStatusInfo.bgColor,
-              )}
-            >
-              <CurrentIcon size={20} className={currentStatusInfo.color} />
-              <div>
-                <p className={cn("font-medium", currentStatusInfo.color)}>
-                  {currentStatusInfo.label}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {currentStatusInfo.description}
-                </p>
-              </div>
-            </div>
-          </div>
+      <section className="flex flex-col gap-3 rounded-[18px] border border-line bg-white p-5">
+        <h2 className="text-[15px] font-extrabold text-ink">Siguiente paso</h2>
 
-          {/* Botones de estados posibles */}
-          {availableStatuses.length > 0 ? (
-            <div className="space-y-3">
-              <Label>Acciones</Label>
-              <div className="grid grid-cols-1 gap-2">
-                {availableStatuses.map((status) => {
-                  const statusInfo = getOrderStatusInfo(status);
-                  if (!statusInfo) return null;
-                  const action = ORDER_STATUS_ACTIONS[status];
-                  const Icon = statusInfo.icon;
-                  const blockedByShipping =
-                    shippingPending &&
-                    (status === "pending_payment" || status === "paid");
-                  return (
-                    <Button
-                      key={status}
-                      onClick={() => handleStatusChange(status)}
-                      disabled={isBusy || blockedByShipping}
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start gap-2 h-auto py-3 transition-colors",
-                        statusInfo.borderColor,
-                        statusInfo.bgColor,
-                        getHoverColor(statusInfo.bgColor),
-                      )}
-                    >
-                      <Icon size={18} className={statusInfo.color} />
-                      <div className="flex flex-col items-start flex-1">
-                        <span className={cn("font-medium", statusInfo.color)}>
-                          {action.label}
-                        </span>
-                        <span className="text-xs text-muted-foreground whitespace-normal text-left">
-                          {blockedByShipping
-                            ? "Primero define el costo de envío (junto al total)"
-                            : status === "cancelled" && isPaid
-                              ? "Devuelve el stock; el reembolso se hace fuera de la app"
-                              : action.description}
-                        </span>
-                      </div>
-                    </Button>
-                  );
-                })}
+        {primary ? (
+          <>
+            <p className="text-sm text-neutral-600">
+              {ORDER_STATUS_ACTIONS[primary].description}
+            </p>
+            {blockedBy(primary) && (
+              <p className="rounded-xl bg-orange-50 px-3.5 py-2.5 text-[13px] font-bold text-orange-700">
+                {SHIPPING_REQUIRED_MESSAGE}
+              </p>
+            )}
+            <Button
+              onClick={() => handleStatusChange(primary)}
+              disabled={isBusy || blockedBy(primary)}
+              className="h-[50px] w-full rounded-xl text-[15px] disabled:bg-primary-300 disabled:opacity-100"
+            >
+              {ORDER_STATUS_ACTIONS[primary].label}
+            </Button>
+
+            {(alternatives.length > 0 ||
+              availableStatuses.includes("paid")) && (
+              <div className="flex flex-col gap-2">
+                {alternatives.map((s) => (
+                  <Button
+                    key={s}
+                    variant="soft"
+                    onClick={() => handleStatusChange(s)}
+                    disabled={isBusy || blockedBy(s)}
+                    className="h-11 w-full rounded-xl"
+                  >
+                    {ORDER_STATUS_ACTIONS[s].label}
+                  </Button>
+                ))}
                 {availableStatuses.includes("paid") && (
                   <Button
+                    variant="soft"
                     onClick={handlePaidAndDelivered}
                     disabled={isBusy || shippingPending}
-                    variant="outline"
-                    className="w-full justify-start gap-2 h-auto py-3 border-emerald-300 bg-emerald-50 hover:bg-emerald-100"
+                    title="Cobrado y entregado en el momento (p. ej. recogida en tienda)"
+                    className="h-11 w-full rounded-xl"
                   >
-                    <div className="flex flex-col items-start flex-1">
-                      <span className="font-medium text-emerald-700">
-                        Pagada y entregada
-                      </span>
-                      <span className="text-xs text-muted-foreground whitespace-normal text-left">
-                        {shippingPending
-                          ? "Primero define el costo de envío (junto al total)"
-                          : "Cobrado y entregado en el momento (p. ej. recogida en tienda)"}
-                      </span>
-                    </div>
+                    Pagada y entregada
                   </Button>
                 )}
               </div>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <div className="text-sm text-muted-foreground p-3 bg-muted rounded-lg">
-                Esta orden está en un estado final y no puede cambiar.
-              </div>
-              {needsRefund(status, payment) && (
-                <div className="space-y-2 rounded-lg border border-amber-300 bg-amber-50 p-3">
-                  <p className="text-sm font-medium text-amber-800">
-                    Reembolso pendiente
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Estaba pagada cuando se canceló. Devuélvele el dinero al
-                    cliente y márcalo aquí.
-                  </p>
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    disabled={isRefunding}
-                    onClick={markRefunded}
-                  >
-                    {isRefunding ? "Guardando..." : "Marcar como reembolsado"}
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            )}
+          </>
+        ) : !canCancel ? (
+          <p className="rounded-xl bg-surface-soft px-3.5 py-2.5 text-sm text-neutral-600">
+            Estado final: no admite más cambios.
+          </p>
+        ) : null}
+
+        {canCancel && (
+          <Button
+            variant="destructiveSoft"
+            onClick={() => handleStatusChange("cancelled")}
+            disabled={isBusy}
+            className="h-11 w-full rounded-xl"
+          >
+            Cancelar orden · {isPaid ? "devuelve el stock" : "libera el stock"}
+          </Button>
+        )}
+
+        {needsRefund(status, payment) && (
+          <div className="flex flex-col gap-2 rounded-xl border border-amber-300 bg-amber-50 p-3.5">
+            <p className="text-sm font-bold text-amber-800">
+              Reembolso pendiente
+            </p>
+            <p className="text-xs text-neutral-600">
+              Estaba pagada cuando se canceló. Devuélvele el dinero al cliente y
+              márcalo aquí.
+            </p>
+            <Button
+              variant="outline"
+              className="w-full"
+              disabled={isRefunding}
+              onClick={markRefunded}
+            >
+              {isRefunding ? "Guardando..." : "Marcar como reembolsado"}
+            </Button>
+          </div>
+        )}
+      </section>
 
       {/* Diálogo de confirmación */}
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>

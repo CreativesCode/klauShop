@@ -1,14 +1,9 @@
 import AdminShell from "@/components/admin/AdminShell";
 import { Icons } from "@/components/layouts/icons";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { OrderLinePrice } from "@/features/orders";
+import { OrderProgress, StatusPill } from "@/features/orders";
 import { DeleteOrderDialog } from "@/features/orders/components/admin/DeleteOrderDialog";
 import OrderStatusChanger from "@/features/orders/components/admin/OrderStatusChanger";
 import ShippingCostEditor from "@/features/orders/components/admin/ShippingCostEditor";
-import { getOrderStatusInfo } from "@/features/orders/utils/orderStatus";
 import {
   formatOrderTotal,
   formatShipping,
@@ -17,8 +12,10 @@ import {
 import {
   getPaymentMethodLabel,
   getPaymentStatusInfo,
+  needsRefund,
 } from "@/features/orders/utils/paymentStatus";
 import { formatOrderNumber } from "@/features/orders/utils/whatsapp";
+import { colorName } from "@/lib/colorName";
 import db from "@/lib/supabase/db";
 import {
   OrderStatus,
@@ -27,24 +24,28 @@ import {
   orders,
   products,
 } from "@/lib/supabase/schema";
-import { cn, formatCUP, keytoUrl } from "@/lib/utils";
-import { eq } from "drizzle-orm";
+import { cn, formatCUP, getNameInitials, keytoUrl } from "@/lib/utils";
+import { eq, sql } from "drizzle-orm";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 /**
- * Genera la URL de WhatsApp para un número de teléfono
+ * WhatsApp chat with the customer (api.whatsapp.com: wa.me breaks emojis)
  * @param phoneNumber - Número de teléfono (puede incluir caracteres especiales)
- * @returns URL de WhatsApp
  */
 function getWhatsAppUrl(phoneNumber: string): string {
   // Remover todos los caracteres no numéricos excepto el +
   const cleaned = phoneNumber.replace(/[^\d+]/g, "");
   // Si no tiene código de país, asumir que es de Cuba (+53)
   const phone = cleaned.startsWith("+") ? cleaned : `+53${cleaned}`;
-  return `https://wa.me/${phone.replace(/\+/g, "")}`;
+  return `https://api.whatsapp.com/send?phone=${phone.replace(/\+/g, "")}`;
 }
+
+const PAYMENT_TEXT: Record<string, string> = {
+  paid: "text-green-700",
+  unpaid: "text-red-700",
+};
 
 type AdminOrderDetailPageProps = {
   params: {
@@ -91,216 +92,216 @@ export default async function AdminOrderDetailPage({
     .leftJoin(medias, eq(products.featuredImageId, medias.id))
     .where(eq(orderLines.orderId, order.id));
 
+  // Registered customer: how many orders they placed
+  const customerOrders = order.user_id
+    ? Number(
+        (
+          await db
+            .select({ total: sql<number>`COUNT(*)` })
+            .from(orders)
+            .where(eq(orders.user_id, order.user_id))
+        )[0]?.total ?? 0,
+      )
+    : null;
+
   const orderNumber = formatOrderNumber(order.id);
   const customerData = order.customer_data as any;
   const orderStatus = (order.order_status ||
     "pending_confirmation") as OrderStatus;
-  const statusInfo = getOrderStatusInfo(orderStatus) || {
-    label: "Desconocido",
-    description: "Estado desconocido",
-    icon: () => null,
-    color: "text-gray-700",
-    bgColor: "bg-gray-50",
-    borderColor: "border-gray-300",
-  };
-  const StatusIcon = statusInfo.icon;
   const paymentInfo = getPaymentStatusInfo(
     order.payment_status,
     order.order_status,
   );
   const { subtotal, shippingCost, total } = getOrderTotals(order);
+  const isPending =
+    orderStatus === "pending_confirmation" || orderStatus === "pending_payment";
+  const isPaid = order.payment_status === "paid";
+
+  const customerName = customerData?.name || order.name || "Cliente";
+  const phone = customerData?.phone || order.phone;
+  const zone = customerData?.zone || order.zone;
+  const createdAt = new Date(order.createdAt);
+  const longDate = `${createdAt.toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "America/Havana",
+  })} · ${createdAt.toLocaleTimeString("es-ES", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "America/Havana",
+  })}`;
+
+  const details = [
+    { label: "Teléfono", value: phone },
+    { label: "Zona", value: zone },
+    { label: "Dirección", value: customerData?.address },
+    { label: "Email", value: order.email },
+  ].filter((d) => d.value);
 
   return (
     <AdminShell
-      heading={`Orden ${orderNumber}`}
-      description="Detalles y gestión de la orden"
+      breadcrumb={[
+        { label: "Órdenes", href: "/admin/orders" },
+        { label: orderNumber },
+      ]}
+      heading={
+        <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          Orden {orderNumber}
+          <StatusPill status={orderStatus} size="md" />
+          <span className="text-sm font-semibold tracking-normal text-neutral-500">
+            {longDate}
+          </span>
+        </span>
+      }
     >
-      <div className="mb-6">
-        <Link href="/admin/orders">
-          <Button variant="outline" className="gap-2">
-            <Icons.chevronLeft className="h-4 w-4" />
-            Ver todas las órdenes
-          </Button>
-        </Link>
-      </div>
-      <div className="grid gap-6 md:grid-cols-3 mb-6">
-        {/* Columna principal - Detalles */}
-        <div className="md:col-span-2 space-y-6">
-          {/* Información general */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Información de la Orden</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    Número de Orden
-                  </p>
-                  <p className="font-medium">{orderNumber}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Fecha</p>
-                  <p className="font-medium">
-                    {new Date(order.createdAt).toLocaleDateString("es-ES", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    Estado del Pedido
-                  </p>
-                  <Badge
-                    variant="outline"
-                    className={`mt-1 rounded-md px-2 py-1 ${statusInfo.color} ${statusInfo.borderColor}`}
-                  >
-                    <StatusIcon size={14} className="mr-1" />
-                    {statusInfo.label}
-                  </Badge>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    Estado de Pago
-                  </p>
-                  <Badge
-                    variant={paymentInfo.badgeVariant}
-                    className={cn(
-                      "mt-1 rounded-md px-2 py-1",
-                      paymentInfo.className,
-                    )}
-                  >
-                    {paymentInfo.label}
-                  </Badge>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    Método de Pago
-                  </p>
-                  <p className="font-medium">
-                    {getPaymentMethodLabel(order.payment_method)}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      <OrderProgress status={orderStatus} />
 
-          {/* Productos */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Productos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {items.map((item) => {
-                  return (
-                    <div
-                      key={item.id}
-                      className="flex items-start gap-4 pb-4 border-b last:border-0 last:pb-0"
-                    >
+      <div className="flex flex-wrap items-start gap-[18px]">
+        {/* Main column */}
+        <div className="flex min-w-0 flex-[2_1_520px] flex-col gap-[18px]">
+          <section className="overflow-hidden rounded-[18px] border border-line bg-white">
+            <div className="flex items-center justify-between gap-3 px-5 pb-3 pt-5">
+              <h2 className="text-[15px] font-extrabold text-ink">
+                Productos{" "}
+                <span className="font-semibold text-neutral-500">
+                  ({items.length})
+                </span>
+              </h2>
+              {orderStatus !== "cancelled" && (
+                <span className="text-xs font-bold text-neutral-500">
+                  {isPaid ? "Stock descontado" : "Stock reservado"}
+                </span>
+              )}
+            </div>
+            <ul>
+              {items.map((item) => {
+                const discount = Number(item.discount || 0);
+                const unit = Number(item.price);
+                return (
+                  <li
+                    key={item.id}
+                    className="flex items-start gap-3.5 border-t border-line-soft px-5 py-3.5"
+                  >
+                    <span className="relative h-[72px] w-[60px] shrink-0 overflow-hidden rounded-xl bg-surface-tint">
                       {item.media && (
-                        <div className="relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0">
-                          <Image
-                            src={keytoUrl(item.media.key)}
-                            alt={item.media.alt}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
+                        <Image
+                          src={keytoUrl(item.media.key)}
+                          alt={item.media.alt || ""}
+                          fill
+                          sizes="60px"
+                          className="object-cover"
+                        />
                       )}
-                      <div className="flex-1 space-y-2">
-                        <div>
-                          <p className="font-medium">{item.product?.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            Cantidad: {item.quantity}
-                          </p>
-                        </div>
-                        {(item.color || item.size || item.material) && (
-                          <div className="flex flex-wrap gap-3 text-sm">
-                            {item.color && (
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-muted-foreground">
-                                  Color:
-                                </span>
-                                <div
-                                  className="h-4 w-4 rounded-full border"
-                                  style={{ backgroundColor: item.color }}
-                                />
-                              </div>
-                            )}
-                            {item.size && (
-                              <div>
-                                <span className="text-muted-foreground">
-                                  Tamaño:
-                                </span>{" "}
-                                <span className="font-medium">{item.size}</span>
-                              </div>
-                            )}
-                            {item.material && (
-                              <div>
-                                <span className="text-muted-foreground">
-                                  Material:
-                                </span>{" "}
-                                <span className="font-medium">
-                                  {item.material}
-                                </span>
-                              </div>
-                            )}
-                          </div>
+                    </span>
+                    <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                      {item.product ? (
+                        <Link
+                          href={`/admin/products/${item.product.id}`}
+                          className="text-sm font-bold text-ink hover:text-primary"
+                        >
+                          {item.product.name}
+                        </Link>
+                      ) : (
+                        <span className="text-sm font-bold text-neutral-500">
+                          Producto eliminado
+                        </span>
+                      )}
+                      <div className="flex flex-wrap gap-1.5">
+                        {item.size && (
+                          <span className="rounded-md bg-surface-soft px-2 py-0.5 text-xs font-semibold text-neutral-700">
+                            Talla {item.size}
+                          </span>
+                        )}
+                        {item.color && (
+                          <span className="flex items-center gap-1 rounded-md bg-surface-soft px-2 py-0.5 text-xs font-semibold capitalize text-neutral-700">
+                            <span
+                              className="size-2.5 rounded-full ring-1 ring-inset ring-black/10"
+                              style={{ backgroundColor: item.color }}
+                              aria-hidden
+                            />
+                            {colorName(item.color)}
+                          </span>
+                        )}
+                        {item.material && (
+                          <span className="rounded-md bg-surface-soft px-2 py-0.5 text-xs font-semibold text-neutral-700">
+                            {item.material}
+                          </span>
+                        )}
+                        <span className="rounded-md bg-surface-soft px-2 py-0.5 text-xs font-semibold text-neutral-700">
+                          Cant. {item.quantity}
+                        </span>
+                        {discount > 0 && (
+                          <span className="rounded-md bg-accent-50 px-2 py-0.5 text-xs font-bold text-accent-700">
+                            -{discount}%
+                          </span>
                         )}
                       </div>
-                      <div className="text-right">
-                        <OrderLinePrice
-                          price={item.price}
-                          listPrice={item.listPrice}
-                          discount={item.discount}
-                          className="font-medium justify-end"
-                        />
-                        <p className="text-sm text-muted-foreground">c/u</p>
-                      </div>
                     </div>
-                  );
-                })}
+                    <div className="shrink-0 text-right tabular-nums">
+                      <p className="text-sm font-extrabold text-ink">
+                        {formatCUP(unit * item.quantity)}
+                      </p>
+                      <p className="text-xs text-neutral-500">
+                        {formatCUP(unit)} c/u
+                        {discount > 0 && item.listPrice != null && (
+                          <span className="ml-1 line-through">
+                            {formatCUP(item.listPrice)}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+            <dl className="flex flex-col gap-2 border-t border-line bg-surface-hover px-5 py-4 text-sm">
+              <div className="flex justify-between gap-3">
+                <dt className="text-neutral-600">Subtotal</dt>
+                <dd className="tabular-nums text-ink">{formatCUP(subtotal)}</dd>
               </div>
-
-              <Separator className="my-4" />
-
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Subtotal</span>
-                  <span>{formatCUP(subtotal)}</span>
-                </div>
-
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Envío</span>
-                  <span>{formatShipping(shippingCost, order.zone)}</span>
-                </div>
-                {/* Shipping is final once the order is paid (the API rejects it too) */}
-                {(orderStatus === "pending_confirmation" ||
-                  orderStatus === "pending_payment") && (
-                  <div className="pt-2">
-                    <ShippingCostEditor
-                      orderId={order.id}
-                      currentShippingCost={shippingCost}
-                    />
-                  </div>
-                )}
-
-                <Separator />
-                <div className="flex justify-between font-semibold text-lg">
-                  <span>Total</span>
-                  <span>{formatOrderTotal(total, shippingCost)}</span>
-                </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-neutral-600">
+                  Envío{order.zone ? ` · ${order.zone}` : ""}
+                </dt>
+                <dd
+                  className={cn(
+                    "text-right tabular-nums",
+                    shippingCost === null
+                      ? "font-bold text-accent-700"
+                      : "text-ink",
+                  )}
+                >
+                  {shippingCost === null
+                    ? "Por acordar"
+                    : shippingCost === 0
+                      ? formatShipping(shippingCost, order.zone) ===
+                        "Recogida en tienda"
+                        ? "Recogida en tienda"
+                        : "Gratis"
+                      : formatCUP(shippingCost)}
+                </dd>
               </div>
-            </CardContent>
-          </Card>
+              <div className="mt-1 flex items-baseline justify-between gap-3 border-t border-line pt-3">
+                <dt className="text-lg font-extrabold text-ink">Total</dt>
+                <dd className="text-lg font-extrabold tabular-nums text-ink">
+                  {formatOrderTotal(total, shippingCost)}
+                </dd>
+              </div>
+            </dl>
+          </section>
+
+          {/* Shipping is final once the order is paid (the API rejects it too) */}
+          {isPending && (
+            <ShippingCostEditor
+              orderId={order.id}
+              currentShippingCost={shippingCost}
+            />
+          )}
         </div>
 
-        {/* Columna lateral - Cliente y acciones (en movil va primero: es lo que se usa en cada pedido) */}
-        <div className="space-y-6 order-first md:order-none">
-          {/* Cambiar Estado */}
+        {/* Side column: first on phones (it is what each order needs) */}
+        <div className="order-first flex min-w-0 flex-[1_1_320px] flex-col gap-[18px] lg:order-none">
           <OrderStatusChanger
             orderId={order.id}
             currentStatus={orderStatus}
@@ -308,92 +309,96 @@ export default async function AdminOrderDetailPage({
             shippingPending={shippingCost === null}
           />
 
-          {/* Información del cliente */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Cliente</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div>
-                <p className="text-sm text-muted-foreground">Nombre</p>
-                <p className="font-medium">
-                  {customerData?.name || order.name || "N/A"}
+          <section className="flex flex-col gap-4 rounded-[18px] border border-line bg-white p-5">
+            <div className="flex items-center gap-3">
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary-100 text-sm font-extrabold text-primary-700">
+                {getNameInitials(customerName) || "?"}
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-[15px] font-extrabold text-ink">
+                  {customerName}
+                </p>
+                <p className="text-[13px] text-neutral-500">
+                  {customerOrders === null
+                    ? "Invitado"
+                    : `Con cuenta · ${customerOrders} pedido${customerOrders === 1 ? "" : "s"}`}
                 </p>
               </div>
-              {(customerData?.phone || order.phone) && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Teléfono</p>
-                  <a
-                    href={getWhatsAppUrl(
-                      customerData?.phone || order.phone || "",
-                    )}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-medium text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-2"
-                  >
-                    {customerData?.phone || order.phone}
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      className="h-4 w-4"
-                    >
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-                    </svg>
-                  </a>
-                </div>
-              )}
-              {(customerData?.zone || order.zone) && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Zona</p>
-                  <p className="font-medium">
-                    {customerData?.zone || order.zone}
-                  </p>
-                </div>
-              )}
-              {customerData?.address && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Dirección</p>
-                  <p className="text-sm">{customerData.address}</p>
-                </div>
-              )}
-              {customerData?.notes && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Notas</p>
-                  <p className="text-sm">{customerData.notes}</p>
-                </div>
-              )}
-              {order.email && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Email</p>
-                  <p className="font-medium">{order.email}</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+            </div>
+            {phone && (
+              <a
+                href={getWhatsAppUrl(phone)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-[46px] items-center justify-center gap-2 rounded-xl bg-emerald-50 text-sm font-extrabold text-emerald-700 transition-colors hover:bg-emerald-100"
+              >
+                <Icons.whatsapp className="size-[18px]" aria-hidden />
+                Escribir por WhatsApp
+              </a>
+            )}
+            {details.length > 0 && (
+              <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
+                {details.map((d) => (
+                  <div key={d.label} className="contents">
+                    <dt className="font-semibold text-neutral-500">
+                      {d.label}
+                    </dt>
+                    <dd className="min-w-0 break-words font-semibold text-ink">
+                      {d.label === "Teléfono" ? (
+                        <a href={`tel:${String(d.value).replace(/\s/g, "")}`}>
+                          {d.value}
+                        </a>
+                      ) : (
+                        d.value
+                      )}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+            {customerData?.notes && (
+              <div className="rounded-xl bg-cream px-3.5 py-3 text-sm">
+                <p className="font-bold text-ink">Nota del cliente</p>
+                <p className="mt-0.5 whitespace-pre-line text-neutral-600">
+                  {customerData.notes}
+                </p>
+              </div>
+            )}
+          </section>
 
-          {/* Eliminar Orden: siempre al final */}
-          <Card className="hidden md:block">
-            <CardHeader>
-              <CardTitle>Acciones Peligrosas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <DeleteOrderDialog orderId={order.id} variant="button" />
-            </CardContent>
-          </Card>
-        </div>
+          <section className="flex flex-col gap-2 rounded-[18px] border border-line bg-white p-5 text-sm">
+            <h2 className="mb-1 text-[15px] font-extrabold text-ink">Pago</h2>
+            <div className="flex justify-between gap-3">
+              <span className="text-neutral-600">Método</span>
+              <span className="font-semibold text-ink">
+                {getPaymentMethodLabel(order.payment_method)}
+              </span>
+            </div>
+            <div className="flex justify-between gap-3">
+              <span className="text-neutral-600">Estado</span>
+              <span
+                className={cn(
+                  "font-bold",
+                  needsRefund(order.order_status, order.payment_status)
+                    ? "text-amber-700"
+                    : PAYMENT_TEXT[order.payment_status || "unpaid"] ??
+                        "text-neutral-500",
+                )}
+              >
+                {paymentInfo.label}
+              </span>
+            </div>
+          </section>
 
-        <div className="md:hidden">
-          {/* Eliminar Orden: siempre al final */}
-          <Card className="">
-            <CardHeader>
-              <CardTitle>Acciones Peligrosas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <DeleteOrderDialog orderId={order.id} variant="button" />
-            </CardContent>
-          </Card>
+          <div className="hidden justify-center lg:flex">
+            <DeleteOrderDialog orderId={order.id} variant="text" />
+          </div>
         </div>
+      </div>
+
+      {/* Delete stays at the very end on phones */}
+      <div className="flex justify-center lg:hidden">
+        <DeleteOrderDialog orderId={order.id} variant="text" />
       </div>
     </AdminShell>
   );

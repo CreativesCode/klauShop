@@ -1,4 +1,5 @@
 import AdminShell from "@/components/admin/AdminShell";
+import { Icons } from "@/components/layouts/icons";
 import { buttonVariants } from "@/components/ui/button";
 import { DataTableSkeleton } from "@/features/cms";
 import { OrdersColumns, OrdersDataTable } from "@/features/orders/admin";
@@ -41,14 +42,26 @@ async function OrdersPage({}: AdminOrdersPageProps) {
   return (
     <AdminShell
       heading="Órdenes"
-      description={"Edite las órdenes desde el dashboard. "}
+      description="Pedidos recibidos por la tienda y confirmados por WhatsApp."
+      actions={
+        <>
+          <a
+            href="/api/admin/dashboard/export"
+            className={cn(
+              buttonVariants({ variant: "outline" }),
+              "border-[#E7E4EF]",
+            )}
+          >
+            <Icons.download className="size-4" aria-hidden />
+            Exportar
+          </a>
+          <Link href="/admin/orders/new" className={buttonVariants()}>
+            <Icons.add className="size-4" aria-hidden />
+            Nueva orden
+          </Link>
+        </>
+      }
     >
-      <section className="flex justify-end items-center pb-5 w-full">
-        <Link href="/admin/orders/new" className={cn(buttonVariants())}>
-          Nueva Orden
-        </Link>
-      </section>
-
       <Suspense fallback={<DataTableSkeleton />}>
         <OrdersDataTable
           columns={OrdersColumns}

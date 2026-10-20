@@ -1,121 +1,86 @@
-"use client";
-import { Progress } from "@/components/ui/progress";
 import { OrderStatus } from "@/lib/supabase/schema";
 import { cn } from "@/lib/utils";
-import {
-  CheckCircle2,
-  Package,
-  PackageCheck,
-  Truck,
-  XCircle,
-} from "lucide-react";
-import React from "react";
-// Mapeo de estados a progreso y etapas
-const STATUS_STEPS = {
-  pending_confirmation: { step: 0, progress: 0 },
-  pending_payment: { step: 1, progress: 33 },
-  paid: { step: 1, progress: 45 },
-  processing: { step: 1, progress: 55 },
-  shipped: { step: 2, progress: 67 },
-  delivered: { step: 3, progress: 100 },
-  cancelled: { step: 0, progress: 0 },
-};
+import { Check } from "lucide-react";
+import { getOrderStatusInfo } from "../utils/orderStatus";
 
-const STEPS = [
-  { label: "Recibida", icon: Package },
-  { label: "Confirmada", icon: CheckCircle2 },
-  { label: "Enviada", icon: Truck },
-  { label: "Entregada", icon: PackageCheck },
+// The happy path of an order, in order (cancelled is shown apart)
+const FLOW: OrderStatus[] = [
+  "pending_confirmation",
+  "pending_payment",
+  "paid",
+  "processing",
+  "shipped",
+  "delivered",
 ];
 
 type Props = {
   status: OrderStatus;
+  className?: string;
 };
 
-function OrderProgress({ status = "pending_confirmation" }: Props) {
-  const [progress, setProgress] = React.useState(0);
-  const statusInfo = STATUS_STEPS[status];
-  const currentStep = statusInfo.step;
-  const targetProgress = statusInfo.progress;
-
-  React.useEffect(() => {
-    const timer = setTimeout(() => setProgress(targetProgress), 200);
-    return () => clearTimeout(timer);
-  }, [targetProgress]);
-
-  // Si está cancelada, mostrar mensaje
-  if (status === "cancelled") {
-    return (
-      <section className="py-8 text-center">
-        <div className="flex items-center justify-center gap-2 text-red-600">
-          <XCircle className="h-6 w-6" />
-          <p className="text-lg font-medium">Orden Cancelada</p>
-        </div>
-      </section>
-    );
-  }
+/** Read-only order stepper (admin detail and the customer's order page). */
+function OrderProgress({ status = "pending_confirmation", className }: Props) {
+  const cancelled = status === "cancelled";
+  const current = FLOW.indexOf(status);
+  // Delivered is final: every step is done
+  const doneUntil = status === "delivered" ? FLOW.length : current;
 
   return (
-    <section className="relative py-8 min-h-[120px] w-full max-w-4xl mx-auto">
-      {/* Círculos de estado */}
-      <div className="relative">
-        {STEPS.map((step, index) => {
-          const isCompleted = index < currentStep;
-          const isCurrent = index === currentStep;
-          const StepIcon = step.icon;
-          const position = `${(index * 100) / (STEPS.length - 1)}%`;
-
+    <section
+      aria-label="Progreso de la orden"
+      className={cn(
+        "no-scrollbar overflow-x-auto rounded-[18px] border border-line bg-white px-[18px] py-4",
+        className,
+      )}
+    >
+      {cancelled && (
+        <p className="mb-3 inline-flex rounded-full bg-red-50 px-3 py-1 text-[13px] font-bold text-red-700">
+          Orden cancelada
+        </p>
+      )}
+      <ol className="flex min-w-[640px] items-center gap-2">
+        {FLOW.map((step, index) => {
+          const done = !cancelled && index < doneUntil;
+          const isCurrent = !cancelled && index === current && !done;
           return (
-            <div
-              key={index}
-              className="absolute top-0 -translate-x-1/2 z-30"
-              style={{ left: position }}
+            <li
+              key={step}
+              className="flex flex-1 items-center gap-2 last:flex-none"
+              aria-current={isCurrent ? "step" : undefined}
             >
-              <div
+              <span
                 className={cn(
-                  "h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300",
-                  isCompleted || isCurrent
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-zinc-200 text-muted-foreground",
+                  "flex size-[30px] shrink-0 items-center justify-center rounded-full text-[13px] font-extrabold tabular-nums",
+                  done
+                    ? "bg-primary text-white"
+                    : isCurrent
+                      ? "border-2 border-primary bg-white text-primary"
+                      : "bg-surface-soft text-neutral-400",
                 )}
               >
-                <StepIcon className="h-5 w-5" />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Barra de progreso */}
-      <Progress value={progress} className="my-5 h-2" />
-
-      {/* Labels */}
-      <div className="relative h-12 mt-4">
-        {STEPS.map((step, index) => {
-          const position = `${(index * 100) / (STEPS.length - 1)}%`;
-          const isCompleted = index < currentStep;
-          const isCurrent = index === currentStep;
-
-          return (
-            <div
-              key={index}
-              className="absolute -translate-x-1/2"
-              style={{ left: position }}
-            >
-              <p
+                {done ? <Check className="size-4" aria-hidden /> : index + 1}
+              </span>
+              <span
                 className={cn(
-                  "text-sm text-center whitespace-nowrap transition-colors",
-                  isCompleted || isCurrent
-                    ? "font-semibold text-foreground"
-                    : "text-muted-foreground",
+                  "whitespace-nowrap text-[13px] font-bold",
+                  done || isCurrent ? "text-ink" : "text-neutral-400",
                 )}
               >
-                {step.label}
-              </p>
-            </div>
+                {getOrderStatusInfo(step)?.shortLabel}
+              </span>
+              {index < FLOW.length - 1 && (
+                <span
+                  className={cn(
+                    "h-0.5 min-w-4 flex-1 rounded-full",
+                    !cancelled && index < doneUntil ? "bg-primary" : "bg-line",
+                  )}
+                  aria-hidden
+                />
+              )}
+            </li>
           );
         })}
-      </div>
+      </ol>
     </section>
   );
 }
