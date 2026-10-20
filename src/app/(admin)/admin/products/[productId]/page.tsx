@@ -25,8 +25,12 @@ async function EditProjectPage({
 
   return (
     <AdminShell
-      heading="Editar Producto"
-      description="Ingrese los campos a continuación y presione el botón Actualizar Producto para guardar el producto."
+      heading="Editar producto"
+      description="Los cambios se ven en la tienda al guardar."
+      breadcrumb={[
+        { label: "Productos", href: "/admin/products" },
+        { label: product.name },
+      ]}
     >
       <Suspense>
         <ProductForm

@@ -83,9 +83,13 @@ export function ExportProductsButton({ products }: ExportProductsButtonProps) {
   };
 
   return (
-    <Button onClick={handleExport} variant="outline" className="gap-2">
-      <Download className="h-4 w-4" />
-      Exportar a Excel
+    <Button
+      onClick={handleExport}
+      variant="outline"
+      className="border-[#E7E4EF]"
+    >
+      <Download className="size-4" aria-hidden />
+      Exportar
     </Button>
   );
 }

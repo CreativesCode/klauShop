@@ -15,18 +15,17 @@ import {
 } from "@tanstack/react-table";
 import * as React from "react";
 
-import { Button } from "@/components/ui/button";
-import { DataTablePagination } from "@/components/ui/data-table-pagination";
-import { Input } from "@/components/ui/input";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Search } from "lucide-react";
+  AdminSearchField,
+  AdminTableView,
+  adminChip,
+} from "@/components/admin/AdminTable";
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
+import { DocumentType } from "@/gql";
+import { formatCUP, keytoUrl } from "@/lib/utils";
+import Image from "next/image";
+import Link from "next/link";
+import { ProductColumnFragment } from "./ProductsColumns";
 
 type StockFilter = "all" | "out" | "low" | "in";
 
@@ -43,44 +42,12 @@ interface DataTableProps<TData, TValue> {
   getRowStock?: (row: TData) => number | null | undefined;
 }
 
-// Hook para detectar si es vista móvil
-function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState(false);
-
-  React.useEffect(() => {
-    // Verificar que estamos en el cliente
-    if (typeof window === "undefined") return;
-
-    // Usar el breakpoint md de Tailwind (768px)
-    const mediaQuery = window.matchMedia("(max-width: 768px)");
-
-    // Establecer el valor inicial
-    setIsMobile(mediaQuery.matches);
-
-    // Función para actualizar el estado cuando cambie el tamaño
-    const handleChange = (event: MediaQueryListEvent) => {
-      setIsMobile(event.matches);
-    };
-
-    // Escuchar cambios
-    mediaQuery.addEventListener("change", handleChange);
-
-    // Limpiar listener al desmontar
-    return () => {
-      mediaQuery.removeEventListener("change", handleChange);
-    };
-  }, []);
-
-  return isMobile;
-}
-
 function DataTable<TData, TValue>({
   columns,
   data,
   initialStockFilter = "all",
   getRowStock,
 }: DataTableProps<TData, TValue>) {
-  const isMobile = useIsMobile();
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -131,22 +98,6 @@ function DataTable<TData, TValue>({
     });
   }, [data, readStock, stockFilter]);
 
-  // Actualizar visibilidad de columnas basado en el tamaño de pantalla
-  React.useEffect(() => {
-    if (isMobile) {
-      // En móvil, ocultar columnas menos importantes
-      setColumnVisibility({
-        slug: false,
-        Collection: false,
-        featured: false,
-        showInSlider: false,
-      });
-    } else {
-      // En desktop, mostrar todas las columnas
-      setColumnVisibility({});
-    }
-  }, [isMobile]);
-
   // Función de filtro global personalizada
   const globalFilterFn = React.useCallback(
     (row: any, columnId: string, filterValue: string) => {
@@ -194,105 +145,120 @@ function DataTable<TData, TValue>({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 
+  const stockTabs: { id: StockFilter; label: string }[] = [
+    { id: "all", label: "Todos" },
+    { id: "out", label: "Sin stock" },
+    { id: "low", label: "Stock bajo" },
+    { id: "in", label: "En stock" },
+  ];
+
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Buscar productos..."
-            value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            className="pl-9"
+    <div className="overflow-hidden rounded-[18px] border border-line bg-white">
+      <div className="flex flex-wrap items-center gap-2 p-3">
+        <AdminSearchField
+          value={globalFilter}
+          onChange={setGlobalFilter}
+          placeholder="Buscar por nombre, slug o colección"
+        />
+        <div className="no-scrollbar flex max-w-full gap-1.5 overflow-x-auto">
+          {stockTabs.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              aria-pressed={stockFilter === t.id}
+              onClick={() => setStockFilter(t.id)}
+              className={adminChip(stockFilter === t.id)}
+            >
+              {t.label} ({stockCounts[t.id]})
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <AdminTableView
+        table={table}
+        emptyText="No hay productos con estos filtros."
+        renderMobileRow={(row) => (
+          <ProductMobileRow
+            product={
+              (row as { node: DocumentType<typeof ProductColumnFragment> }).node
+            }
           />
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button
-            type="button"
-            variant={stockFilter === "all" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setStockFilter("all")}
-          >
-            Todos ({stockCounts.all})
-          </Button>
-          <Button
-            type="button"
-            variant={stockFilter === "out" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setStockFilter("out")}
-          >
-            Sin stock ({stockCounts.out})
-          </Button>
-          <Button
-            type="button"
-            variant={stockFilter === "low" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setStockFilter("low")}
-          >
-            Stock bajo ({stockCounts.low})
-          </Button>
-          <Button
-            type="button"
-            variant={stockFilter === "in" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setStockFilter("in")}
-          >
-            En stock ({stockCounts.in})
-          </Button>
-        </div>
-      </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id} colSpan={header.colSpan}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  Sin resultados.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <DataTablePagination table={table} />
+        )}
+      />
+
+      <DataTablePagination table={table} itemLabel="productos" />
     </div>
+  );
+}
+
+function ProductMobileRow({
+  product,
+}: {
+  product: DocumentType<typeof ProductColumnFragment>;
+}) {
+  const price = parseFloat(product.price?.toString() || "0");
+  const discount = product.discount
+    ? parseFloat(product.discount.toString())
+    : 0;
+  const finalPrice = discount > 0 ? price - (price * discount) / 100 : price;
+  const stock = product.stock ?? 0;
+
+  return (
+    <Link
+      href={`/admin/products/${product.id}`}
+      className="flex items-center gap-3 px-4 py-3"
+    >
+      <span className="relative h-[60px] w-12 shrink-0 overflow-hidden rounded-lg bg-surface-tint">
+        {product.featuredImage?.key && (
+          <Image
+            src={keytoUrl(product.featuredImage.key)}
+            alt={product.featuredImage.alt || product.name}
+            fill
+            sizes="48px"
+            className="object-cover"
+          />
+        )}
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col gap-1">
+        <span className="flex items-baseline justify-between gap-3">
+          <span className="truncate text-[15px] font-extrabold text-ink">
+            {product.name}
+          </span>
+          <span className="shrink-0 font-extrabold tabular-nums text-ink">
+            {formatCUP(finalPrice)}
+          </span>
+        </span>
+        <span className="flex items-center justify-between gap-3 text-xs">
+          <span className="truncate text-neutral-500">
+            {product.collections?.label ?? "Sin colección"}
+            {discount > 0 && (
+              <span className="font-bold text-accent-700">
+                {" "}
+                · -{discount.toFixed(0)}%
+              </span>
+            )}
+          </span>
+          <StockText stock={stock} />
+        </span>
+      </span>
+    </Link>
+  );
+}
+
+function StockText({ stock }: { stock: number }) {
+  return (
+    <span
+      className={
+        stock <= 0
+          ? "shrink-0 font-bold text-red-700"
+          : stock < 5
+            ? "shrink-0 font-bold text-amber-700"
+            : "shrink-0 font-semibold text-neutral-600"
+      }
+    >
+      {stock <= 0 ? "Sin stock" : `${stock} en stock`}
+    </span>
   );
 }
 

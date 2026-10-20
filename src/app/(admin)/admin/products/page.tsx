@@ -1,4 +1,5 @@
 import AdminShell from "@/components/admin/AdminShell";
+import { Icons } from "@/components/layouts/icons";
 import { buttonVariants } from "@/components/ui/button";
 import { DataTableSkeleton } from "@/features/cms";
 import {
@@ -8,7 +9,6 @@ import {
 } from "@/features/products/admin";
 import { gql } from "@/gql";
 import { getServiceClient } from "@/lib/urql-service";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -64,15 +64,19 @@ async function ProductsPage({ searchParams }: AdminProjectsPageProps) {
   return (
     <AdminShell
       heading="Productos"
-      description={"Editar productos desde el dashboard. "}
+      description="Catálogo, precios y stock de la tienda."
+      actions={
+        <>
+          <ExportProductsButton
+            products={data.productsCollection?.edges || []}
+          />
+          <Link href="/admin/products/new" className={buttonVariants()}>
+            <Icons.add className="size-4" aria-hidden />
+            Nuevo producto
+          </Link>
+        </>
+      }
     >
-      <section className="flex justify-end items-center gap-3 pb-5 w-full">
-        <ExportProductsButton products={data.productsCollection?.edges || []} />
-        <Link href="/admin/products/new" className={cn(buttonVariants())}>
-          Nuevo Producto
-        </Link>
-      </section>
-
       <Suspense fallback={<DataTableSkeleton />}>
         <ProductsDataTable
           columns={ProductsColumns}

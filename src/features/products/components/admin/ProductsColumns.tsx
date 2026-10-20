@@ -12,7 +12,7 @@ import {
 import { DocumentType, gql } from "@/gql";
 import { formatCUP, keytoUrl } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
-import { CheckCircle2, MoreHorizontal, Tag, XCircle } from "lucide-react";
+import { CheckCircle2, ImageOff, MoreHorizontal, XCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { DeleteProductDialog } from "./DeleteProductDialog";
@@ -53,26 +53,27 @@ const ProductsColumns: ColumnDef<{
   {
     accessorFn: (row) => row.node.featuredImage?.key || "",
     accessorKey: "image",
-    header: () => <div className="text-center">Imagen</div>,
+    header: () => <span className="sr-only">Imagen</span>,
     cell: ({ row }) => {
       const product = row.original.node;
       const imageKey = product.featuredImage?.key;
 
       return (
-        <div className="flex justify-center">
+        <div className="flex">
           {imageKey ? (
-            <div className="relative h-12 w-12 overflow-hidden rounded-md border border-border">
+            <div className="relative h-[55px] w-11 overflow-hidden rounded-lg bg-surface-tint">
               <Image
                 src={keytoUrl(imageKey)}
                 alt={product.featuredImage?.alt || product.name}
                 fill
                 className="object-cover"
-                sizes="48px"
+                sizes="44px"
               />
             </div>
           ) : (
-            <div className="flex h-12 w-12 items-center justify-center rounded-md border border-border bg-muted text-xs text-muted-foreground">
-              Sin imagen
+            <div className="flex h-[55px] w-11 items-center justify-center rounded-lg bg-surface-soft text-neutral-400">
+              <ImageOff className="size-4" aria-hidden />
+              <span className="sr-only">Sin imagen</span>
             </div>
           )}
         </div>
@@ -92,25 +93,18 @@ const ProductsColumns: ColumnDef<{
         product.discount && parseFloat(product.discount.toString()) > 0;
 
       return (
-        <div className="flex items-center gap-2">
-          <Link href={`/admin/products/${product.id}`} className="font-medium">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Link
+            href={`/admin/products/${product.id}`}
+            className="font-bold text-ink hover:text-primary-700"
+          >
             {product.name}
           </Link>
           {hasDiscount && (
-            <Badge className="bg-orange-500 text-white hover:bg-orange-600 flex items-center gap-1">
-              <Tag className="h-3 w-3" />
-              {parseFloat(product.discount.toString()).toFixed(0)}%
+            <Badge variant="discount">
+              -{parseFloat(product.discount.toString()).toFixed(0)}%
             </Badge>
           )}
-          {(product.stock ?? 0) <= 0 ? (
-            <Badge className="bg-red-600 text-white hover:bg-red-600">
-              Sin stock
-            </Badge>
-          ) : (product.stock ?? 0) < 5 ? (
-            <Badge className="bg-yellow-500 text-black hover:bg-yellow-500">
-              Stock bajo
-            </Badge>
-          ) : null}
         </div>
       );
     },
@@ -124,7 +118,7 @@ const ProductsColumns: ColumnDef<{
     cell: ({ row }) => {
       const product = row.original.node;
 
-      return <div className="font-medium">{product.slug}</div>;
+      return <div className="text-[13px] text-neutral-500">{product.slug}</div>;
     },
   },
   {
@@ -137,8 +131,8 @@ const ProductsColumns: ColumnDef<{
       const product = row.original.node;
 
       return (
-        <div className="font-medium">
-          {product.collections ? product.collections.label : "-"}
+        <div className="text-neutral-700">
+          {product.collections ? product.collections.label : "—"}
         </div>
       );
     },
@@ -148,7 +142,7 @@ const ProductsColumns: ColumnDef<{
     accessorKey: "featured",
     header: ({ column }) => (
       <div className="text-center">
-        <DataTableColumnHeader column={column} title="Dest" />
+        <DataTableColumnHeader column={column} title="Destacado" />
       </div>
     ),
     cell: ({ row }) => {
@@ -158,9 +152,9 @@ const ProductsColumns: ColumnDef<{
       return (
         <div className="flex justify-center">
           {isFeatured ? (
-            <CheckCircle2 className="h-5 w-5 text-green-500" />
+            <CheckCircle2 className="size-5 text-emerald-600" aria-label="Sí" />
           ) : (
-            <XCircle className="h-5 w-5 text-gray-400" />
+            <XCircle className="size-5 text-neutral-300" aria-label="No" />
           )}
         </div>
       );
@@ -171,7 +165,7 @@ const ProductsColumns: ColumnDef<{
     accessorKey: "showInSlider",
     header: ({ column }) => (
       <div className="text-center">
-        <DataTableColumnHeader column={column} title="Slid" />
+        <DataTableColumnHeader column={column} title="Slider" />
       </div>
     ),
     cell: ({ row }) => {
@@ -181,9 +175,9 @@ const ProductsColumns: ColumnDef<{
       return (
         <div className="flex justify-center">
           {showInSlider ? (
-            <CheckCircle2 className="h-5 w-5 text-green-500" />
+            <CheckCircle2 className="size-5 text-emerald-600" aria-label="Sí" />
           ) : (
-            <XCircle className="h-5 w-5 text-gray-400" />
+            <XCircle className="size-5 text-neutral-300" aria-label="No" />
           )}
         </div>
       );
@@ -218,15 +212,15 @@ const ProductsColumns: ColumnDef<{
         <div className="flex flex-col gap-1">
           {hasDiscount ? (
             <>
-              <div className="font-medium text-xs sm:text-base text-gray-500 line-through">
+              <div className="text-xs text-neutral-500 line-through">
                 {formatCUP(priceValue)}
               </div>
-              <div className="font-bold text-xs sm:text-base text-green-600 dark:text-green-400">
+              <div className="font-extrabold tabular-nums text-ink">
                 {formatCUP(finalPrice)}
               </div>
             </>
           ) : (
-            <div className="font-medium text-xs sm:text-base">
+            <div className="font-extrabold tabular-nums text-ink">
               {formatCUP(priceValue)}
             </div>
           )}
@@ -243,34 +237,39 @@ const ProductsColumns: ColumnDef<{
     cell: ({ row }) => {
       const product = row.original.node;
       const stockValue = product.stock ?? 0;
-      const stockColor =
-        stockValue === 0
-          ? "text-red-500"
-          : stockValue < 5
-            ? "text-yellow-500"
-            : "text-green-500";
-
-      return <div className={`font-medium ${stockColor}`}>{stockValue}</div>;
+      return (
+        <div
+          className={
+            stockValue <= 0
+              ? "font-bold text-red-700"
+              : stockValue < 5
+                ? "font-bold text-amber-700"
+                : "font-semibold tabular-nums text-neutral-700"
+          }
+        >
+          {stockValue <= 0 ? "Sin stock" : stockValue}
+        </div>
+      );
     },
   },
   {
     id: "actions",
-    header: () => <div className="text-center capitalize">Acc</div>,
+    header: () => <span className="sr-only">Acciones</span>,
     cell: ({ row }) => {
       const product = row.original.node;
 
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button variant="ghost" size="iconAdmin">
               <span className="sr-only">Abrir menú</span>
-              <MoreHorizontal className="h-4 w-4" />
+              <MoreHorizontal className="size-4" aria-hidden />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
+          <DropdownMenuContent align="end">
             <DropdownMenuItem asChild>
               <Link href={`/admin/products/${product.id}`}>
-                Editar Producto
+                Editar producto
               </Link>
             </DropdownMenuItem>
             <DeleteProductDialog

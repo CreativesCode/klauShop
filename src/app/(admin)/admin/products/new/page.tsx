@@ -10,8 +10,12 @@ async function NewProjectPage() {
 
   return (
     <AdminShell
-      heading="Nuevo Producto"
-      description="Ingrese los campos a continuación y presione el botón Agregar Producto para guardar el producto."
+      heading="Nuevo producto"
+      description="Completa los datos y pulsa «Crear producto» para publicarlo."
+      breadcrumb={[
+        { label: "Productos", href: "/admin/products" },
+        { label: "Nuevo" },
+      ]}
     >
       <Suspense>
         <ProductForm />
