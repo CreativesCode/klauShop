@@ -13,7 +13,7 @@ type AdminUsersPageProps = {
 };
 
 async function UsersPage({ searchParams }: AdminUsersPageProps) {
-  const users = await listUsers({});
+  const users = await listUsers();
 
   return (
     <AdminShell

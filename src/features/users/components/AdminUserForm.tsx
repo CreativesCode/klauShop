@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { useToast } from "@/components/ui/use-toast";
 import { PasswordInput } from "@/features/auth";
-import { SelectUserProfiles } from "@/lib/supabase/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -23,45 +22,35 @@ import { useForm } from "react-hook-form";
 import { createUser } from "../actions";
 import { AdminUserFormData, adminUserShcema } from "../validations";
 
-type AdminUserFormProps = {
-  user?: SelectUserProfiles;
-};
-
-function AdminUserForm({ user }: AdminUserFormProps) {
+function AdminUserForm() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm<AdminUserFormData>({
     resolver: zodResolver(adminUserShcema),
+    defaultValues: { name: "", email: "", password: "" },
   });
 
-  const {
-    register,
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = form;
-
-  const onSubmit = handleSubmit(
-    async ({ name, email, password }: AdminUserFormData) => {
-      startTransition(async () => {
-        try {
-          await createUser({ email, password, name });
-          router.push("/admin/users");
-
-          toast({
-            title: "Created a new user.",
-            description: `${name} is created.`,
-          });
-        } catch (err) {
-          toast({
-            title: "Error",
-            description: `${err.message}`,
-          });
-        }
-      });
-    },
-  );
+  const onSubmit = form.handleSubmit((values) => {
+    startTransition(async () => {
+      try {
+        await createUser(values);
+        toast({
+          title: "Usuario creado",
+          description: `${values.name} ya puede iniciar sesión.`,
+        });
+        router.push("/admin/users");
+        router.refresh();
+      } catch (err) {
+        toast({
+          title: "No se pudo crear el usuario",
+          description:
+            err instanceof Error ? err.message : "Ocurrió un error inesperado.",
+          variant: "destructive",
+        });
+      }
+    });
+  });
 
   return (
     <Form {...form}>
@@ -71,56 +60,60 @@ function AdminUserForm({ user }: AdminUserFormProps) {
         onSubmit={onSubmit}
       >
         <section className="flex max-w-xl flex-col gap-5 rounded-[18px] border border-line bg-white p-5">
-          <FormItem>
-            <FormLabel className="text-sm">Nombre*</FormLabel>
-            <FormControl>
-              <Input
-                defaultValue={user?.name || ""}
-                aria-invalid={!!form.formState.errors.name}
-                placeholder="Nombre del usuario"
-                {...register("name")}
-              />
-            </FormControl>
-            <FormDescription>
-              Se muestra cuando el usuario inicia sesión.
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nombre*</FormLabel>
+                <FormControl>
+                  <Input placeholder="Nombre del usuario" {...field} />
+                </FormControl>
+                <FormDescription>
+                  Se muestra cuando el usuario inicia sesión.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <FormItem>
-            <FormLabel className="text-sm">Email*</FormLabel>
-            <FormControl>
-              <Input
-                defaultValue={user?.email || ""}
-                aria-invalid={!!form.formState.errors.email}
-                placeholder="correo@ejemplo.com"
-                {...register("email")}
-              />
-            </FormControl>
-            <FormDescription>
-              El usuario entra a su cuenta con este correo.
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email*</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    autoComplete="off"
+                    placeholder="correo@ejemplo.com"
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  El usuario entra a su cuenta con este correo.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <FormField
             control={form.control}
             name="password"
             render={({ field }) => (
-              <FormItem className="">
+              <FormItem>
                 <FormLabel>Contraseña*</FormLabel>
                 <FormControl>
                   <PasswordInput
-                    aria-invalid={!!form.formState.errors}
+                    autoComplete="new-password"
                     placeholder="Contraseña"
                     {...field}
                   />
                 </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormDescription>
-                    Crea una contraseña para esta cuenta.
-                  </FormDescription>
-                </div>
+                <FormDescription>Mínimo 6 caracteres.</FormDescription>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -134,10 +127,10 @@ function AdminUserForm({ user }: AdminUserFormProps) {
             Cancelar
           </Link>
           <Button disabled={isPending} form="project-form" type="submit">
-            {user ? "Guardar cambios" : "Crear usuario"}
             {isPending && (
               <Spinner className="size-4 animate-spin" aria-hidden="true" />
             )}
+            Crear usuario
           </Button>
         </div>
       </form>

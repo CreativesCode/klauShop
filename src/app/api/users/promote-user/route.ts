@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json(
     {
-      message: `User:${updatedUser.user.user_metadata.name} is promoted to Admin.`,
+      message: `${updatedUser.user.user_metadata?.name || updatedUser.user.email} ahora es administrador.`,
     },
     { status: 201 },
   );

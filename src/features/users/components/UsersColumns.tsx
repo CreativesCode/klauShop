@@ -132,9 +132,11 @@ const UsersColumns: ColumnDef<User>[] = [
             <DropdownMenuItem asChild>
               <Link href={`/admin/users/${user.id}`}>Editar usuario</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => promoteAdminHandler(user.id)}>
-              Hacer administrador
-            </DropdownMenuItem>
+            {user.app_metadata?.isAdmin !== true && (
+              <DropdownMenuItem onSelect={() => promoteAdminHandler(user.id)}>
+                Hacer administrador
+              </DropdownMenuItem>
+            )}
             <DeleteUserDialog
               userId={user.id}
               userName={user.user_metadata?.name || user.email || "Usuario"}

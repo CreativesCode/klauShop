@@ -12,7 +12,7 @@ async function UpdateUserPage({ params: { userId } }: UpdateUserPageProps) {
   return (
     <AdminShell
       heading="Editar usuario"
-      description="Correo y contraseña de la cuenta."
+      description="Nombre, correo y contraseña de la cuenta."
       breadcrumb={[
         { label: "Usuarios", href: "/admin/users" },
         { label: user.email ?? "Usuario" },
