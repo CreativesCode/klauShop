@@ -90,7 +90,10 @@ export function SignInForm() {
               <FormLabel>Correo electrónico</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <Icons.mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Icons.mail
+                    className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
+                    aria-hidden
+                  />
                   <Input
                     placeholder="tu@correo.com"
                     className="pl-10"
@@ -131,12 +134,16 @@ export function SignInForm() {
           </div>
           <Link
             href="/sign-in/reset-password"
-            className="text-sm text-primary underline-offset-4 transition-colors hover:underline"
+            className="text-sm font-bold text-primary-700 underline-offset-4 transition-colors hover:underline"
           >
             ¿Olvidaste tu contraseña?
           </Link>
         </div>
-        <Button disabled={!ready || isPending} className="w-full rounded-full">
+        <Button
+          size="xl"
+          disabled={!ready || isPending}
+          className="mt-1 w-full"
+        >
           {isPending && (
             <Spinner className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
           )}

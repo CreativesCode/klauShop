@@ -1,16 +1,10 @@
 "use client";
 
-import Branding from "@/components/layouts/Branding";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { AuthCard } from "@/features/auth";
 import supabaseClient from "@/lib/supabase/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -122,83 +116,22 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <section className="w-full max-w-md px-3 sm:px-0">
-      <Card className="border-0 border-t-4 border-accent">
-        <CardHeader className="space-y-6 text-center">
-          <div className="flex flex-col items-center space-y-4">
-            <Branding className="mb-2" />
-            <h1 className="text-2xl font-bold text-primary">
-              {mode === "request"
-                ? "Recuperar contraseña"
-                : "Crear nueva contraseña"}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              {mode === "request"
-                ? "Te enviamos un enlace para restablecerla."
-                : "Define una nueva contraseña para tu cuenta."}
-            </p>
-          </div>
-        </CardHeader>
-
-        <CardContent className="grid gap-4">
-          {mode === "request" ? (
-            <form className="grid gap-4" onSubmit={onRequestReset}>
-              <div className="grid gap-2">
-                <Label htmlFor="email">Correo electrónico</Label>
-                <Input
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="tu@correo.com"
-                  autoComplete="email"
-                />
-              </div>
-              <Button
-                disabled={isLoading}
-                className="w-full rounded-full"
-                type="submit"
-              >
-                Enviar enlace
-              </Button>
-            </form>
-          ) : (
-            <form className="grid gap-4" onSubmit={onUpdatePassword}>
-              <div className="grid gap-2">
-                <Label htmlFor="newPassword">Nueva contraseña</Label>
-                <Input
-                  id="newPassword"
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  autoComplete="new-password"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  autoComplete="new-password"
-                />
-              </div>
-              <Button
-                disabled={isLoading}
-                className="w-full rounded-full"
-                type="submit"
-              >
-                Guardar contraseña
-              </Button>
-            </form>
-          )}
-        </CardContent>
-
-        <CardFooter className="flex flex-col space-y-3">
+    <AuthCard
+      title={
+        mode === "request" ? "Recuperar contraseña" : "Crear nueva contraseña"
+      }
+      description={
+        mode === "request"
+          ? "Te enviamos un enlace para restablecerla."
+          : "Define una nueva contraseña para tu cuenta."
+      }
+      footer={
+        <>
           {mode === "update" && (
             <Button
               variant="outline"
-              className="w-full rounded-full"
+              size="lg"
+              className="w-full"
               disabled={isLoading}
               onClick={() => setMode("request")}
             >
@@ -207,12 +140,66 @@ export default function ResetPasswordPage() {
           )}
           <Link
             href="/sign-in"
-            className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:underline"
+            className="font-semibold text-neutral-500 transition-colors hover:text-ink"
           >
             Volver a iniciar sesión
           </Link>
-        </CardFooter>
-      </Card>
-    </section>
+        </>
+      }
+    >
+      {mode === "request" ? (
+        <form className="grid gap-4" onSubmit={onRequestReset}>
+          <div className="grid gap-2">
+            <Label htmlFor="email">Correo electrónico</Label>
+            <Input
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="tu@correo.com"
+              autoComplete="email"
+            />
+          </div>
+          <Button
+            disabled={isLoading}
+            size="xl"
+            className="mt-1 w-full"
+            type="submit"
+          >
+            Enviar enlace
+          </Button>
+        </form>
+      ) : (
+        <form className="grid gap-4" onSubmit={onUpdatePassword}>
+          <div className="grid gap-2">
+            <Label htmlFor="newPassword">Nueva contraseña</Label>
+            <Input
+              id="newPassword"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              autoComplete="new-password"
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              autoComplete="new-password"
+            />
+          </div>
+          <Button
+            disabled={isLoading}
+            size="xl"
+            className="mt-1 w-full"
+            type="submit"
+          >
+            Guardar contraseña
+          </Button>
+        </form>
+      )}
+    </AuthCard>
   );
 }

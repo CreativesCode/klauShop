@@ -1,3 +1,4 @@
+export { AuthCard } from "./AuthCard";
 export { default as OAuthLoginButtons } from "./OAuthLoginButtons";
 export { PasswordInput } from "./PasswordInput";
 export { default as SigninForm } from "./SigninForm";

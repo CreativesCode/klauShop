@@ -142,7 +142,11 @@ export function SignUpForm() {
             </FormItem>
           )}
         />
-        <Button disabled={!ready || isLoading}>
+        <Button
+          size="xl"
+          disabled={!ready || isLoading}
+          className="mt-1 w-full"
+        >
           {isLoading && (
             <Icons.spinner
               className="mr-2 h-4 w-4 animate-spin"
