@@ -101,6 +101,16 @@ function matchesSearch(order: OrderRow["node"], filterValue: string) {
   );
 }
 
+const COLUMN_WIDTHS: Record<string, string> = {
+  select: "w-11",
+  id: "w-24",
+  created_at: "w-[136px]",
+  order_status: "w-[168px] 2xl:w-[200px]",
+  payment_status: "w-[88px]",
+  amount: "w-[120px]",
+  actions: "w-[168px]",
+};
+
 function DataTable<TValue>({ columns, data }: DataTableProps<TValue>) {
   const router = useRouter();
   const pathname = usePathname();
@@ -371,14 +381,19 @@ function DataTable<TValue>({ columns, data }: DataTableProps<TValue>) {
         </div>
       )}
 
-      {/* Desktop table */}
-      <div className="hidden lg:block">
-        <Table>
+      {/* Desktop table: fixed column widths so sorting or the rows on the page never
+          reflow it ("Cliente" takes the remaining space) */}
+      <div className="hidden xl:block">
+        <Table className="min-w-[960px] table-fixed">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="border-t-0">
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} colSpan={header.colSpan}>
+                  <TableHead
+                    key={header.id}
+                    colSpan={header.colSpan}
+                    className={COLUMN_WIDTHS[header.column.id]}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -421,8 +436,8 @@ function DataTable<TValue>({ columns, data }: DataTableProps<TValue>) {
         </Table>
       </div>
 
-      {/* Mobile cards: act from the detail page */}
-      <ul className="lg:hidden">
+      {/* Cards below xl (phones, tablets, small laptops): act from the detail page */}
+      <ul className="xl:hidden">
         {rows.length ? (
           rows.map((row) => {
             const order = row.original.node;

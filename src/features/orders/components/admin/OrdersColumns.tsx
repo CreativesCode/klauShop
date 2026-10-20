@@ -136,7 +136,7 @@ const OrdersColumns: ColumnDef<OrderRow>[] = [
     cell: ({ row }) => {
       const order = row.original.node;
       return (
-        <div className="min-w-0 max-w-[220px]">
+        <div className="min-w-0">
           <div className="truncate font-semibold text-ink">
             {order.name || "—"}
           </div>
