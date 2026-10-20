@@ -3,8 +3,8 @@
 Spec: `docs/design/design_handoff_klaushop_redesign/` (el dueño lo aportó; aún sin commitear en git).
 Plan y estado detallado: `.titan/plans/redisenio-2-0.md`.
 
-**Estado 2026-10-20:** Fases 0–4 hechas (todas las vistas de tienda, auth y admin). Commits locales en `main`,
-**sin push** (push = deploy a producción; lo decide el dueño). Queda: Lighthouse sobre el deploy y decidir el push.
+**Estado 2026-10-20:** Fases 0–4 hechas (todas las vistas de tienda, auth y admin). Commits en `main`,
+**publicado en producción** (push a `main` 2026-10-20, aprobado por el dueño). Queda: Lighthouse oficial.
 Detalle en el plan.
 
 ## Reglas nuevas (respetarlas en código nuevo)

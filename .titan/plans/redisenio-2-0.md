@@ -30,11 +30,15 @@ Commits locales en `main`, **sin push** (cada fase deja el sitio funcionando; li
 | Código muerto eliminado | `44790f6` | Hecha |
 | Handoff `docs/design/` en el repo | `1f67ab7` | Hecha |
 | Carrito como panel lateral | `aab2b72` | Hecha |
-| Comprobaciones finales (Lighthouse) | — | Pendiente: hacerlo sobre el deploy (preview/prod) |
+| Fix clase ambigua `duration-[600ms]` (choca con tailwindcss-animate) | `5830abf` | Hecha |
+| **Push a `main` = deploy a producción** (dueño aprobó) | `5163ca9..5830abf` | Hecho 2026-10-20 |
+| Comprobaciones finales | — | Smoke test en prod OK; Lighthouse oficial pendiente (ver abajo) |
 
 ### Pendiente
-- [ ] Lighthouse móvil sobre el deploy (no tiene sentido sobre `next dev`).
-- [ ] Push a `main` (= deploy a producción): lo decide el dueño.
+- [ ] Lighthouse oficial: la API de PageSpeed sin clave agotó la cuota diaria y no se instaló Lighthouse en local
+      (descarga de paquete, pedir permiso). Medición propia en prod (Chromium, viewport iPhone, SIN throttling, así que
+      optimista): LCP / 1,3 s · /shop 2,1 s · ficha 1,3 s · /cart 0,9 s · /sign-in 1,0 s; CLS 0 (sign-in 0,017);
+      `lang="es"`; ninguna imagen sin `alt`; ningún texto < 11px.
 - [ ] Probar con una sesión admin real guardar un usuario editado (no se probó: modificaría datos de producción).
 
 ### Hallazgos resueltos (pedido del dueño 2026-10-20)
@@ -84,6 +88,12 @@ commit se excluyeron los dos layouts; al parar se revirtió. Comprobar siempre c
 solo contienen el parche: `git checkout --` de ambos.
 
 ## Aprendizajes
+- Antes de cada push: `npm run build` (para el dev server antes: comparte `.next`). Los avisos "Dynamic server usage"
+  de `/api/admin/dashboard/export` son informativos y vienen de antes.
+- El conector de Vercel de esta máquina es de otra cuenta (no ve klauShop): el deploy se verifica contra
+  https://klau-shop.vercel.app buscando una marca de la versión nueva en el HTML.
+- Tras borrar archivos, `next dev` puede quedar con caché rota ("Failed to read source code"): parar el proceso de
+  node (TaskStop no siempre lo mata) y arrancar de nuevo.
 - Los heredocs con comillas raras fallan en el Bash de esta máquina: escribir scripts/fragmentos con la herramienta Write
   y empalmar con un script Python.
 - En CSS grid sin `grid-cols-1`, la columna implícita crece con el contenido y provoca scroll horizontal en móvil.
