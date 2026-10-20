@@ -57,8 +57,8 @@ function ImagesGrid({
           key={media.id}
           type="button"
           className={cn(
-            "object-center group relative h-[120px] w-[120px]",
-            defaultImageId === media.id && "ring-offset-2 ring-2",
+            "group relative h-[120px] w-[120px] overflow-hidden rounded-xl bg-surface-tint object-center",
+            defaultImageId === media.id && "ring-2 ring-primary ring-offset-2",
           )}
           onClick={() => onClickHandler(media.id)}
         >
@@ -68,7 +68,7 @@ function ImagesGrid({
             width={120}
             height={120}
             className={cn(
-              "group-hover:opacity-30 transition-all duration-300 h-[120px] w-[120px] object-cover",
+              "h-[120px] w-[120px] object-cover transition-opacity duration-300 group-hover:opacity-60",
             )}
           />
         </button>
@@ -100,8 +100,8 @@ function UploadTile({ upload, onSelect, onRetry, onDismiss }: UploadTileProps) {
   return (
     <div
       className={cn(
-        "relative h-[120px] w-[120px] overflow-hidden rounded-sm border",
-        isError ? "border-destructive" : "border-zinc-300",
+        "relative h-[120px] w-[120px] overflow-hidden rounded-xl border",
+        isError ? "border-red-300" : "border-line",
       )}
       title={isError ? error : file.name}
     >
@@ -121,20 +121,20 @@ function UploadTile({ upload, onSelect, onRetry, onDismiss }: UploadTileProps) {
         <button
           type="button"
           onClick={() => onSelect?.(mediaId)}
-          className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-1 bg-green-600/90 py-1 text-xs font-medium text-white"
+          className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-1 bg-emerald-600/90 py-1 text-xs font-bold text-white"
         >
           <Check className="h-3 w-3" /> {STATUS_LABEL.done}
         </button>
       ) : isError ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-white/80 p-1 text-center">
-          <p className="line-clamp-3 text-[10px] leading-tight text-destructive">
+          <p className="line-clamp-3 text-xs leading-tight text-red-700">
             {error}
           </p>
           <div className="flex gap-1">
             <button
               type="button"
               onClick={() => onRetry?.(upload)}
-              className="rounded bg-primary px-2 py-0.5 text-[10px] text-primary-foreground"
+              className="rounded-md bg-primary px-2 py-1 text-xs font-bold text-white"
             >
               Reintentar
             </button>
@@ -142,7 +142,7 @@ function UploadTile({ upload, onSelect, onRetry, onDismiss }: UploadTileProps) {
               type="button"
               onClick={() => onDismiss?.(upload.id)}
               aria-label="Quitar"
-              className="rounded border px-1 text-zinc-600"
+              className="rounded-md border border-line px-1.5 text-neutral-600"
             >
               <Icons.close className="h-3 w-3" />
             </button>

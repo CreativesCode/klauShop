@@ -20,17 +20,17 @@ function Modal({ header, containerClassName, children }: Props) {
   return (
     <section
       className={cn(
-        "fixed z-50 inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full",
+        "fixed inset-0 z-50 h-full w-full overflow-y-auto bg-ink/40",
       )}
     >
       <Card
         className={cn(
-          "relative max-w-full inset-0 md:inset-20 md:max-w-2xl lg:max-w-[960px] xl:max-w-[1080px] top-20 mx-auto p-5 border container w-full shadow-lg rounded-md bg-white min-h-[480px]",
+          "relative max-w-full inset-0 md:inset-20 md:max-w-2xl lg:max-w-[960px] xl:max-w-[1080px] top-20 mx-auto p-5 container mb-10 min-h-[480px] w-full rounded-[24px] border-line bg-white shadow-2xl",
           containerClassName,
         )}
       >
         <CardHeader className="p-0 mb-3 md:mb-5">
-          <h1 className="font-semibold text-lg leading-5 tracking-tight">
+          <h1 className="text-lg font-extrabold leading-5 tracking-tight text-ink">
             {header}
           </h1>
           <CloseButton />

@@ -46,7 +46,7 @@ function ImageDialog({
             {displayValue ? (
               <Suspense
                 fallback={
-                  <div className="h-32 w-32 bg-muted animate-pulse rounded-md" />
+                  <div className="h-32 w-32 animate-pulse rounded-xl bg-surface-soft" />
                 }
               >
                 <ImagePreviewCard
@@ -56,8 +56,8 @@ function ImageDialog({
                 />
               </Suspense>
             ) : (
-              <div className="h-32 w-32 border-2 border-dashed border-muted-foreground/25 rounded-md flex items-center justify-center text-sm text-muted-foreground">
-                Seleccionar / Agregar Imagen
+              <div className="flex h-32 w-32 items-center justify-center rounded-xl border-2 border-dashed border-neutral-300 px-2 text-center text-[13px] font-bold text-neutral-500 transition-colors hover:border-primary hover:text-primary">
+                Elegir o subir imagen
               </div>
             )}
           </div>
@@ -69,7 +69,7 @@ function ImageDialog({
             <DialogTitle className="mb-5">Galería de imágenes</DialogTitle>
             <Suspense
               fallback={
-                <div className="h-64 w-full bg-muted animate-pulse rounded-md" />
+                <div className="h-64 w-full animate-pulse rounded-xl bg-surface-soft" />
               }
             >
               <UploadMediaContainer

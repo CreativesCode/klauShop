@@ -172,13 +172,17 @@ function UploadMediaContainer({
 
   return (
     <div>
-      {error && <p>Oh no... {error.message}</p>}
+      {error && (
+        <p className="rounded-xl bg-red-50 px-3.5 py-2.5 text-sm font-bold text-red-700">
+          No se pudieron cargar las imágenes: {error.message}
+        </p>
+      )}
 
       {fetching && !medias && <ImageGridSkeleton />}
 
       {medias && (
         <>
-          <div className="border border-dot border-zinc-300 p-5">
+          <div className="rounded-[18px] border border-line bg-white p-4 md:p-5">
             <div {...getRootProps()} className="dropzone-container">
               <ImagesGrid
                 medias={medias.edges}
@@ -193,20 +197,21 @@ function UploadMediaContainer({
               />
 
               {medias.pageInfo.hasNextPage ? (
-                <div className="flex justify-center content-center">
+                <div className="flex justify-center pt-5">
                   <Button
+                    variant="outline"
                     onClick={() => {
                       setLastCursor(medias.pageInfo.endCursor ?? undefined);
                     }}
                   >
-                    Cargar más.
+                    Cargar más
                   </Button>
                 </div>
               ) : null}
 
               <input {...getInputProps()} />
               {isDragActive ? (
-                <div className="w-full h-full min-h-[320px] flex items-center justify-center z-50">
+                <div className="z-50 mt-4 flex min-h-[320px] w-full items-center justify-center rounded-xl border-2 border-dashed border-primary bg-primary-50 text-sm font-bold text-primary-700">
                   Arrastre la imagen aquí para subir la imagen.
                 </div>
               ) : null}
@@ -239,9 +244,10 @@ const AddMediaButtonComponent = ({ open }: { open: () => void }) => {
       type="button"
       onClick={open}
       aria-label="Subir imágenes"
-      className=" h-[120px] w-[120px] border-2 border-dashed border-zinc-400 text-zinc-400 flex flex-col justify-center items-center"
+      className="flex h-[120px] w-[120px] flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-neutral-300 text-xs font-bold text-neutral-500 transition-colors hover:border-primary hover:text-primary"
     >
-      <Icons.add size={32} />
+      <Icons.add className="size-7" aria-hidden />
+      Subir
     </button>
   );
 };

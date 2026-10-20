@@ -18,16 +18,16 @@ async function EditMediaModals({ params: { mediaId } }: Props) {
   return (
     <Modal header="Modificar Imagen" containerClassName="px-5">
       <div className="flex flex-col md:flex-row gap-y-5 gap-x-5">
-        <div className="flex-1 w-[640px]">
+        <div className="min-w-0 flex-1 md:max-w-[640px]">
           <Image
             src={keytoUrl(media.key)}
             alt={media.alt}
             width={640}
             height={640}
-            className="max-w-[640px] w-full h-auto object-cover"
+            className="h-auto w-full rounded-xl object-cover"
           />
         </div>
-        <div className="border-t md:border-t-0 md:border-l border-zinc-600 pt-5">
+        <div className="border-t md:border-t-0 md:border-l border-line pt-5 md:pl-5 md:pt-0">
           <UpdateMediaForm media={media} usage={usage} />
         </div>
       </div>

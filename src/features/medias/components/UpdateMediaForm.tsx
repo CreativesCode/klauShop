@@ -161,7 +161,10 @@ function UpdateMediaForm({ media, usage }: UpdateMediaFormProps) {
           open={confirmOpen}
           onOpenChange={(open) => !isDeleting && setConfirmOpen(open)}
         >
-          <AlertDialogTrigger type="button" className="text-red-600 text-left">
+          <AlertDialogTrigger
+            type="button"
+            className="w-fit rounded-lg px-2 py-1.5 text-left text-[13px] font-extrabold text-red-600 hover:bg-red-50"
+          >
             Eliminar permanentemente
           </AlertDialogTrigger>
           <AlertDialogContent>
@@ -216,7 +219,7 @@ function UpdateMediaForm({ media, usage }: UpdateMediaFormProps) {
           </AlertDialogContent>
         </AlertDialog>
 
-        <div className="py-8 flex gap-x-5 items-center justify-between">
+        <div className="flex items-center justify-between gap-3 pt-4">
           <Link
             href="/admin/medias"
             className={buttonVariants({ variant: "outline" })}
@@ -224,7 +227,7 @@ function UpdateMediaForm({ media, usage }: UpdateMediaFormProps) {
             Cancelar
           </Link>
           <Button disabled={isPending} form="project-form" type="submit">
-            {media ? "Actualizar" : "Crear"}
+            {media ? "Guardar cambios" : "Crear"}
             {isPending && (
               <Spinner
                 className="mr-2 h-4 w-4 animate-spin ml-2"
