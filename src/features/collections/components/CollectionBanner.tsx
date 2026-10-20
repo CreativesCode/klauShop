@@ -1,7 +1,5 @@
-import { buttonVariants } from "@/components/ui/button";
 import { DocumentType, gql } from "@/gql";
-import { cn, keytoUrl } from "@/lib/utils";
-import { ArrowLeft } from "lucide-react";
+import { keytoUrl } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -51,68 +49,64 @@ function CollectionBanner({
   const subcollections = collectionsCollection?.edges || [];
 
   return (
-    <div className="relative w-full md:container-2xl mx-auto h-auto min-h-[320px] md:min-h-[400px] overflow-hidden mb-8">
-      {/* Background Image */}
-      <Image
-        src={keytoUrl(featuredImage.key)}
-        alt={featuredImage.alt}
-        width={1440}
-        height={500}
-        sizes="100vw"
-        className="absolute inset-0 object-center object-cover w-full h-full opacity-40"
-      />
+    <div className="flex flex-col gap-3">
+      {parentCollection && (
+        <nav
+          aria-label="Ruta"
+          className="flex items-center gap-1.5 text-[13px] font-semibold text-neutral-500"
+        >
+          <Link href="/" className="hover:text-primary-700">
+            Inicio
+          </Link>
+          <span aria-hidden>/</span>
+          <Link
+            href={`/collections/${parentCollection.slug}`}
+            className="hover:text-primary-700"
+          >
+            {parentCollection.label}
+          </Link>
+          <span aria-hidden>/</span>
+          <span className="truncate text-ink">{label}</span>
+        </nav>
+      )}
 
-      {/* Content Overlay */}
-      <div className="relative z-10 px-6 md:px-12 py-8 md:py-12">
-        {/* Parent Collection Button */}
-        {parentCollection && (
-          <div className="mb-4">
-            <Link
-              href={`/collections/${parentCollection.slug}`}
-              className={cn(
-                buttonVariants({ variant: "outline", size: "sm" }),
-                "gap-2 bg-white/90 hover:bg-white hover:text-primary border-primary/20",
-              )}
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Volver a {parentCollection.label}
-            </Link>
-          </div>
-        )}
-
-        {/* Title */}
-        <h1 className="text-3xl md:text-5xl font-medium mb-4">{label}</h1>
-
-        {/* Description */}
-        {description && (
-          <p className="text-foreground/90 text-sm md:text-base mb-6 max-w-2xl">
-            {description}
-          </p>
-        )}
-
-        {/* Subcollections */}
-        {subcollections.length > 0 && (
-          <div className="mt-6">
-            <h2 className="text-lg md:text-xl font-semibold mb-3">
-              Subcategorías
-            </h2>
-            <div className="flex flex-wrap gap-2">
+      <section className="relative flex min-h-[clamp(220px,26vw,340px)] items-end overflow-hidden rounded-4xl bg-primary-950">
+        <Image
+          src={keytoUrl(featuredImage.key)}
+          alt={featuredImage.alt || label}
+          fill
+          priority
+          sizes="(max-width: 1320px) 100vw, 1320px"
+          className="object-cover object-center"
+        />
+        <span
+          className="absolute inset-0 bg-[linear-gradient(180deg,rgba(17,24,39,.1)_20%,rgba(17,24,39,.78)_100%)]"
+          aria-hidden
+        />
+        <div className="relative flex max-w-2xl flex-col gap-3 p-[clamp(22px,3vw,36px)] text-white">
+          <h1 className="font-display text-[clamp(40px,4.4vw,60px)] leading-none">
+            {label}
+          </h1>
+          {description && (
+            <p className="text-[15px] leading-[1.55] text-white/90">
+              {description}
+            </p>
+          )}
+          {subcollections.length > 0 && (
+            <div className="mt-1 flex flex-wrap gap-2">
               {subcollections.map((edge) => (
                 <Link
                   key={edge.node.id}
                   href={`/collections/${edge.node.slug}`}
-                  className={cn(
-                    buttonVariants({ variant: "secondary", size: "sm" }),
-                    "bg-white/90 hover:bg-primary hover:text-primary-foreground transition-colors shadow-sm",
-                  )}
+                  className="inline-flex h-9 items-center rounded-full bg-white/90 px-3.5 text-[13px] font-bold text-ink backdrop-blur transition-colors hover:bg-white"
                 >
                   {edge.node.label}
                 </Link>
               ))}
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

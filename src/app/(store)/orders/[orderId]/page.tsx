@@ -1,10 +1,6 @@
 import { signInRedirect } from "@/lib/safeRedirect";
 import { Shell } from "@/components/layouts/Shell";
-import { Icons } from "@/components/layouts/icons";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { OrderLinePrice, OrderProgress } from "@/features/orders";
+import { OrderLinePrice, OrderProgress, StatusPill } from "@/features/orders";
 import { getOrderStatusInfo } from "@/features/orders/utils/orderStatus";
 import {
   formatOrderTotal,
@@ -16,6 +12,7 @@ import {
   getPaymentStatusInfo,
 } from "@/features/orders/utils/paymentStatus";
 import { formatOrderNumber } from "@/features/orders/utils/whatsapp";
+import { colorName } from "@/lib/colorName";
 import db from "@/lib/supabase/db";
 import {
   OrderStatus,
@@ -103,217 +100,202 @@ async function TrackOrderPage({ params: { orderId } }: TrackOrderProps) {
       ? ("pending_payment" as const)
       : rawOrderStatus;
   const statusInfo = getOrderStatusInfo(orderStatus);
-  const StatusIcon = statusInfo?.icon;
   const paymentInfo = getPaymentStatusInfo(
     order.payment_status,
     order.order_status,
   );
   const { subtotal, shippingCost, total: amountNumber } = getOrderTotals(order);
 
+  const details = [
+    { label: "Nombre", value: customerData?.name },
+    { label: "Teléfono", value: customerData?.phone },
+    { label: "Zona", value: customerData?.zone },
+    { label: "Dirección", value: customerData?.address },
+  ].filter((d) => d.value);
+
   return (
-    <Shell className="max-w-screen-2xl mx-auto">
+    <Shell>
       <RefreshOnFocus />
-      <div className="space-y-6">
-        <div className="mb-4">
-          <Link href="/orders">
-            <Button variant="outline" className="gap-2">
-              <Icons.chevronLeft className="h-4 w-4" />
-              Ver todas las órdenes
-            </Button>
-          </Link>
-        </div>
-        {/* Header con estado */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold">Orden {orderNumber}</h1>
-            <p className="text-muted-foreground mt-1">
-              Creada el{" "}
-              {new Date(order.createdAt).toLocaleDateString("es-ES", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </p>
-          </div>
-          {statusInfo && (
-            <Badge
-              variant="outline"
-              className={cn(
-                "flex items-center gap-2 px-4 py-2 text-base w-fit rounded-md",
-                statusInfo.color,
-                statusInfo.bgColor,
-                statusInfo.borderColor,
-              )}
-            >
-              {StatusIcon && <StatusIcon className="h-5 w-5" />}
-              <span className="font-medium">{statusInfo.label}</span>
-            </Badge>
-          )}
-        </div>
+      <nav
+        aria-label="Ruta"
+        className="flex items-center gap-1.5 text-[13px] font-semibold text-neutral-500"
+      >
+        <Link href="/orders" className="hover:text-primary-700">
+          Mis órdenes
+        </Link>
+        <span aria-hidden>/</span>
+        <span className="text-ink">{orderNumber}</span>
+      </nav>
 
-        {/* Progress bar */}
-        {statusInfo && <OrderProgress status={orderStatus} />}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+        <h1 className="text-[clamp(24px,2.6vw,34px)] font-extrabold tracking-[-0.02em] text-ink">
+          Orden {orderNumber}
+        </h1>
+        {statusInfo && <StatusPill status={orderStatus} size="md" />}
+        <p className="w-full text-sm text-neutral-500 sm:w-auto">
+          Creada el{" "}
+          {new Date(order.createdAt).toLocaleDateString("es-ES", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
+        </p>
+      </div>
 
-        {/* Productos */}
-        <Card>
-          <CardHeader className="font-semibold text-lg">
-            Productos de la Orden
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {items.map((item) => {
-              return (
-                <div
-                  key={item.id}
-                  className="flex items-start gap-4 pb-4 border-b last:border-0 last:pb-0"
-                >
+      {statusInfo && <OrderProgress status={orderStatus} />}
+
+      <div className="flex flex-wrap items-start gap-[18px]">
+        <section className="min-w-0 flex-[2_1_520px] overflow-hidden rounded-[18px] border border-line bg-white">
+          <h2 className="px-5 pb-3 pt-5 text-[15px] font-extrabold text-ink">
+            Productos de la orden
+          </h2>
+          <ul>
+            {items.map((item) => (
+              <li
+                key={item.id}
+                className="flex items-start gap-3.5 border-t border-line-soft px-5 py-3.5"
+              >
+                <span className="relative h-[72px] w-[60px] shrink-0 overflow-hidden rounded-xl bg-surface-tint">
                   {item.media && (
-                    <div className="relative w-24 h-24 flex-shrink-0">
-                      <Image
-                        src={keytoUrl(item.media.key)}
-                        alt={item.media.alt}
-                        width={96}
-                        height={96}
-                        className="object-cover w-24 h-24 rounded-md"
-                      />
-                    </div>
+                    <Image
+                      src={keytoUrl(item.media.key)}
+                      alt={item.media.alt || item.product?.name || ""}
+                      fill
+                      sizes="60px"
+                      className="object-cover"
+                    />
                   )}
-                  <div className="flex-1 space-y-2">
-                    <div>
-                      <Link
-                        href={`/shop/${item.product?.slug}`}
-                        className="font-medium hover:underline text-blue-600"
-                      >
-                        {item.product?.name}
-                      </Link>
-                      <p className="text-sm text-muted-foreground mt-1 flex flex-wrap items-center gap-1">
-                        Cantidad: {item.quantity} ×{" "}
-                        <OrderLinePrice
-                          price={item.price}
-                          listPrice={item.listPrice}
-                          discount={item.discount}
-                        />
-                      </p>
-                    </div>
-                    {(item.color || item.size || item.material) && (
-                      <div className="flex flex-wrap gap-3 text-sm">
-                        {item.color && (
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-muted-foreground">
-                              Color:
-                            </span>
-                            <div
-                              className="h-4 w-4 rounded-full border"
-                              style={{ backgroundColor: item.color }}
-                            />
-                          </div>
-                        )}
-                        {item.size && (
-                          <div>
-                            <span className="text-muted-foreground">
-                              Tamaño:
-                            </span>{" "}
-                            <span className="font-medium">{item.size}</span>
-                          </div>
-                        )}
-                        {item.material && (
-                          <div>
-                            <span className="text-muted-foreground">
-                              Material:
-                            </span>{" "}
-                            <span className="font-medium">{item.material}</span>
-                          </div>
-                        )}
-                      </div>
+                </span>
+                <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                  <Link
+                    href={`/shop/${item.product?.slug}`}
+                    className="text-sm font-bold text-ink hover:text-primary"
+                  >
+                    {item.product?.name}
+                  </Link>
+                  <div className="flex flex-wrap gap-1.5 text-xs font-semibold text-neutral-700">
+                    {item.size && (
+                      <span className="rounded-md bg-surface-soft px-2 py-0.5">
+                        Talla {item.size}
+                      </span>
                     )}
+                    {item.color && (
+                      <span className="flex items-center gap-1 rounded-md bg-surface-soft px-2 py-0.5 capitalize">
+                        <span
+                          className="size-2.5 rounded-full ring-1 ring-inset ring-black/10"
+                          style={{ backgroundColor: item.color }}
+                          aria-hidden
+                        />
+                        {colorName(item.color)}
+                      </span>
+                    )}
+                    {item.material && (
+                      <span className="rounded-md bg-surface-soft px-2 py-0.5">
+                        {item.material}
+                      </span>
+                    )}
+                    <span className="rounded-md bg-surface-soft px-2 py-0.5">
+                      Cant. {item.quantity}
+                    </span>
                   </div>
-                  <div className="text-right">
-                    <p className="font-semibold">
-                      {formatCUP(Number(item.price) * item.quantity)}
-                    </p>
-                  </div>
+                  <p className="text-xs text-neutral-500">
+                    <OrderLinePrice
+                      price={item.price}
+                      listPrice={item.listPrice}
+                      discount={item.discount}
+                    />{" "}
+                    c/u
+                  </p>
                 </div>
-              );
-            })}
-          </CardContent>
-        </Card>
+                <span className="shrink-0 text-sm font-extrabold tabular-nums text-ink">
+                  {formatCUP(Number(item.price) * item.quantity)}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <dl className="flex flex-col gap-2 border-t border-line bg-surface-hover px-5 py-4 text-sm">
+            <div className="flex justify-between gap-3">
+              <dt className="text-neutral-600">Subtotal</dt>
+              <dd className="tabular-nums text-ink">{formatCUP(subtotal)}</dd>
+            </div>
+            <div className="flex justify-between gap-3">
+              <dt className="text-neutral-600">Envío</dt>
+              <dd
+                className={cn(
+                  "text-right",
+                  shippingCost === null
+                    ? "font-bold text-accent-700"
+                    : "text-ink",
+                )}
+              >
+                {formatShipping(shippingCost, order.zone)}
+              </dd>
+            </div>
+            <div className="mt-1 flex items-baseline justify-between gap-3 border-t border-line pt-3">
+              <dt className="text-lg font-extrabold text-ink">Total</dt>
+              <dd className="text-lg font-extrabold tabular-nums text-ink">
+                {formatOrderTotal(amountNumber, shippingCost)}
+              </dd>
+            </div>
+          </dl>
+        </section>
 
-        {/* Información adicional */}
-        <div className="grid gap-5 md:grid-cols-3">
-          <Card>
-            <CardHeader className="font-semibold">
-              Información de Envío
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {customerData?.name && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Nombre</p>
-                  <p className="font-medium">{customerData.name}</p>
-                </div>
-              )}
-              {customerData?.phone && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Teléfono</p>
-                  <p className="text-sm">{customerData.phone}</p>
-                </div>
-              )}
-              {customerData?.zone && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Zona</p>
-                  <p className="text-sm font-medium">{customerData.zone}</p>
-                </div>
-              )}
-              {customerData?.address && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Dirección</p>
-                  <p className="text-sm">{customerData.address}</p>
-                </div>
-              )}
+        <div className="flex min-w-0 flex-[1_1_300px] flex-col gap-[18px]">
+          {details.length > 0 && (
+            <section className="flex flex-col gap-3 rounded-[18px] border border-line bg-white p-5">
+              <h2 className="text-[15px] font-extrabold text-ink">Entrega</h2>
+              <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
+                {details.map((d) => (
+                  <div key={d.label} className="contents">
+                    <dt className="font-semibold text-neutral-500">
+                      {d.label}
+                    </dt>
+                    <dd className="min-w-0 break-words font-semibold text-ink">
+                      {d.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
               {customerData?.notes && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Notas</p>
-                  <p className="text-sm italic">{customerData.notes}</p>
+                <div className="rounded-xl bg-cream px-3.5 py-3 text-sm">
+                  <p className="font-bold text-ink">Tu nota</p>
+                  <p className="mt-0.5 whitespace-pre-line text-neutral-600">
+                    {customerData.notes}
+                  </p>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </section>
+          )}
 
-          <Card>
-            <CardHeader className="font-semibold">Resumen de Pago</CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Subtotal:</span>
-                <span>{formatCUP(subtotal)}</span>
+          <section className="flex flex-col gap-2 rounded-[18px] border border-line bg-white p-5 text-sm">
+            <h2 className="mb-1 text-[15px] font-extrabold text-ink">Pago</h2>
+            {order.payment_method && (
+              <div className="flex justify-between gap-3">
+                <span className="text-neutral-600">Método</span>
+                <span className="font-semibold text-ink">
+                  {getPaymentMethodLabel(order.payment_method)}
+                </span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Envío:</span>
-                <span>{formatShipping(shippingCost, order.zone)}</span>
-              </div>
-              <div className="flex justify-between font-semibold pt-2 border-t">
-                <span>Total:</span>
-                <span>{formatOrderTotal(amountNumber, shippingCost)}</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="font-semibold">Estado de Pago</CardHeader>
-            <CardContent className="space-y-2">
-              <div className="pt-2">
-                <p className="text-sm text-muted-foreground">Estado del pago</p>
-                <Badge
-                  variant={paymentInfo.badgeVariant}
-                  className={cn("text-sm mt-1", paymentInfo.className)}
-                >
-                  {paymentInfo.label}
-                </Badge>
-              </div>
-              {order.payment_method && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  Método: {getPaymentMethodLabel(order.payment_method)}
-                </p>
-              )}
-            </CardContent>
-          </Card>
+            )}
+            <div className="flex justify-between gap-3">
+              <span className="text-neutral-600">Estado</span>
+              <span
+                className={cn(
+                  "font-bold",
+                  order.payment_status === "paid"
+                    ? "text-green-700"
+                    : paymentInfo.className
+                      ? "text-amber-700"
+                      : "text-neutral-700",
+                )}
+              >
+                {paymentInfo.label}
+              </span>
+            </div>
+            <p className="mt-2 text-xs text-neutral-500">
+              El pago se coordina por WhatsApp, fuera de la tienda.
+            </p>
+          </section>
         </div>
       </div>
     </Shell>

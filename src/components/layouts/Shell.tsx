@@ -20,9 +20,10 @@ export function Shell({
   return (
     <section
       className={cn(
-        "grid items-center gap-8 pb-8 pt-6 md:py-8",
-        layout === "default" && "container",
-        layout === "narrow" && "container max-w-5xl",
+        // Store page container (same width and gutters as the header)
+        "mx-auto flex w-full flex-col gap-6 px-4 pb-8 pt-4 md:gap-8 md:px-6 md:pt-8 xl:px-8",
+        layout === "default" && "max-w-store",
+        layout === "narrow" && "max-w-5xl",
 
         className,
       )}

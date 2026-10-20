@@ -92,7 +92,7 @@ const benefits = [
 export default function SpecialOrdersPage() {
   return (
     <main>
-      <Shell className="max-w-screen-2xl mx-auto">
+      <Shell>
         <Header
           heading="Servicio de Encargos"
           description="¿Encontraste algo que te gusta en Shein, Temu o Amazon pero no sabes cómo comprarlo? Nosotros te ayudamos. Envíanos el link del producto, te cotizamos y te lo llevamos hasta tu domicilio."

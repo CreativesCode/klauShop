@@ -1,3 +1,4 @@
+import Header from "@/components/layouts/Header";
 import { Shell } from "@/components/layouts/Shell";
 import {
   WishlistProducts,
@@ -12,11 +13,20 @@ type Props = {};
 
 function WishListPage({}: Props) {
   return (
-    <Shell className="max-w-screen-2xl mx-auto">
-      <section className="flex justify-between items-center py-8">
-        <h1 className="text-3xl">Tus favoritos</h1>
-        <Link href="/shop">Continuar comprando</Link>
-      </section>
+    <Shell>
+      <Header
+        as="h1"
+        heading="Tus favoritos"
+        className="pt-0"
+        action={
+          <Link
+            href="/shop"
+            className="text-sm font-bold text-primary-700 hover:text-primary-800"
+          >
+            Seguir comprando →
+          </Link>
+        }
+      />
       {/*
       <Suspense fallback={<CartSectionSkeleton />}>
         <CartSection />

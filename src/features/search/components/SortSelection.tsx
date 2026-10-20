@@ -28,7 +28,7 @@ function SortSelection({
 }: SelectionFilterProps) {
   return (
     <Select {...props}>
-      <SelectTrigger className="min-w-[90px] max-w-[180px] border-0 ring-0 focus:ring-0 focus-visible:ring-0">
+      <SelectTrigger className="h-10 min-w-[140px] max-w-[220px] rounded-full border-neutral-200 px-4 font-bold">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
 

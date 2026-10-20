@@ -225,7 +225,7 @@ async function CategoryPage({ params }: CategoryPageProps) {
   const allCollectionIds = [collection.id, ...childCollectionIds];
 
   return (
-    <Shell className="max-w-screen-2xl mx-auto">
+    <Shell>
       <CollectionBanner collectionBannerData={collection} />
       <Suspense
         fallback={

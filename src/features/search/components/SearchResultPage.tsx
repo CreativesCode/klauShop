@@ -145,7 +145,9 @@ const SearchResultPage = ({
   return (
     <div>
       {shouldShowError && (
-        <p>No se pudieron cargar los productos. Inténtalo de nuevo.</p>
+        <p className="rounded-xl bg-orange-50 px-3.5 py-2.5 text-[13px] font-bold text-orange-700">
+          No se pudieron cargar los productos. Inténtalo de nuevo.
+        </p>
       )}
 
       {isOffline && (
@@ -162,9 +164,11 @@ const SearchResultPage = ({
       {(products || inStockEdges.length > 0) && (
         <>
           {!fetching && inStockEdges.length === 0 && (
-            <p>
+            <p className="py-12 text-center text-[15px] text-neutral-500">
               {`No encontramos productos con el nombre `}
-              <span className="font-bold">{searchParams.get("search")}</span>
+              <span className="font-bold text-ink">
+                {searchParams.get("search")}
+              </span>
               {"."}
             </p>
           )}
@@ -181,6 +185,8 @@ const SearchResultPage = ({
           {isLastPage && pageInfo?.hasNextPage && (
             <div className="w-full flex justify-center items-center mt-3">
               <Button
+                variant="outline"
+                size="lg"
                 onClick={() => {
                   if (!pageInfo?.endCursor) return;
                   onLoadMore(pageInfo.endCursor);

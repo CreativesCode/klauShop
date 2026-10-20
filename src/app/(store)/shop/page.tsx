@@ -19,8 +19,13 @@ async function ProductsPage({}: ProductsPageProps) {
   // const collectionsData = await listCollectionsAction();
 
   return (
-    <Shell className="max-w-screen-2xl mx-auto">
-      <Header heading="Compra ahora" />
+    <Shell>
+      <Header
+        as="h1"
+        heading="Compra ahora"
+        description="Todo lo que tenemos en existencia, listo para pedir."
+        className="pt-0"
+      />
 
       {/* <Suspense
         fallback={

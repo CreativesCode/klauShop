@@ -20,6 +20,7 @@ import { SelectCollection } from "@/lib/supabase/schema";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { Icons } from "@/components/layouts/icons";
+import { cn } from "@/lib/utils";
 import PriceRange from "@/components/ui/PriceRange";
 import { useDebounce } from "@/features/cms/hooks/use-debounce";
 import CollectionsSelection from "@/features/search/components/CollectionsSelection";
@@ -149,14 +150,63 @@ function FilterSelections({ collectionsSection, shopLayout = true }: Props) {
     }
   };
 
+  const chip =
+    "inline-flex h-10 items-center gap-1.5 rounded-full border border-neutral-200 bg-white px-4 text-sm font-bold text-ink transition-colors hover:border-ink data-[state=open]:border-ink";
+
+  const priceRange = (
+    <PriceRange
+      label={"Rango de precios (CUP)"}
+      defaultValue={query.priceRange}
+      value={query.priceRange}
+      onMinChange={(data) => {
+        const currentRange = query.priceRange ?? [0, 10000];
+        setQuery({
+          ...query,
+          priceRange: [data, currentRange[1]],
+        });
+      }}
+      onMaxChange={(data) => {
+        const currentRange = query.priceRange ?? [0, 10000];
+        setQuery({
+          ...query,
+          priceRange: [currentRange[0], data],
+        });
+      }}
+      onValueChange={(priceRange) => setQuery({ ...query, priceRange })}
+      onReset={() => {
+        setQuery({ ...query, priceRange: undefined });
+        startTransition(() => {
+          const qs = removeQueryString("price_range");
+          router.push(qs ? `${pathname}?${qs}` : pathname);
+        });
+      }}
+    />
+  );
+
+  const sort = (
+    <SortSelection
+      id="sort"
+      disabled={isLoading}
+      onValueChange={(sort) => {
+        setQuery({ ...query, sort: SortEnum[sort] });
+        router.push(`${pathname}?${createQueryString("sort", sort)}`);
+      }}
+      defaultValue={query.sort}
+      items={Object.entries(SortEnum).map(([key, value]) => ({
+        value: key,
+        label: value,
+      }))}
+      placeholder="Ordenar"
+    />
+  );
+
   return (
     <>
-      <section className="justify-between items-center hidden md:flex">
-        <div className="flex gap-x-5 items-center">
-          <span>Filtros:</span>
+      <section className="hidden items-center justify-between gap-4 md:flex">
+        <div className="flex flex-wrap items-center gap-2">
           {shopLayout && (
             <CollectionsSelection
-              className="flex items-center"
+              className={chip}
               value={query.collections}
               onCheckedChange={collectionChangeHandler}
               selections={collectionsSection}
@@ -164,141 +214,65 @@ function FilterSelections({ collectionsSection, shopLayout = true }: Props) {
           )}
 
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center">
-              Rango de precios
-              <Icons.chevronDown width={25} height={25} strokeWidth={2} />
+            <DropdownMenuTrigger className={chip}>
+              Precio
+              <Icons.chevronDown className="size-4" aria-hidden />
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent className="p-5 max-w-xl">
+            <DropdownMenuContent className="max-w-xl rounded-[18px] p-5">
               <DropdownMenuLabel>Rango de precios (CUP)</DropdownMenuLabel>
               <DropdownMenuSeparator />
-
-              <PriceRange
-                label={"Rango de precios (CUP)"}
-                defaultValue={query.priceRange}
-                value={query.priceRange}
-                onMinChange={(data) => {
-                  const currentRange = query.priceRange ?? [0, 10000];
-                  setQuery({
-                    ...query,
-                    priceRange: [data, currentRange[1]],
-                  });
-                }}
-                onMaxChange={(data) => {
-                  const currentRange = query.priceRange ?? [0, 10000];
-                  setQuery({
-                    ...query,
-                    priceRange: [currentRange[0], data],
-                  });
-                }}
-                onValueChange={(priceRange) =>
-                  setQuery({ ...query, priceRange })
-                }
-                onReset={() => {
-                  setQuery({ ...query, priceRange: undefined });
-                  startTransition(() => {
-                    const qs = removeQueryString("price_range");
-                    router.push(qs ? `${pathname}?${qs}` : pathname);
-                  });
-                }}
-              />
+              {priceRange}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
 
-        <div className="flex gap-x-5 items-center">
-          <label htmlFor="sort" className="text-nowrap">
-            Ordenar por:
+        <div className="flex items-center gap-2">
+          <label
+            htmlFor="sort"
+            className="text-nowrap text-sm font-semibold text-neutral-500"
+          >
+            Ordenar por
           </label>
-
-          <SortSelection
-            id="sort"
-            disabled={isLoading}
-            onValueChange={(sort) => {
-              setQuery({ ...query, sort: SortEnum[sort] });
-              router.push(`${pathname}?${createQueryString("sort", sort)}`);
-            }}
-            items={Object.entries(SortEnum).map(([key, value]) => ({
-              value: key,
-              label: value,
-            }))}
-            placeholder="Ordenar"
-          />
+          {sort}
         </div>
       </section>
 
       <Sheet>
-        <SheetTrigger className="block md:hidden">Filtros</SheetTrigger>
-        <SheetContent className="w-full">
-          <SheetHeader>
+        <SheetTrigger className={cn(chip, "w-fit md:hidden")}>
+          <Icons.layoutGrid className="size-4" aria-hidden />
+          Filtros y orden
+        </SheetTrigger>
+        <SheetContent
+          side="bottom"
+          className="max-h-[85dvh] overflow-y-auto rounded-t-[24px] px-5 pb-[calc(24px+env(safe-area-inset-bottom))] pt-6"
+        >
+          <SheetHeader className="text-left">
             <SheetTitle>Filtros</SheetTitle>
-            <SheetDescription className="flex flex-col items-start">
-              {shopLayout && (
-                <div className="grid">
-                  <label className="text-primary font-semibold text-left">
-                    Colecciones
-                  </label>
-                  <CollectionsSelection
-                    className="flex items-center"
-                    value={query.collections}
-                    onCheckedChange={collectionChangeHandler}
-                    selections={collectionsSection}
-                  />
+            <SheetDescription asChild>
+              <div className="flex flex-col items-stretch gap-5 pt-2 text-ink">
+                {shopLayout && (
+                  <div className="flex flex-col gap-2">
+                    <span className="text-sm font-bold">Categorías</span>
+                    <CollectionsSelection
+                      className={cn(chip, "w-fit")}
+                      value={query.collections}
+                      onCheckedChange={collectionChangeHandler}
+                      selections={collectionsSection}
+                    />
+                  </div>
+                )}
+                <div className="flex flex-col gap-2">
+                  <span className="text-sm font-bold">Rango de precios</span>
+                  {priceRange}
                 </div>
-              )}
-              <div className="grid">
-                <label className="text-primary font-semibold text-left">
-                  Rango de precios
-                </label>
-
-                <PriceRange
-                  label={"Rango de precios"}
-                  defaultValue={query.priceRange}
-                  value={query.priceRange}
-                  onMinChange={(data) => {
-                    const currentRange = query.priceRange ?? [0, 10000];
-                    setQuery({
-                      ...query,
-                      priceRange: [data, currentRange[1]],
-                    });
-                  }}
-                  onMaxChange={(data) => {
-                    const currentRange = query.priceRange ?? [0, 10000];
-                    setQuery({
-                      ...query,
-                      priceRange: [currentRange[0], data],
-                    });
-                  }}
-                  onValueChange={(priceRange) =>
-                    setQuery({ ...query, priceRange })
-                  }
-                  onReset={() => {
-                    setQuery({ ...query, priceRange: undefined });
-                    router.push(
-                      pathname + "?" + removeQueryString("price_range"),
-                    );
-                  }}
-                />
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="sort" className="text-sm font-bold">
+                    Ordenar por
+                  </label>
+                  {sort}
+                </div>
               </div>
-
-              <label htmlFor="sort" className="text-nowrap">
-                Ordenar por:
-              </label>
-
-              <SortSelection
-                id="sort"
-                disabled={isLoading}
-                onValueChange={(sort) => {
-                  setQuery({ ...query, sort: SortEnum[sort] });
-                  router.push(`${pathname}?${createQueryString("sort", sort)}`);
-                }}
-                defaultValue={query.sort}
-                items={Object.entries(SortEnum).map(([key, value]) => ({
-                  value: key,
-                  label: value,
-                }))}
-                placeholder="Ordenar"
-              />
             </SheetDescription>
           </SheetHeader>
         </SheetContent>

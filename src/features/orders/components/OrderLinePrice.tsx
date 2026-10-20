@@ -24,15 +24,13 @@ export default function OrderLinePrice({
     <span
       className={cn("inline-flex flex-wrap items-center gap-1.5", className)}
     >
-      <span className={cn(hasDiscount && "text-red-600")}>
-        {formatCUP(price)}
-      </span>
+      <span className="tabular-nums">{formatCUP(price)}</span>
       {hasDiscount && (
         <>
-          <span className="text-xs text-muted-foreground line-through">
+          <span className="text-xs tabular-nums text-neutral-500 line-through">
             {formatCUP(listPrice)}
           </span>
-          <span className="text-xs bg-red-500 text-white px-1.5 py-0.5 rounded">
+          <span className="rounded-full bg-accent px-1.5 py-0.5 text-[11px] font-extrabold text-ink">
             -{discountValue}%
           </span>
         </>

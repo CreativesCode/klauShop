@@ -1,8 +1,10 @@
 "use client";
+import { buttonVariants } from "@/components/ui/button";
 import { ProductCard, ProductCardFragment } from "@/features/products";
 import { DocumentType, gql } from "@/gql";
 import { useAuth } from "@/providers/AuthProvider";
 import { useQuery } from "@urql/next";
+import Link from "next/link";
 import React, { useEffect } from "react";
 import { ProductCardSkeleton } from "./ProductCardSkeleton";
 
@@ -45,10 +47,16 @@ function WishlistProducts({}: WishlistProductsProps) {
 
   if (!user) {
     return (
-      <div className="text-center py-8">
-        <p className="text-muted-foreground">
-          Please sign in to view your wishlist.
+      <div className="flex flex-col items-center gap-4 rounded-[18px] border border-line bg-white px-6 py-12 text-center">
+        <p className="text-[15px] text-neutral-500">
+          Inicia sesión para guardar y ver tus favoritos.
         </p>
+        <Link
+          href="/sign-in?redirect=/wish-list"
+          className={buttonVariants({ size: "lg" })}
+        >
+          Entrar
+        </Link>
       </div>
     );
   }
@@ -65,8 +73,10 @@ function WishlistProducts({}: WishlistProductsProps) {
 
   if (error) {
     return (
-      <div className="text-center py-8">
-        <p className="text-red-500">Error loading wishlist: {error.message}</p>
+      <div className="py-12 text-center">
+        <p className="text-[15px] font-semibold text-red-700">
+          No pudimos cargar tus favoritos. Revisa tu conexión.
+        </p>
       </div>
     );
   }
@@ -81,10 +91,14 @@ function WishlistProducts({}: WishlistProductsProps) {
 
   if (wishlistProducts.length === 0) {
     return (
-      <div className="text-center py-8">
-        <p className="text-muted-foreground">
-          Your wishlist is empty. Start adding products you love!
+      <div className="flex flex-col items-center gap-4 rounded-[18px] border border-line bg-white px-6 py-12 text-center">
+        <p className="text-[15px] text-neutral-500">
+          Aún no tienes favoritos. Toca el corazón de un producto para guardarlo
+          aquí.
         </p>
+        <Link href="/shop" className={buttonVariants({ size: "lg" })}>
+          Ver novedades
+        </Link>
       </div>
     );
   }

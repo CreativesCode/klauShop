@@ -31,12 +31,12 @@ export const BuyAgainCardFragment = gql(/* GraphQL */ `
 function BuyAgainCard({ products }: BuyAgainCardProps) {
   return (
     <Card>
-      <CardHeader className="px-6 py-3 flex flex-row justify-between items-center bg-zinc-100 rounded-t-md">
-        <h2 className="text-lg font-semibold text-primary">
+      <CardHeader className="pb-3">
+        <h2 className="text-[15px] font-extrabold text-ink">
           Te puede interesar
         </h2>
       </CardHeader>
-      <CardContent className="flex flex-col gap-y-5 py-5">
+      <CardContent className="flex flex-col gap-y-3.5">
         {products.map(({ node }) => {
           const discountValue = node.discount
             ? parseFloat(node.discount.toString())
@@ -48,36 +48,32 @@ function BuyAgainCard({ products }: BuyAgainCardProps) {
             : priceValue;
 
           return (
-            <div key={node.id} className="flex gap-5">
-              <div className="relative w-[80px] h-[80px]">
+            <div key={node.id} className="flex gap-3">
+              <span className="relative h-[60px] w-12 shrink-0 overflow-hidden rounded-[10px] bg-surface-tint">
                 <Image
-                  width={120}
-                  height={120}
+                  fill
+                  sizes="48px"
                   src={keytoUrl(node.featuredImage.key)}
-                  alt={node.featuredImage.alt}
-                  className="object-cover w-[80px] h-[80px] rounded-md"
+                  alt={node.featuredImage.alt || node.name}
+                  className="object-cover"
                 />
-              </div>
+              </span>
 
-              <div className="flex flex-col gap-2">
+              <div className="flex min-w-0 flex-col gap-1">
                 <Link
                   href={"/shop/" + node.slug}
-                  className="text-primary-800 line-clamp-2"
+                  className="line-clamp-2 text-sm font-semibold text-ink hover:text-primary"
                 >
                   {node.name}
                 </Link>
-                <div className="flex items-center gap-2">
-                  {hasDiscount ? (
-                    <>
-                      <p className="font-bold text-red-600">
-                        {formatCUP(discountedPrice)}
-                      </p>
-                      <p className="text-sm text-gray-500 line-through">
-                        {formatCUP(priceValue)}
-                      </p>
-                    </>
-                  ) : (
-                    <p className="font-bold">{formatCUP(priceValue)}</p>
+                <div className="flex items-baseline gap-2 tabular-nums">
+                  <p className="text-sm font-extrabold text-ink">
+                    {formatCUP(discountedPrice)}
+                  </p>
+                  {hasDiscount && (
+                    <p className="text-xs text-neutral-500 line-through">
+                      {formatCUP(priceValue)}
+                    </p>
                   )}
                 </div>
               </div>

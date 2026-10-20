@@ -80,7 +80,7 @@ const whyChooseUs = [
 export default function AboutUsPage() {
   return (
     <main>
-      <Shell className="max-w-screen-2xl mx-auto">
+      <Shell>
         <Header
           heading="Sobre Nosotros"
           description={`Conoce más sobre ${siteConfig.name}, nuestra historia, misión y valores. Estamos aquí para hacer que la moda sea accesible para todos.`}

@@ -82,19 +82,21 @@ async function OrderPage({ searchParams }: OrderPageProps) {
   if (!data) return notFound();
 
   return (
-    <Shell layout="narrow" className="max-w-screen-2xl mx-auto">
+    <Shell>
       <RefreshOnFocus />
-      <h1 className="pb-8 text-3xl font-semibold border-b">Órdenes</h1>
+      <h1 className="text-[clamp(24px,2.6vw,34px)] font-extrabold tracking-[-0.02em] text-ink">
+        Mis órdenes
+      </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
-        <section className="col-span-1 md:col-span-9">
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <section className="min-w-0">
           <OrdersList
             orders={data.ordersCollection.edges}
             pageInfo={data.ordersCollection.pageInfo}
           />
         </section>
 
-        <section className="col-span-1 md:col-span-3">
+        <section className="min-w-0">
           <BuyAgainCard products={data.productsCollection.edges} />
         </section>
       </div>

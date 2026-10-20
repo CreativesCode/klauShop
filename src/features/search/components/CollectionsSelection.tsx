@@ -24,11 +24,11 @@ function CollectionsSelection({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger {...props}>
-        Collections
-        <Icons.chevronDown width={25} height={25} strokeWidth={2} />
+        Categorías
+        <Icons.chevronDown className="size-4" aria-hidden />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>Collections</DropdownMenuLabel>
+        <DropdownMenuLabel>Categorías</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {selections.map((collection) => (
           <DropdownMenuCheckboxItem

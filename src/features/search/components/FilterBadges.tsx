@@ -24,30 +24,36 @@ function FilterBadges({
   }
 
   return (
-    <section className="gap-x-10 md:flex hidden">
+    <section className="flex flex-wrap gap-2">
       {query.search && (
-        <Badge className="px-3 py-2 gap-x-3">
-          {`Search: ${query.search}`}
+        <Badge className="h-9 gap-x-2 bg-ink px-3.5 text-[13px] font-bold text-white">
+          {`Búsqueda: ${query.search}`}
           <button
             onClick={() =>
               router.push(pathname + "?" + onDeleteHandler("search"))
             }
-            className={cn("rounded-full")}
+            aria-label="Quitar filtro"
+            className={cn(
+              "-mr-1 flex size-6 items-center justify-center rounded-full hover:bg-white/15",
+            )}
           >
-            <Icons.close width={15} height={15} />
+            <Icons.close className="size-3.5" aria-hidden />
           </button>
         </Badge>
       )}
       {query.priceRange && (
-        <Badge className="px-3 py-2 gap-x-3">
-          {`Price Range: ${query.priceRange[0]} - ${query.priceRange[1]} CUP`}
+        <Badge className="h-9 gap-x-2 bg-ink px-3.5 text-[13px] font-bold text-white">
+          {`Precio: ${query.priceRange[0]} – ${query.priceRange[1]} CUP`}
           <button
             onClick={() =>
               router.push(pathname + "?" + onDeleteHandler("price_range"))
             }
-            className={cn("rounded-full")}
+            aria-label="Quitar filtro"
+            className={cn(
+              "-mr-1 flex size-6 items-center justify-center rounded-full hover:bg-white/15",
+            )}
           >
-            <Icons.close width={15} height={15} />
+            <Icons.close className="size-3.5" aria-hidden />
           </button>
         </Badge>
       )}
@@ -55,7 +61,10 @@ function FilterBadges({
       {collections &&
         collections.map((collection, index) =>
           query.collections.includes(collection.id) ? (
-            <Badge key={index} className="px-3 py-2 gap-x-3">
+            <Badge
+              key={index}
+              className="h-9 gap-x-2 bg-ink px-3.5 text-[13px] font-bold text-white"
+            >
               {`${collection.label}`}
               <button
                 onClick={() => {
@@ -77,9 +86,12 @@ function FilterBadges({
                       ),
                   );
                 }}
-                className={cn("rounded-full")}
+                aria-label="Quitar filtro"
+                className={cn(
+                  "-mr-1 flex size-6 items-center justify-center rounded-full hover:bg-white/15",
+                )}
               >
-                <Icons.close width={15} height={15} />
+                <Icons.close className="size-3.5" aria-hidden />
               </button>
             </Badge>
           ) : null,

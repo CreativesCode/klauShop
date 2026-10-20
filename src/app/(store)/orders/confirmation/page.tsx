@@ -21,7 +21,7 @@ export default async function OrderConfirmationPage({
 
   if (!orderId || !orderNumber) {
     return (
-      <Shell className="max-w-screen-2xl mx-auto">
+      <Shell>
         <Card>
           <CardContent className="pt-6">
             <p className="text-center text-muted-foreground">
