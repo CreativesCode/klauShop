@@ -21,7 +21,7 @@ export function MultiSelect({
   selected,
   setSelected,
   onChange,
-  placeholder = "Select options",
+  placeholder = "Selecciona opciones",
   options,
 }: MultiSelectProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -90,7 +90,7 @@ export function MultiSelect({
               >
                 {option.label}
                 <Button
-                  aria-label="Remove option"
+                  aria-label="Quitar opción"
                   size="sm"
                   className="ml-2 h-auto bg-transparent p-0 text-primary hover:bg-transparent hover:text-destructive"
                   onKeyDown={(e) => {
