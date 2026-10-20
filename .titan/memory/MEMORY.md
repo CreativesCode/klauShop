@@ -12,7 +12,7 @@
 - [negocio-klaushop.md](project/negocio-klaushop.md) — Que vende, mercado (Cuba/CUP), checkout WhatsApp, origen fork de Hiyori
 - [decision-no-golden-path.md](project/decision-no-golden-path.md) — 2026-09-24: TF solo como capa de agente; no migrar el stack
 - [riesgos-detectados-2026-09-24.md](project/riesgos-detectados-2026-09-24.md) — Analisis inicial; SUPERADO en gran parte por qa-piloto-cuba (ver esa entrada)
-- [2026-10-02-dual-agent-tooling.md](project/2026-10-02-dual-agent-tooling.md) — Claude Code + Codex en el repo (copiado de lensspace), memoria en .titan/, skills tf-, MCP Supabase OAuth
+- [2026-10-02-dual-agent-tooling.md](project/2026-10-02-dual-agent-tooling.md) — Claude Code + Codex en el repo (copiado de lensspace), memoria en .titan/, skills tf-, MCP Supabase (ya no OAuth: ver supabase-mcp-token.md)
 - [qa-piloto-cuba-2026-10-02.md](project/qa-piloto-cuba-2026-10-02.md) — QA pre-piloto: Fases 0-5 hechas y en main (0018-0025 aplicadas), Stripe eliminado, reembolsos; pendientes menores listados; decisiones del dueño, reglas nuevas, pendientes y lecciones
 
 ## feedback/ — Correcciones y preferencias
@@ -28,3 +28,4 @@
 - [auth-y-datos.md](reference/auth-y-datos.md) — Admin via app_metadata.isAdmin, requireAdmin en actions, middleware de sesion, service role con Bearer, RLS 0018
 - [subida-imagenes.md](reference/subida-imagenes.md) — Limite 4.5MB de Vercel, recorte/compresion en cliente, estados por archivo, /api/medias solo admin
 - [modales-slots-paralelos.md](reference/modales-slots-paralelos.md) — Cerrar modales @slot con router.back(); push+refresh re-renderiza el slot viejo -> 404
+- [supabase-mcp-token.md](reference/supabase-mcp-token.md) — MCP Supabase via scripts/supabase-mcp.mjs + SUPABASE_ACCESS_TOKEN en .env.local (cuenta robert)

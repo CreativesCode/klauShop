@@ -1,6 +1,9 @@
 # Acceso a la BD cuando el MCP de Supabase no conecta
 
-El MCP de Supabase da "Unauthorized" (falta SUPABASE_ACCESS_TOKEN en .mcp.json). Alternativa que funciona
+> 2026-10-20: el MCP ya usa `scripts/supabase-mcp.mjs` + `SUPABASE_ACCESS_TOKEN` en `.env.local` (ver `reference/supabase-mcp-token.md`).
+> Esto queda como plan B si el MCP no conecta.
+
+Alternativa que funciona
 (usada 2026-09-24 para aplicar 0015/0016 y resetear una orden):
 
 ```bash

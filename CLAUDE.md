@@ -80,8 +80,9 @@ supabase-admin, codebase-analyst, vercel-deployer, gestor-documentacion, validac
 ## MCPs
 
 `.mcp.json` (versionado, sin secretos) define `supabase`, `next-devtools`, `playwright` y `n8n-mcp`.
-`supabase` es el servidor remoto `https://mcp.supabase.com/mcp` con login OAuth en el navegador
-(`/mcp` → supabase → Authenticate); no usa tokens. `n8n-mcp` necesita `N8N_API_URL`/`N8N_API_KEY`
+`supabase` arranca con `node scripts/supabase-mcp.mjs`, que lee `SUPABASE_ACCESS_TOKEN` de
+`.env.local` (git-ignored; cuenta Supabase propia de este proyecto) y limita el MCP al proyecto
+`bhwyagfoyylgrdgyngrm`. `n8n-mcp` necesita `N8N_API_URL`/`N8N_API_KEY`
 en el entorno. Si un MCP no conecta, trabajar con CLI/codigo y avisar
 (ver `.titan/memory/reference/acceso-bd-sin-mcp.md`). Setup completo: `docs/AGENT_SETUP.md`.
 <!-- titan-factory-claude:end -->

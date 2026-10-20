@@ -74,17 +74,18 @@ settings stay on each machine.
 
 1. Clone the repository and open its root in Claude Code. `CLAUDE.md`, the skills,
    subagents and `.claude/settings.json` load automatically.
-2. Approve the project MCP servers from `.mcp.json` when asked. The `supabase` server is
-   Supabase's hosted MCP (`https://mcp.supabase.com/mcp`), scoped to the Klau's Shop
-   project. It authenticates with your Supabase account through OAuth, so no personal
-   access token is needed:
+2. Approve the project MCP servers from `.mcp.json` when asked. The `supabase` server runs
+   `node scripts/supabase-mcp.mjs`, which starts `@supabase/mcp-server-supabase` scoped to
+   the Klau's Shop project (`bhwyagfoyylgrdgyngrm`) with the account token from your
+   `.env.local`:
 
-   - Run `/mcp`, select `supabase` and choose **Authenticate**.
-   - Log in to Supabase in the browser and authorize the organization that owns the project.
-   - Back in Claude Code, `/mcp` should show `supabase` as connected.
+   ```
+   SUPABASE_ACCESS_TOKEN=sbp_...   # Supabase Dashboard -> Account -> Access Tokens
+   ```
 
-   The session is stored by Claude Code on your machine and never in the repository.
-   `SUPABASE_PROJECT_REF` is optional and only needed to point at another project.
+   `.env.local` is git-ignored, so each person uses their own token. Without that line the
+   server falls back to a global `SUPABASE_ACCESS_TOKEN`, which may belong to another
+   account. Reload VS Code / restart Claude Code after changing it.
 3. `n8n-mcp` (optional) reads `N8N_API_URL` and `N8N_API_KEY` from your environment.
    Without them it starts without workflow-management tools.
 4. The local servers in `.mcp.json` launch through `cmd /c npx` because native Windows
@@ -97,7 +98,7 @@ settings stay on each machine.
    claude mcp add --scope local n8n-mcp -e MCP_MODE=stdio -- npx n8n-mcp
    ```
 
-   The hosted `supabase` server needs no override.
+   The `supabase` launcher is plain Node and needs no override.
 5. Run `/tf-primer` to load project context and the shared memory.
 
 If the Supabase MCP is unavailable, see `.titan/memory/reference/acceso-bd-sin-mcp.md`.
