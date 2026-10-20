@@ -86,10 +86,10 @@ function CollectionTreeItem({
         href={`/collections/${collection.slug}`}
         onClick={onLinkClick}
         className={cn(
-          "flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm md:text-base transition-colors",
+          "flex min-h-11 items-center gap-2 rounded-xl px-4 py-2.5 text-[15px] font-semibold transition-colors",
           isActive
-            ? "bg-primary-100 text-primary font-semibold"
-            : "hover:bg-primary-50 text-foreground",
+            ? "bg-primary-50 text-primary-700"
+            : "text-ink hover:bg-primary-50",
         )}
         style={{ paddingLeft: `${1 + level * 0.75}rem` }}
       >
@@ -103,8 +103,8 @@ function CollectionTreeItem({
     <AccordionItem value={collection.id} className="border-none">
       <AccordionTrigger
         className={cn(
-          "px-4 py-2.5 rounded-lg text-sm md:text-base font-medium hover:no-underline [&[data-state=open]]:bg-primary-50 [&[data-state=open]]:text-primary",
-          isActive && "bg-primary-100 text-primary",
+          "min-h-11 rounded-xl px-4 py-2.5 text-[15px] font-semibold text-ink hover:no-underline [&[data-state=open]]:bg-primary-50 [&[data-state=open]]:text-primary-700",
+          isActive && "bg-primary-50 text-primary-700",
         )}
         style={{ paddingLeft: `${1 + level * 0.75}rem` }}
       >
@@ -120,17 +120,15 @@ function CollectionTreeItem({
             href={`/collections/${collection.slug}`}
             onClick={onLinkClick}
             className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors",
+              "flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors",
               isActive
-                ? "bg-primary-100 text-primary font-semibold"
-                : "hover:bg-primary-50 text-foreground",
+                ? "bg-primary-50 text-primary-700"
+                : "text-neutral-700 hover:bg-primary-50",
             )}
             style={{ paddingLeft: `${1.5 + level * 0.75}rem` }}
           >
             <Icons.tag className="w-3.5 h-3.5 opacity-60" />
-            <span className="text-xs md:text-sm">
-              Ver todo en {collection.label}
-            </span>
+            <span>Ver todo en {collection.label}</span>
           </Link>
           {/* Render children */}
           {collection.children!.map((child) => (

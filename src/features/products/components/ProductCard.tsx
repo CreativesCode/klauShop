@@ -177,9 +177,7 @@ export function ProductCard({
                 {BADGE_LABEL[badge] ?? "Destacado"}
               </Badge>
             )}
-            {hasDiscount && (
-              <Badge variant="discount">-{discountValue}%</Badge>
-            )}
+            {hasDiscount && <Badge variant="discount">-{discountValue}%</Badge>}
           </div>
         )}
 

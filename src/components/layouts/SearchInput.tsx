@@ -1,17 +1,9 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Button } from "../ui/button";
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "../ui/input";
@@ -21,10 +13,15 @@ const filterSelectionSchema = z.object({
   search: z.string(),
 });
 
-function SearchInput() {
+type Props = {
+  /** desktop: pill in the header row; mobile: full-width second header row */
+  variant?: "desktop" | "mobile";
+  className?: string;
+};
+
+function SearchInput({ variant = "desktop", className }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isFocused, setIsFocused] = useState(false);
 
   const form = useForm<z.infer<typeof filterSelectionSchema>>({
     resolver: zodResolver(filterSelectionSchema),
@@ -41,44 +38,40 @@ function SearchInput() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="relative p-4 rounded-full flex-1"
+        role="search"
+        className={cn(
+          "flex h-11 w-full items-center gap-2.5 border border-transparent bg-surface-muted px-4 transition-colors focus-within:border-primary-300 focus-within:bg-white",
+          variant === "desktop" ? "max-w-[560px] rounded-full" : "rounded-xl",
+          className,
+        )}
       >
         <Icons.search
-          className={cn(
-            isFocused ? "scale-0" : "scale-100",
-            "absolute left-8 top-6 h-6 w-4 text-muted-foreground transition-all duration-500",
-          )}
+          className="size-[18px] shrink-0 text-neutral-500"
+          aria-hidden
         />
-
         <FormField
           control={form.control}
           name="search"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex-1 space-y-0">
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Encuentra tus artículos favoritos y llevalos a tu casa"
-                  className={cn(
-                    isFocused ? "pl-6" : "pl-10",
-                    "rounded-full transition-all duration-500",
-                  )}
-                  onFocus={() => setIsFocused(true)}
-                  onBlur={() => setIsFocused(false)}
+                  type="search"
+                  enterKeyHint="search"
+                  aria-label="Buscar productos"
+                  variant="ghost"
+                  placeholder={
+                    variant === "desktop"
+                      ? "Buscar vestidos, juguetes, accesorios…"
+                      : "Buscar en Klau's Shop"
+                  }
+                  className="h-10 rounded-none px-0 placeholder:text-neutral-500 [&::-webkit-search-cancel-button]:hidden"
                 />
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
-        <Button className="absolute right-4 top-4" type="submit" variant="link">
-          <Icons.search
-            className={cn(
-              "h-4 w-4 text-muted-foreground transition-all duration-200",
-              isFocused ? "opacity-1 scale-1" : "opacity-0 scale-0",
-            )}
-          />
-        </Button>
       </form>
     </Form>
   );

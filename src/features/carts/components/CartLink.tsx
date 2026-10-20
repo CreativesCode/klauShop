@@ -1,24 +1,53 @@
 import { Icons } from "@/components/layouts/icons";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-type CartLinkProps = { productCount: number };
+type CartLinkProps = {
+  productCount: number;
+  /** pill: dark "Carrito" button (desktop header); icon: 44px icon (mobile) */
+  variant?: "pill" | "icon";
+};
 
-function CartLink({ productCount }: CartLinkProps) {
+function CartLink({ productCount, variant = "pill" }: CartLinkProps) {
+  const label =
+    productCount > 0 ? `Carrito, ${productCount} productos` : "Carrito";
+  const count = (
+    <span
+      className={cn(
+        "flex items-center justify-center rounded-full bg-accent font-extrabold tabular-nums text-ink transition-transform duration-200",
+        variant === "pill"
+          ? "h-[22px] min-w-[22px] px-1.5 text-xs"
+          : "absolute right-0.5 top-0.5 h-[18px] min-w-[18px] px-1 text-[11px]",
+        productCount === 0 && "scale-0",
+      )}
+      aria-hidden
+    >
+      {productCount}
+    </span>
+  );
+
+  if (variant === "icon") {
+    return (
+      <Link
+        href="/cart"
+        aria-label={label}
+        className="relative flex size-11 items-center justify-center rounded-full text-ink hover:bg-surface-muted"
+      >
+        <Icons.store className="size-[22px]" aria-hidden />
+        {count}
+      </Link>
+    );
+  }
+
   return (
-    <Link href={"/cart"}>
-      <div className="relative w-5 h-5">
-        <Icons.cart className="w-5 h-5 text-primary" aria-label="cart" />
-        <Badge
-          className={cn(
-            "absolute block rounded-full w-4 h-4 p-0 -top-2 -right-2 text-[10px] text-center align-middle transition-all duration-200",
-            productCount === 0 ? "scale-0" : "scale-100",
-          )}
-        >
-          {productCount}
-        </Badge>
-      </div>
+    <Link
+      href="/cart"
+      aria-label={label}
+      className="flex h-11 items-center gap-2 rounded-full bg-ink pl-4 pr-2.5 text-sm font-bold text-white transition-colors hover:bg-primary-950"
+    >
+      <Icons.store className="size-[18px]" aria-hidden />
+      Carrito
+      {count}
     </Link>
   );
 }

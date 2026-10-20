@@ -3,19 +3,24 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 
-type Props = { className?: string; width?: number; height?: number };
+// imagotipo_horizontal_tight.svg is 376×176 (viewBox cropped to the artwork)
+const RATIO = 376 / 176;
 
-function Branding({ className, width = 100, height = 100 }: Props) {
+type Props = { className?: string; height?: number };
+
+function Branding({ className, height = 40 }: Props) {
   return (
     <Link
       href="/"
-      className={cn("text-2xl font-medium align-middle", className)}
+      aria-label={`${siteConfig.name} — inicio`}
+      className={cn("inline-flex shrink-0 items-center", className)}
     >
       <Image
-        src="/imagotipo_horizontal.svg"
+        src="/imagotipo_horizontal_tight.svg"
         alt={siteConfig.name}
-        width={width}
+        width={Math.round(height * RATIO)}
         height={height}
+        priority
       />
     </Link>
   );

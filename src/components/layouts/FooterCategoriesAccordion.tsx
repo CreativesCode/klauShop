@@ -74,16 +74,16 @@ export default function FooterCategoriesAccordion({
         <AccordionItem
           key={category.id}
           value={category.id}
-          className="border-b border-primary-200"
+          className="border-b border-line"
         >
-          <AccordionTrigger className="text-sm font-semibold text-primary py-3 hover:no-underline">
+          <AccordionTrigger className="min-h-11 py-3 text-[15px] font-semibold text-ink hover:no-underline">
             {category.label}
           </AccordionTrigger>
           <AccordionContent>
             <div className="flex flex-col gap-y-2 pl-2">
               <Link
                 href={`/collections/${category.slug}`}
-                className="text-sm text-primary-800 hover:text-primary transition-colors"
+                className="flex min-h-9 items-center text-sm text-neutral-600 transition-colors hover:text-primary"
               >
                 Ver todo en {category.label}
               </Link>
@@ -93,7 +93,7 @@ export default function FooterCategoriesAccordion({
                     <Link
                       key={child.id}
                       href={`/collections/${child.slug}`}
-                      className="text-sm text-primary-700 hover:text-primary transition-colors pl-2"
+                      className="flex min-h-9 items-center pl-2 text-sm text-neutral-600 transition-colors hover:text-primary"
                     >
                       {child.label}
                     </Link>

@@ -41,19 +41,20 @@ function UserNav() {
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="relative h-auto px-2 py-1.5 rounded-full focus:ring-0 border-0 flex items-center gap-2"
+              aria-label="Mi cuenta"
+              className="relative flex h-11 items-center gap-2 rounded-full px-1.5 sm:pr-3"
             >
-              <Avatar className="h-8 w-8 focus:ring-0 border-0">
+              <Avatar className="size-8 border-0">
                 {/* TODO: UPDATE AVATOR IMAGE & NAME */}
                 <AvatarImage
                   src={avatarUrl || undefined}
                   alt={getNameInitials(displayName)}
                 />
-                <AvatarFallback className="text-accent border border-primary bg-primary-200">
+                <AvatarFallback className="bg-primary-100 text-xs font-extrabold text-primary-700">
                   {getNameInitials(displayName)}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-sm font-medium hidden sm:inline-block text-primary">
+              <span className="hidden max-w-[120px] truncate text-sm font-bold text-ink sm:inline-block">
                 {displayName}
               </span>
             </Button>
@@ -76,7 +77,7 @@ function UserNav() {
                 <DropdownMenuItem>Órdenes</DropdownMenuItem>
               </Link>
               <Link href="/wish-list">
-                <DropdownMenuItem>Lista de Deseos</DropdownMenuItem>
+                <DropdownMenuItem>Favoritos</DropdownMenuItem>
               </Link>
               <Link href="/cart">
                 <DropdownMenuItem>Carrito</DropdownMenuItem>
@@ -111,10 +112,10 @@ function UserNav() {
         <Link
           href="/sign-in"
           prefetch={false}
-          className="flex items-center text-foreground"
+          className="flex h-11 items-center gap-2 rounded-full px-3.5 text-sm font-bold text-ink transition-colors hover:bg-surface-muted"
         >
-          <Icons.user className="h-5 w-5 mr-2 text-primary" />
-          <p className="text-sm text-primary hidden sm:inline-block">Entrar</p>
+          <Icons.user className="size-5" aria-hidden />
+          Entrar
         </Link>
       )}
     </>

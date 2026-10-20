@@ -177,7 +177,9 @@ function GuestCartSection() {
           <CardDescription>{`${productCount} producto${productCount > 1 ? "s" : ""}`}</CardDescription>
         </CardHeader>
         <CardContent className="relative overflow-hidden px-3 py-2">
-          <p className="text-3xl md:text-lg lg:text-2xl font-bold">{formatCUP(subtotal)}</p>
+          <p className="text-3xl md:text-lg lg:text-2xl font-bold">
+            {formatCUP(subtotal)}
+          </p>
         </CardContent>
 
         <CardFooter className="gap-x-2 md:gap-x-5 px-3 flex-col gap-y-3">

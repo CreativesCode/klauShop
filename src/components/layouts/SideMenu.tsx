@@ -13,11 +13,17 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/providers/AuthProvider";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { create } from "zustand";
 import Branding from "./Branding";
 import type { Collection } from "./SideMenuCollections";
 import SideMenuCollections from "./SideMenuCollections";
 import { Icons } from "./icons";
+
+// Shared so the mobile tab bar ("Categorías") can open the menu
+export const useSideMenu = create<{
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}>((set) => ({ open: false, setOpen: (open) => set({ open }) }));
 
 interface SideMenuProps {
   collections: Collection[];
@@ -27,26 +33,25 @@ export function SideMenu({ collections }: SideMenuProps) {
   const pathname = usePathname();
   const { user } = useAuth();
   const isAdmin = user?.app_metadata?.isAdmin ?? false;
-  const [open, setOpen] = useState(false);
+  const { open, setOpen } = useSideMenu();
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" className="p-0 hover:bg-primary-100/50">
-          <Icons.menu className="text-primary w-6 h-6" />
+        <Button variant="ghost" size="icon" aria-label="Abrir menú">
+          <Icons.menu className="size-6 text-ink" aria-hidden />
         </Button>
       </SheetTrigger>
 
       <SheetContent
         side="left"
-        className="!w-full max-w-[100vw] md:!max-w-md pr-4 md:pr-8 overflow-y-auto"
-        closeButtonClassName="w-5 h-5 md:w-6 md:h-6"
+        className="!w-full max-w-[100vw] overflow-y-auto px-4 pb-[calc(24px+env(safe-area-inset-bottom))] md:!max-w-md md:px-6"
       >
         <div className="flex flex-col h-full">
           {/* Header con Branding */}
-          <div className="pt-8 pb-6 border-b border-primary-200">
-            <Branding className="text-2xl md:text-3xl mb-2" />
-            <p className="text-xs md:text-sm text-muted-foreground">
+          <div className="border-b border-line pb-5 pt-2">
+            <Branding className="mb-2" />
+            <p className="text-[13px] text-neutral-500">
               {siteConfig.description}
             </p>
           </div>
@@ -58,10 +63,10 @@ export function SideMenu({ collections }: SideMenuProps) {
               href="/shop"
               onClick={() => setOpen(false)}
               className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-lg text-base md:text-lg font-medium transition-colors",
+                "flex h-12 items-center gap-3 rounded-xl px-3 text-[15px] font-bold transition-colors",
                 pathname === "/shop"
-                  ? "bg-primary-100 text-primary font-semibold"
-                  : "hover:bg-primary-50 text-foreground",
+                  ? "bg-primary-50 text-primary-700"
+                  : "text-ink hover:bg-primary-50",
               )}
             >
               <Icons.store className="w-5 h-5" />
@@ -71,8 +76,8 @@ export function SideMenu({ collections }: SideMenuProps) {
             {/* Árbol de Colecciones */}
             <div className="mt-4">
               <div className="px-4 mb-2">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                  Colecciones
+                <h3 className="text-xs font-bold uppercase tracking-[.08em] text-neutral-500">
+                  Categorías
                 </h3>
               </div>
               <SideMenuCollections
@@ -83,16 +88,16 @@ export function SideMenu({ collections }: SideMenuProps) {
 
             {/* Sección de Administración - Solo para admins */}
             {isAdmin && (
-              <div className="mt-6 pt-6 border-t border-primary-200">
+              <div className="mt-6 border-t border-line pt-6">
                 <div className="px-4 mb-2">
-                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                  <h3 className="text-xs font-bold uppercase tracking-[.08em] text-neutral-500">
                     Administración
                   </h3>
                 </div>
                 <div className="space-y-1">
                   {dashboardConfig.sidebarNav.map((item) => {
                     const Icon = Icons[item.icon ?? "chevronLeft"];
-                    const isActive = pathname === item.href;
+                    const isActive = pathname.startsWith(item.href);
 
                     return (
                       <Link
@@ -100,10 +105,10 @@ export function SideMenu({ collections }: SideMenuProps) {
                         href={item.href}
                         onClick={() => setOpen(false)}
                         className={cn(
-                          "flex items-center gap-3 px-4 py-3 rounded-lg text-base md:text-lg font-medium transition-colors",
+                          "flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold transition-colors",
                           isActive
-                            ? "bg-primary-100 text-primary font-semibold"
-                            : "hover:bg-primary-50 text-foreground",
+                            ? "bg-primary-50 text-primary-700"
+                            : "text-neutral-700 hover:bg-primary-50",
                         )}
                       >
                         <Icon className="w-5 h-5" />
@@ -117,8 +122,8 @@ export function SideMenu({ collections }: SideMenuProps) {
           </div>
 
           {/* Footer con información de contacto */}
-          <SheetFooter className="flex-col items-start gap-4 pt-6 border-t border-primary-200 mt-auto">
-            <div className="text-sm text-primary-800">
+          <SheetFooter className="mt-auto flex-col items-start gap-4 border-t border-line pt-5">
+            <div className="text-[13px] text-neutral-500">
               <p className="text-center">
                 &copy; {new Date().getFullYear()} {siteConfig.name}. Todos los
                 derechos reservados.

@@ -6,6 +6,7 @@ import {
   NavigationMenuItem,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
@@ -67,29 +68,29 @@ function buildCategoryTree(collections: Collection[]): Collection[] {
 // Component to render subcategories recursively
 function SubcategoryList({ categories }: { categories: Collection[] }) {
   return (
-    <div className="grid gap-2 p-4 w-[400px]">
+    <div className="grid w-[400px] gap-1 p-3">
       {categories.map((category) => (
         <div key={category.id} className="space-y-1">
           <Link
             href={`/collections/${category.slug}`}
-            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-primary focus:bg-accent focus:text-accent-foreground"
+            className="block select-none space-y-1 rounded-xl p-3 leading-none no-underline outline-none transition-colors hover:bg-primary-50 hover:text-primary-700 focus:bg-primary-50"
           >
-            <div className="text-sm font-medium leading-none">
+            <div className="text-sm font-bold leading-none">
               {category.label}
             </div>
             {category.title && (
-              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+              <p className="line-clamp-2 text-[13px] leading-snug text-neutral-500">
                 {category.title}
               </p>
             )}
           </Link>
           {category.children && category.children.length > 0 && (
-            <div className="ml-4 border-l-2 border-primary-100 pl-4">
+            <div className="ml-4 border-l-2 border-line pl-3">
               {category.children.map((child) => (
                 <Link
                   key={child.id}
                   href={`/collections/${child.slug}`}
-                  className="block select-none rounded-md p-2 text-sm leading-none no-underline outline-none transition-colors hover:bg-accent/50 hover:text-accent-foreground"
+                  className="block select-none rounded-[10px] p-2 text-sm font-semibold leading-none text-neutral-700 no-underline outline-none transition-colors hover:bg-primary-50 hover:text-primary-700"
                 >
                   {child.label}
                 </Link>
@@ -129,66 +130,59 @@ function CategoriesSubNavClient({ categories }: CategoriesSubNavClientProps) {
     return null;
   }
 
-  return (
-    <div className="bg-white border-b border-primary-200 fixed top-[73px] z-40 w-full shadow-sm hidden md:block">
-      <div className="max-w-screen-2xl mx-auto px-4 flex justify-center">
-        <NavigationMenu value={activeMenu || undefined}>
-          <NavigationMenuList>
-            <NavigationMenuItem>
-              <Link
-                href="/shop"
-                className={`inline-flex h-10 w-max items-center justify-center px-4 py-2 text-sm font-medium text-primary transition-colors border-b-[3px] ${
-                  pathname === "/shop" ? "border-accent" : "border-transparent"
-                } hover:border-accent focus:outline-none`}
-              >
-                Ver todos
-              </Link>
-            </NavigationMenuItem>
-            {categoryTree.map((category) => {
-              const isActive = pathname === `/collections/${category.slug}`;
-              const isHovered = activeMenu === category.id;
-              const showBorder = isActive || isHovered;
+  const linkClass = (active: boolean) =>
+    cn(
+      "inline-flex w-max items-center border-b-2 px-3.5 pb-3 pt-2.5 text-sm font-semibold transition-colors hover:border-primary hover:text-ink focus:outline-none focus-visible:text-ink",
+      active
+        ? "border-primary text-ink"
+        : "border-transparent text-neutral-600",
+    );
 
-              return (
-                <NavigationMenuItem
-                  key={category.id}
-                  value={category.id}
-                  onMouseEnter={() => handleMouseEnter(category.id)}
-                  onMouseLeave={handleMouseLeave}
+  return (
+    // The list scrolls (not the root) so the subcategory dropdown is not clipped
+    <div className="-mx-3.5">
+      <NavigationMenu
+        value={activeMenu || undefined}
+        className="w-full max-w-none justify-start"
+      >
+        <NavigationMenuList className="min-w-0 justify-start gap-0 overflow-x-auto no-scrollbar">
+          <NavigationMenuItem>
+            <Link href="/shop" className={linkClass(pathname === "/shop")}>
+              Ver todo
+            </Link>
+          </NavigationMenuItem>
+          {categoryTree.map((category) => {
+            const isActive = pathname === `/collections/${category.slug}`;
+            const isHovered = activeMenu === category.id;
+            const hasChildren =
+              category.children && category.children.length > 0;
+
+            return (
+              <NavigationMenuItem
+                key={category.id}
+                value={category.id}
+                onMouseEnter={() => handleMouseEnter(category.id)}
+                onMouseLeave={handleMouseLeave}
+              >
+                <Link
+                  href={`/collections/${category.slug}`}
+                  className={linkClass(isActive || isHovered)}
                 >
-                  {category.children && category.children.length > 0 ? (
-                    <>
-                      <Link
-                        href={`/collections/${category.slug}`}
-                        className={`inline-flex h-10 w-max items-center justify-center px-4 py-2 text-sm font-medium text-primary transition-colors border-b-[3px] ${
-                          showBorder ? "border-accent" : "border-transparent"
-                        } hover:border-accent focus:outline-none`}
-                      >
-                        {category.label}
-                      </Link>
-                      <NavigationMenuContent
-                        onMouseEnter={() => handleMouseEnter(category.id)}
-                        onMouseLeave={handleMouseLeave}
-                      >
-                        <SubcategoryList categories={category.children} />
-                      </NavigationMenuContent>
-                    </>
-                  ) : (
-                    <Link
-                      href={`/collections/${category.slug}`}
-                      className={`inline-flex h-10 w-max items-center justify-center px-4 py-2 text-sm font-medium text-primary transition-colors border-b-[3px] ${
-                        showBorder ? "border-accent" : "border-transparent"
-                      } hover:border-accent focus:outline-none`}
-                    >
-                      {category.label}
-                    </Link>
-                  )}
-                </NavigationMenuItem>
-              );
-            })}
-          </NavigationMenuList>
-        </NavigationMenu>
-      </div>
+                  {category.label}
+                </Link>
+                {hasChildren && (
+                  <NavigationMenuContent
+                    onMouseEnter={() => handleMouseEnter(category.id)}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    <SubcategoryList categories={category.children!} />
+                  </NavigationMenuContent>
+                )}
+              </NavigationMenuItem>
+            );
+          })}
+        </NavigationMenuList>
+      </NavigationMenu>
     </div>
   );
 }

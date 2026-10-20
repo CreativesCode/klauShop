@@ -7,19 +7,29 @@ import { create } from "zustand";
 import useCartStore, { calcProductCountStorage } from "../useCartStore";
 import CartLink from "./CartLink";
 
-function CartNav() {
+type Variant = "pill" | "icon";
+
+function CartNav({ variant = "pill" }: { variant?: Variant }) {
   const { user } = useAuth();
-  return <>{!user ? <GuestCart /> : <UserCartNav currentUser={user} />}</>;
+  return (
+    <>
+      {!user ? (
+        <GuestCart variant={variant} />
+      ) : (
+        <UserCartNav currentUser={user} variant={variant} />
+      )}
+    </>
+  );
 }
 
-const GuestCart = () => {
+const GuestCart = ({ variant }: { variant: Variant }) => {
   const cart = useCartStore((s) => s.cart);
 
   const productCountStorage = useMemo(
     () => calcProductCountStorage(cart),
     [cart],
   );
-  return <CartLink productCount={productCountStorage} />;
+  return <CartLink productCount={productCountStorage} variant={variant} />;
 };
 
 // Shared by the desktop and mobile navbars (both mounted): one request per change
@@ -62,7 +72,13 @@ function refreshUserCartCount(userId: string): Promise<void> {
   return inflight;
 }
 
-const UserCartNav = ({ currentUser }: { currentUser: User }) => {
+const UserCartNav = ({
+  currentUser,
+  variant,
+}: {
+  currentUser: User;
+  variant: Variant;
+}) => {
   const { userId, count } = useUserCartCount();
 
   useEffect(() => {
@@ -75,7 +91,12 @@ const UserCartNav = ({ currentUser }: { currentUser: User }) => {
   }, [currentUser.id]);
 
   // Another account's count (or none yet) shows as empty
-  return <CartLink productCount={userId === currentUser.id ? count : 0} />;
+  return (
+    <CartLink
+      productCount={userId === currentUser.id ? count : 0}
+      variant={variant}
+    />
+  );
 };
 
 export default CartNav;
