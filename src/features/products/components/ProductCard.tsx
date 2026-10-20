@@ -129,7 +129,7 @@ export function ProductCard({
   const stockInfo = getStockInfo(stock);
 
   const imageClass =
-    "object-cover object-center transition-[transform,opacity] duration-[600ms] ease-soft group-hover:scale-[1.04] motion-reduce:transform-none";
+    "object-cover object-center transition-[transform,opacity] [transition-duration:600ms] ease-soft group-hover:scale-[1.04] motion-reduce:transform-none";
 
   return (
     <div

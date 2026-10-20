@@ -212,7 +212,7 @@ function discountedPrice(product: HomeProduct) {
 }
 
 const zoomOnHover =
-  "object-cover transition-transform duration-[600ms] ease-soft group-hover:scale-[1.04] motion-reduce:transform-none";
+  "object-cover transition-transform [transition-duration:600ms] ease-soft group-hover:scale-[1.04] motion-reduce:transform-none";
 
 function HeroSection({ products }: { products: HomeProduct[] }) {
   const [main, ...rest] = products;
