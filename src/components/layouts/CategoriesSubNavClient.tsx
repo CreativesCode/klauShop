@@ -65,6 +65,9 @@ function buildCategoryTree(collections: Collection[]): Collection[] {
   return roots;
 }
 
+// Dropdown width: SubcategoryList (400px) + viewport border
+const SUBMENU_WIDTH = 402;
+
 // Component to render subcategories recursively
 function SubcategoryList({ categories }: { categories: Collection[] }) {
   return (
@@ -110,7 +113,9 @@ interface CategoriesSubNavClientProps {
 function CategoriesSubNavClient({ categories }: CategoriesSubNavClientProps) {
   const categoryTree = buildCategoryTree(categories);
   const [activeMenu, setActiveMenu] = React.useState<string | null>(null);
+  const [viewportOffset, setViewportOffset] = React.useState(0);
   const timeoutRef = React.useRef<NodeJS.Timeout>();
+  const rootRef = React.useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
   const handleMouseEnter = (categoryId: string) => {
@@ -120,10 +125,22 @@ function CategoriesSubNavClient({ categories }: CategoriesSubNavClientProps) {
     setActiveMenu(categoryId);
   };
 
+  // Open the dropdown under the hovered category, kept inside the nav's width
+  const placeViewport = (item: HTMLElement) => {
+    const root = rootRef.current;
+    if (!root) return;
+    const rootRect = root.getBoundingClientRect();
+    const left = item.getBoundingClientRect().left - rootRect.left;
+    setViewportOffset(
+      Math.max(0, Math.min(left, rootRect.width - SUBMENU_WIDTH)),
+    );
+  };
+
   const handleMouseLeave = () => {
+    // Time to move the pointer from the category down to the dropdown
     timeoutRef.current = setTimeout(() => {
       setActiveMenu(null);
-    }, 150);
+    }, 300);
   };
 
   if (categoryTree.length === 0) {
@@ -140,9 +157,10 @@ function CategoriesSubNavClient({ categories }: CategoriesSubNavClientProps) {
 
   return (
     // The list scrolls (not the root) so the subcategory dropdown is not clipped
-    <div className="-mx-3.5">
+    <div className="-mx-3.5" ref={rootRef}>
       <NavigationMenu
         value={activeMenu || undefined}
+        viewportOffset={viewportOffset}
         className="w-full max-w-none justify-start"
       >
         <NavigationMenuList className="min-w-0 justify-start gap-0 overflow-x-auto no-scrollbar">
@@ -161,7 +179,10 @@ function CategoriesSubNavClient({ categories }: CategoriesSubNavClientProps) {
               <NavigationMenuItem
                 key={category.id}
                 value={category.id}
-                onMouseEnter={() => handleMouseEnter(category.id)}
+                onMouseEnter={(e) => {
+                  placeViewport(e.currentTarget);
+                  handleMouseEnter(category.id);
+                }}
                 onMouseLeave={handleMouseLeave}
               >
                 <Link
