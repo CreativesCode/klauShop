@@ -40,6 +40,8 @@ type WhatsAppCheckoutButtonProps = {
   subtotal: number;
   disabled?: boolean;
   className?: string;
+  /** Open the delivery form on mount (/cart?checkout=1 from the cart drawer) */
+  defaultOpen?: boolean;
 };
 
 const GUEST_ADDRESS_KEY = "guest_last_address";
@@ -80,8 +82,17 @@ export function WhatsAppCheckoutButton({
   subtotal,
   disabled = false,
   className,
+  defaultOpen = false,
 }: WhatsAppCheckoutButtonProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  // Drop ?checkout=1 so a reload or "back" does not reopen the form
+  useEffect(() => {
+    if (!defaultOpen) return;
+    const url = new URL(window.location.href);
+    url.searchParams.delete("checkout");
+    window.history.replaceState(window.history.state, "", url);
+  }, [defaultOpen]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingAddresses, setLoadingAddresses] = useState(false);
   const [addresses, setAddresses] = useState<SelectAddress[]>([]);

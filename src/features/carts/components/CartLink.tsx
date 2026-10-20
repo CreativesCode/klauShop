@@ -1,6 +1,11 @@
+"use client";
+
 import { Icons } from "@/components/layouts/icons";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { MouseEvent } from "react";
+import { useCartDrawer } from "../hooks/useCartDrawer";
 
 type CartLinkProps = {
   productCount: number;
@@ -9,6 +14,16 @@ type CartLinkProps = {
 };
 
 function CartLink({ productCount, variant = "pill" }: CartLinkProps) {
+  const pathname = usePathname();
+  const setDrawerOpen = useCartDrawer((s) => s.setOpen);
+
+  // Opens the drawer; still a real link (new tab, no JS, already on /cart)
+  const onClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    if (pathname === "/cart" || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    e.preventDefault();
+    setDrawerOpen(true);
+  };
+
   const label =
     productCount > 0 ? `Carrito, ${productCount} productos` : "Carrito";
   const count = (
@@ -30,6 +45,8 @@ function CartLink({ productCount, variant = "pill" }: CartLinkProps) {
     return (
       <Link
         href="/cart"
+        onClick={onClick}
+        aria-haspopup="dialog"
         aria-label={label}
         className="relative flex size-11 items-center justify-center rounded-full text-ink hover:bg-surface-muted"
       >
@@ -42,6 +59,8 @@ function CartLink({ productCount, variant = "pill" }: CartLinkProps) {
   return (
     <Link
       href="/cart"
+      onClick={onClick}
+      aria-haspopup="dialog"
       aria-label={label}
       className="flex h-11 items-center gap-2 rounded-full bg-ink pl-4 pr-2.5 text-sm font-bold text-white transition-colors hover:bg-primary-950"
     >

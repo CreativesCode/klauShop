@@ -1,5 +1,5 @@
-import { LoadingCartSection } from "./GuestCartSection";
+import { CartSkeleton } from "./CartLayout";
 
-const CartSectionSkeleton = LoadingCartSection;
+const CartSectionSkeleton = () => <CartSkeleton />;
 
 export default CartSectionSkeleton;

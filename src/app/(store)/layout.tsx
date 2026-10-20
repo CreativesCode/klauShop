@@ -3,6 +3,7 @@ import Navbar from "@/components/layouts/MainNavbar";
 import { MobileTabBar } from "@/components/layouts/MobileTabBar";
 import { ServiceWorkerRegister } from "@/components/layouts/ServiceWorkerRegister";
 import { siteConfig } from "@/config/site";
+import { CartDrawer } from "@/features/carts";
 import { ReactNode } from "react";
 
 type Props = { children: ReactNode };
@@ -22,6 +23,7 @@ async function StoreLayout({ children }: Props) {
       <main className="min-h-screen">{children}</main>
       <MainFooter />
       <MobileTabBar />
+      <CartDrawer />
       {/* Store only: the admin never works offline */}
       <ServiceWorkerRegister />
     </div>

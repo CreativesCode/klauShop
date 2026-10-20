@@ -1,7 +1,6 @@
 "use client";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
 import { User } from "@supabase/auth-helpers-nextjs";
 import { useState } from "react";
 import {
@@ -11,18 +10,21 @@ import {
   updateCartItemQuantity,
 } from "../api";
 import useCartStore from "../useCartStore";
+import { useCartDrawer } from "./useCartDrawer";
 
 function useCartActions(user: User | null, productId: string) {
   const { toast } = useToast();
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-  // One tap from the toast to the cart (the usual next step)
+  // One tap from the toast to the cart drawer (the usual next step)
   const toastAdded = () =>
     toast({
       title: "Producto agregado al carrito.",
       action: (
-        <ToastAction altText="Ver carrito" onClick={() => router.push("/cart")}>
+        <ToastAction
+          altText="Ver carrito"
+          onClick={() => useCartDrawer.getState().setOpen(true)}
+        >
           Ver carrito
         </ToastAction>
       ),

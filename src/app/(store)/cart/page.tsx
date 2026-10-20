@@ -10,7 +10,11 @@ import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
 
-async function CartPage() {
+type CartPageProps = {
+  searchParams: { checkout?: string };
+};
+
+async function CartPage({ searchParams }: CartPageProps) {
   return (
     <div className="mx-auto max-w-store px-4 pt-6 md:px-6 md:pt-10 xl:px-8">
       <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
@@ -26,7 +30,7 @@ async function CartPage() {
       </div>
 
       <Suspense fallback={<CartSectionSkeleton />}>
-        <CartSection />
+        <CartSection autoOpenCheckout={searchParams.checkout === "1"} />
       </Suspense>
 
       <Suspense fallback={<RecommendationProductsSkeleton />}>

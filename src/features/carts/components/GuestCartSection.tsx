@@ -1,5 +1,4 @@
 "use client";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import { getDiscountedUnitPrice } from "@/features/orders/utils/pricing";
 import { WhatsAppCheckoutButton } from "@/features/orders/components/WhatsAppCheckoutButton";
@@ -12,10 +11,13 @@ import useCartStore, {
   getProductIdFromCartKey,
 } from "../useCartStore";
 import CartItemCard from "./CartItemCard";
-import { CartLayout } from "./CartLayout";
+import { CartLayout, CartSectionProps, CartSkeleton } from "./CartLayout";
 import EmptyCart from "./EmptyCart";
 
-function GuestCartSection() {
+function GuestCartSection({
+  variant = "page",
+  autoOpenCheckout = false,
+}: CartSectionProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const cartItems = useCartStore((s) => s.cart);
@@ -48,7 +50,8 @@ function GuestCartSection() {
     () => calcProductCountStorage(cartItems),
     [cartItems],
   );
-  if (fetching && productIds.length > 0) return LoadingCartSection();
+  if (fetching && productIds.length > 0)
+    return <CartSkeleton variant={variant} />;
   if (error)
     return (
       <div className="flex flex-col items-center gap-3 py-12 text-center">
@@ -67,12 +70,12 @@ function GuestCartSection() {
 
   // Si no hay productos en el carrito, mostrar EmptyCart
   if (Object.keys(cartItems).length === 0) {
-    return <EmptyCart />;
+    return <EmptyCart variant={variant} />;
   }
 
   // Si no hay datos aún pero hay productos, mostrar loading
   if (!data && productIds.length > 0) {
-    return LoadingCartSection();
+    return <CartSkeleton variant={variant} />;
   }
 
   const addOneHandler = (cartKey: string, quantity: number) => {
@@ -137,6 +140,7 @@ function GuestCartSection() {
 
   return (
     <CartLayout
+      variant={variant}
       productCount={productCount}
       subtotal={subtotal}
       checkout={
@@ -156,6 +160,7 @@ function GuestCartSection() {
           }
           subtotal={subtotal}
           disabled={isLoading}
+          defaultOpen={autoOpenCheckout}
           className="w-full"
         />
       }
@@ -185,30 +190,6 @@ function GuestCartSection() {
 }
 
 export default GuestCartSection;
-
-export const LoadingCartSection = () => (
-  <section
-    className="grid items-start gap-5 md:grid-cols-[minmax(0,1fr)_360px] lg:gap-8"
-    aria-label="Cargando carrito"
-  >
-    <div className="rounded-[18px] border border-line bg-white px-4 md:px-5">
-      {[...Array(3)].map((_, index) => (
-        <div
-          className="flex gap-3.5 border-b border-line-soft py-3.5 last:border-b-0"
-          key={index}
-        >
-          <Skeleton className="h-24 w-[76px] rounded-xl" />
-          <div className="flex-1 space-y-2.5">
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-3 w-1/3" />
-            <Skeleton className="mt-4 h-9 w-[104px] rounded-full" />
-          </div>
-        </div>
-      ))}
-    </div>
-    <Skeleton className="hidden h-[240px] rounded-[18px] md:block" />
-  </section>
-);
 
 const calcSubtotal = ({
   prdouctsDetails,
