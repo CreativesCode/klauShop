@@ -4,8 +4,8 @@ Spec: `docs/design/design_handoff_klaushop_redesign/` (el dueño lo aportó; aú
 Plan y estado detallado: `.titan/plans/redisenio-2-0.md`.
 
 **Estado 2026-10-20:** Fases 0–4 hechas (todas las vistas de tienda, auth y admin). Commits locales en `main`,
-**sin push** (push = deploy a producción; lo decide el dueño). Queda: Lighthouse sobre el deploy, decidir push y si se
-commitea `docs/design/`. Detalle y hallazgos en el plan.
+**sin push** (push = deploy a producción; lo decide el dueño). Queda: Lighthouse sobre el deploy y decidir el push.
+Detalle en el plan.
 
 ## Reglas nuevas (respetarlas en código nuevo)
 - Precios visibles: `formatCUP()` de `src/lib/utils.ts` ("4.500 CUP"). WhatsApp/JSON-LD/exports: `formatPrice()`.
@@ -21,3 +21,5 @@ commitea `docs/design/`. Detalle y hallazgos en el plan.
 - Listas admin: `AdminSearchField` / `adminChip` / `AdminTableView` de `components/admin/AdminTable.tsx`.
 - Formularios admin: tarjetas 2fr/1fr + barra "Guardar" `sticky bottom-[calc(65px+env(safe-area-inset-bottom))] lg:bottom-0`.
 - Auth: `AuthCard` (`@/features/auth`). `PasswordInput` ya usa 16px en móvil.
+- Carrito: `CartDrawer` (estado `useCartDrawer`). El checkout NO se mete en el panel: el panel enlaza a
+  `/cart?checkout=1` (`WhatsAppCheckoutButton defaultOpen`). No anidar el diálogo de checkout en el Sheet.

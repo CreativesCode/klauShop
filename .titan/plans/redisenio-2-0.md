@@ -26,19 +26,22 @@ Commits locales en `main`, **sin push** (cada fase deja el sitio funcionando; li
 | 4 Admin zonas de envío | `e88d0ec` | Hecha |
 | 4 Admin nueva orden | `e53c896` | Hecha |
 | Textos en inglés (carousel, multi-select) | `8ea5599` | Hecha |
+| Usuarios admin: editar guarda, lista completa, crear sin `role: "ADMIN"` | `8b41c2b` | Hecha |
+| Código muerto eliminado | `44790f6` | Hecha |
+| Handoff `docs/design/` en el repo | `1f67ab7` | Hecha |
+| Carrito como panel lateral | `aab2b72` | Hecha |
 | Comprobaciones finales (Lighthouse) | — | Pendiente: hacerlo sobre el deploy (preview/prod) |
 
 ### Pendiente
 - [ ] Lighthouse móvil sobre el deploy (no tiene sentido sobre `next dev`).
 - [ ] Push a `main` (= deploy a producción): lo decide el dueño.
-- [ ] `docs/design/` sigue sin commitear: lo decide el dueño.
-- [ ] Revisar con una sesión admin real `/admin/users` (la vista previa sin sesión no puede listar usuarios:
-      `listUsers` exige admin en el servidor).
+- [ ] Probar con una sesión admin real guardar un usuario editado (no se probó: modificaría datos de producción).
 
-### Hallazgos (no tocados, avisar)
-- `UpdateUserForm` (editar usuario) no guarda nada: su `onSubmit` está comentado. Solo se rediseñó.
-- Código muerto: `FilterSheet.tsx` (no se importa; tiene textos en inglés), `CartSheet`, `ShipReturns`, `RecentSales`,
-  `AdminUserNav` (ya no se usa en la página de usuarios).
+### Hallazgos resueltos (pedido del dueño 2026-10-20)
+- Editar usuario no guardaba (submit comentado) → `updateUserAction` (nombre, correo, contraseña opcional; sincroniza
+  `profiles`). `listUsers` solo traía 10 → pagina todo. `createUser` mandaba `role: "ADMIN"` (no es un rol de
+  Postgres) → quitado; la cuenta se crea confirmada y el admin se da con "Hacer administrador".
+- Borrados: `FilterSheet`, `CartSheet`, `ShipReturns`, `RecentSales`, `AdminUserNav`, `data-table-toolbar`.
 
 ### Patrones nuevos de la Fase 4
 - Listas admin: `components/admin/AdminTable.tsx` → `AdminSearchField`, `adminChip(active)`, `AdminTableView`
@@ -55,10 +58,10 @@ Commits locales en `main`, **sin push** (cada fase deja el sitio funcionando; li
 - **El admin ya no fija `html{font-size:14px}`**: el diseño usa px sobre la base de 16px de Tailwind.
 - **Precios en UI con `formatCUP()` ("4.500 CUP", sin decimales)**; WhatsApp, JSON-LD, metadata y exportaciones siguen
   con `formatPrice()` / `toFixed(2)`.
-- **Carrito como drawer: NO implementado.** `CartSheet` era un placeholder vacío (quitado del layout; el archivo
-  sigue). El carrito sigue siendo la página `/cart` con la estética del drawer (lista + resumen sticky que en móvil es
-  barra fija). La zona y el total siguen eligiéndose en el diálogo de checkout existente (no se duplicó el flujo de
-  WhatsApp/iOS). Si el dueño quiere el drawer, es trabajo aparte.
+- **Carrito como panel lateral (`CartDrawer`, dueño dijo que sí).** Los botones del carrito del header lo abren
+  (siguen siendo enlaces reales a `/cart`). Muestra líneas, cantidades, subtotal y total. Su botón principal va a
+  `/cart?checkout=1`, que abre el diálogo de entrega al llegar: el checkout de WhatsApp sigue corriendo solo en `/cart`
+  (el flujo probado en iOS), sin diálogo anidado en el panel. La acción "Ver carrito" del toast abre el panel.
 - Tarjeta de producto: botón "Añadir al carrito" si el producto no tiene variantes; "Elegir opciones" (lleva a la ficha)
   si tiene talla/color/material.
 - `MaterialSelector` usa chips como la talla (antes Radix Select, el del "clic fantasma" en iOS).
