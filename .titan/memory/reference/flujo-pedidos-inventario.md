@@ -30,7 +30,7 @@ Fuente unica: `VALID_STATUS_TRANSITIONS` + `ORDER_STATUS_ACTIONS` (copy de boton
 - `mark-paid` con `{ deliver: true }`: pagada y entregada en un solo UPDATE (un solo WhatsApp al cliente).
 - `update-shipping`: edita costo de envio. `create`: orden manual desde admin.
 - Etiquetas: `getOrderStatusLabel`, `getPaymentStatusInfo`, `getPaymentMethodLabel` — nunca mostrar el enum crudo.
-- Admin usa `html{font-size:14px}` desde `src/app/(admin)/layout.tsx` (UI mas densa); la tienda sigue en 16px.
+- ~~Admin usa `html{font-size:14px}`~~ SUPERADO (2026-10-20, rediseño 2.0): el admin usa la base de 16px; shell en `(admin)/admin/layout.tsx`.
 
 ## Modelo de stock (desde 2026-09-24)
 - `products.stock` = stock fisico (a nivel producto, no por variante).

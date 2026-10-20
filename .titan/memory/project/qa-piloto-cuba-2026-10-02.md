@@ -58,7 +58,8 @@ Todas son manuales (fuera del journal de drizzle-kit); se aplican con node+postg
 - Envio: solo editable en pending_confirmation/pending_payment (API y UI).
 - Colores: se guardan en hex; para mostrarlos al cliente usar `colorName()` (`src/lib/colorName.ts`) y en SQL `wa_color_name()`
   (misma paleta en los dos: cambiarlos juntos).
-- Precios: `formatPrice()` → "200.00 CUP" (mismo formato que tarjetas y WhatsApp). Enlaces WhatsApp: `api.whatsapp.com/send`, no `wa.me`.
+- Precios: `formatPrice()` → "200.00 CUP" (mismo formato que tarjetas y WhatsApp). **SUPERADO en la UI (2026-10-20, rediseño 2.0):**
+  la UI usa `formatCUP()` ("4.500 CUP"); `formatPrice()` queda para WhatsApp/exports. Enlaces WhatsApp: `api.whatsapp.com/send`, no `wa.me`.
 - Cada cambio de `order_status` dispara un WhatsApp al cliente: para saltar varios pasos usar un solo UPDATE (ver mark-paid `deliver`).
 
 ## Pendiente conocido (decidido dejarlo para despues)
