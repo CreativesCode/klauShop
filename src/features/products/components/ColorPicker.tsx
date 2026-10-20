@@ -1,7 +1,7 @@
 "use client";
 
+import { colorName } from "@/lib/colorName";
 import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
 
 interface ColorPickerProps {
   colors?: string[] | null;
@@ -38,29 +38,43 @@ export function ColorPicker({
   }
 
   return (
-    <div className={cn("space-y-2", className)}>
-      <label className="text-sm font-medium">Color</label>
+    <fieldset className={cn("space-y-2.5", className)}>
+      <legend className="mb-2.5 text-sm font-bold text-ink">
+        Color
+        {selectedColor && (
+          <>
+            :{" "}
+            <span className="font-semibold capitalize text-neutral-600">
+              {colorName(selectedColor)}
+            </span>
+          </>
+        )}
+      </legend>
       <div className="flex flex-wrap gap-2">
-        {normalizedColors.map((color) => (
-          <button
-            key={color}
-            type="button"
-            onClick={() => onColorSelect(color)}
-            className={cn(
-              "relative h-10 w-10 rounded-full border-2 transition-all hover:scale-110",
-              selectedColor === color
-                ? "border-primary ring-2 ring-primary ring-offset-2"
-                : "border-gray-300 hover:border-gray-400",
-            )}
-            style={{ backgroundColor: color }}
-            aria-label={`Select color ${color}`}
-          >
-            {selectedColor === color && (
-              <Check className="absolute inset-0 m-auto h-5 w-5 text-white drop-shadow-md" />
-            )}
-          </button>
-        ))}
+        {normalizedColors.map((color) => {
+          const selected = selectedColor === color;
+          return (
+            <button
+              key={color}
+              type="button"
+              onClick={() => onColorSelect(color)}
+              aria-pressed={selected}
+              aria-label={`Color ${colorName(color)}`}
+              className={cn(
+                "flex size-11 items-center justify-center rounded-full border-2 p-[3px] transition-colors",
+                selected
+                  ? "border-ink"
+                  : "border-neutral-200 hover:border-neutral-400",
+              )}
+            >
+              <span
+                className="size-full rounded-full ring-1 ring-inset ring-black/10"
+                style={{ backgroundColor: color }}
+              />
+            </button>
+          );
+        })}
       </div>
-    </div>
+    </fieldset>
   );
 }

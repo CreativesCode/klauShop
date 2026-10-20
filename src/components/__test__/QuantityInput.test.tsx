@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import QuantityInput from "../layouts/QuantityInput";
 
-it("should render Component Section Header", () => {
+it("renders the quantity controls", () => {
   render(
     <QuantityInput
-      value={0}
+      value={1}
       addOneHandler={function (): void {
         throw new Error("Function not implemented.");
       }}
@@ -14,8 +14,8 @@ it("should render Component Section Header", () => {
     />,
   );
 
-  expect(screen.getByLabelText("add")).toBeInTheDocument();
-  expect(screen.getByLabelText("minus")).toBeInTheDocument();
+  expect(screen.getByLabelText("Sumar uno")).toBeInTheDocument();
+  expect(screen.getByLabelText("Restar uno")).toBeInTheDocument();
 
   //   expect(screen.getByText("section description.")).toBeInTheDocument()
 });

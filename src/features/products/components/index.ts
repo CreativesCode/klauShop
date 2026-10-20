@@ -18,3 +18,4 @@ export { SizeSelector } from "./SizeSelector";
 export { ShareProductButton } from "./ShareProductButton";
 export { default as WishlistProducts } from "./WishlistProducts";
 export { default as WishlistProductsSkeleton } from "./WishlistProductsSkeleton";
+export { HomeProductTabs } from "./HomeProductTabs";

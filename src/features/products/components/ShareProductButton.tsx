@@ -76,13 +76,10 @@ ${discountText}${descriptionText}
       onClick={handleShare}
       variant="outline"
       size="icon"
-      className={cn(
-        "hover:bg-green-50 hover:border-green-500 hover:text-green-600",
-        className,
-      )}
+      className={cn("size-[42px] border-neutral-200 p-0", className)}
       aria-label="Compartir producto por WhatsApp"
     >
-      <Icons.whatsapp className="h-5 w-5" />
+      <Icons.share className="size-[18px]" aria-hidden />
     </Button>
   );
 }

@@ -1,18 +1,12 @@
-import { Icons } from "@/components/layouts/icons";
 import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 function EmptyCart() {
   return (
-    <section className="w-full border border-foreground min-h-[450px] flex flex-col gap-5 justify-center items-center">
-      <p className="text-muted-foreground text-sm">Tu carrito está vacío.</p>
-      <Link
-        href="/shop"
-        className={cn(buttonVariants({ size: "lg" }), "font-semibold")}
-      >
-        <Icons.cart className="mr-3 w-5 h-5" />
-        Continuar comprando
+    <section className="flex min-h-[320px] flex-col items-center justify-center gap-5 rounded-[18px] border border-line bg-white px-6 py-12 text-center">
+      <p className="text-[15px] text-neutral-500">Tu carrito está vacío.</p>
+      <Link href="/shop" className={buttonVariants({ size: "lg" })}>
+        Ver novedades
       </Link>
     </section>
   );

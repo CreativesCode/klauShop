@@ -3046,6 +3046,7 @@ export type ProductDetailPageQueryQuery = {
         rating: any;
         price: any;
         discount?: any | null;
+        badge?: string | null;
         stock?: number | null;
         tags: any;
         totalComments: number;
@@ -7318,6 +7319,10 @@ export const ProductDetailPageQueryDocument = {
                             {
                               kind: "Field",
                               name: { kind: "Name", value: "discount" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "badge" },
                             },
                             {
                               kind: "Field",

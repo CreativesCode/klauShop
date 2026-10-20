@@ -9,6 +9,8 @@ interface ProductStockAndFormWrapperProps {
   colors?: string[] | null;
   sizes?: string[] | null;
   materials?: string[] | null;
+  /** Final unit price, shown in the mobile buy bar */
+  price: number;
 }
 
 export function ProductStockAndFormWrapper({
@@ -17,30 +19,28 @@ export function ProductStockAndFormWrapper({
   colors,
   sizes,
   materials,
+  price,
 }: ProductStockAndFormWrapperProps) {
   // One stock request shared by the header and the form (same number in both)
   const { availableStock, isLoading } = useAvailableStock(productId);
 
   return (
     <>
-      <section className="mb-2">
-        <ProductStockDisplay
-          availableStock={availableStock}
-          totalStock={totalStock}
-          isLoading={isLoading}
-        />
-      </section>
+      <ProductStockDisplay
+        availableStock={availableStock}
+        totalStock={totalStock}
+        isLoading={isLoading}
+      />
 
-      <section className="flex mb-2 items-end space-x-2">
-        <AddProductToCartForm
-          productId={productId}
-          colors={colors}
-          sizes={sizes}
-          materials={materials}
-          availableStock={availableStock}
-          isLoadingStock={isLoading}
-        />
-      </section>
+      <AddProductToCartForm
+        productId={productId}
+        colors={colors}
+        sizes={sizes}
+        materials={materials}
+        availableStock={availableStock}
+        isLoadingStock={isLoading}
+        price={price}
+      />
     </>
   );
 }

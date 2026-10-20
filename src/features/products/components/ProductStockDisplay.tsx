@@ -1,10 +1,25 @@
 "use client";
 
+import { cn } from "@/lib/utils";
+
 interface ProductStockDisplayProps {
   // Available stock (physical minus reservations); null while unknown
   availableStock: number | null;
   totalStock: number;
   isLoading?: boolean;
+}
+
+export function getStockLabel(stock: number) {
+  if (stock === 0)
+    return { text: "Sin stock disponible", className: "text-red-700" };
+  if (stock === 1)
+    return { text: "Última unidad disponible", className: "text-accent-700" };
+  if (stock < 5)
+    return { text: `Quedan ${stock} unidades`, className: "text-accent-700" };
+  return {
+    text: "En stock · listo para entregar",
+    className: "text-emerald-700",
+  };
 }
 
 export function ProductStockDisplay({
@@ -14,35 +29,20 @@ export function ProductStockDisplay({
 }: ProductStockDisplayProps) {
   if (isLoading) {
     return (
-      <div className="text-muted-foreground font-semibold">
+      <p className="flex items-center gap-2 text-sm font-bold text-neutral-500">
+        <span className="size-2 rounded-full bg-current" aria-hidden />
         Comprobando stock…
-      </div>
+      </p>
     );
   }
 
   // Physical stock only as a fallback when the check failed
-  const displayStock = availableStock ?? totalStock;
-
-  if (displayStock === 0) {
-    return (
-      <div className="text-red-500 font-semibold text-lg">
-        Sin stock disponible
-      </div>
-    );
-  }
-
-  if (displayStock < 5) {
-    return (
-      <div className="text-yellow-600 font-semibold">
-        Stock bajo - ¡Solo {displayStock} disponible
-        {displayStock === 1 ? "" : "s"}!
-      </div>
-    );
-  }
+  const { text, className } = getStockLabel(availableStock ?? totalStock);
 
   return (
-    <div className="text-green-600 font-semibold">
-      En Stock ({displayStock} disponible{displayStock === 1 ? "" : "s"})
-    </div>
+    <p className={cn("flex items-center gap-2 text-sm font-bold", className)}>
+      <span className="size-2 rounded-full bg-current" aria-hidden />
+      {text}
+    </p>
   );
 }

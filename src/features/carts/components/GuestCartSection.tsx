@@ -1,13 +1,4 @@
 "use client";
-import { formatCUP } from "@/lib/utils";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import { getDiscountedUnitPrice } from "@/features/orders/utils/pricing";
@@ -21,6 +12,7 @@ import useCartStore, {
   getProductIdFromCartKey,
 } from "../useCartStore";
 import CartItemCard from "./CartItemCard";
+import { CartLayout } from "./CartLayout";
 import EmptyCart from "./EmptyCart";
 
 function GuestCartSection() {
@@ -144,66 +136,51 @@ function GuestCartSection() {
   };
 
   return (
-    <section
-      aria-label="Cart Section"
-      className="grid grid-cols-12 gap-x-6 gap-y-5"
+    <CartLayout
+      productCount={productCount}
+      subtotal={subtotal}
+      checkout={
+        <WhatsAppCheckoutButton
+          cartItems={
+            data?.productsCollection.edges.flatMap(({ node }) => {
+              return Object.entries(cartItems)
+                .filter(([key]) => getProductIdFromCartKey(key) === node.id)
+                .map(([, item]) => ({
+                  productId: node.id,
+                  quantity: item.quantity,
+                  color: item.color,
+                  size: item.size,
+                  material: item.material,
+                }));
+            }) || []
+          }
+          subtotal={subtotal}
+          disabled={isLoading}
+          className="w-full"
+        />
+      }
     >
-      <div className="col-span-12 md:col-span-9 overflow-y-auto space-y-3">
-        {data?.productsCollection.edges.flatMap(({ node }) => {
-          // Encontrar todas las combinaciones de este producto en el carrito
-          return Object.entries(cartItems)
-            .filter(([key]) => getProductIdFromCartKey(key) === node.id)
-            .map(([cartKey, item]) => (
-              <CartItemCard
-                key={cartKey}
-                id={cartKey}
-                product={node}
-                quantity={item.quantity}
-                selectedColor={item.color}
-                selectedSize={item.size}
-                selectedMaterial={item.material}
-                addOneHandler={() => addOneHandler(cartKey, item.quantity)}
-                minusOneHandler={() => minusOneHandler(cartKey, item.quantity)}
-                removeHandler={() => removeHandler(cartKey)}
-                disabled={isLoading}
-              />
-            ));
-        })}
-      </div>
-
-      <Card className="w-full h-[180px] px-3 col-span-12 md:col-span-3">
-        <CardHeader className="px-3 pt-2 pb-0 text-md">
-          <CardTitle className="text-lg mb-0">Subtotal: </CardTitle>
-          <CardDescription>{`${productCount} producto${productCount > 1 ? "s" : ""}`}</CardDescription>
-        </CardHeader>
-        <CardContent className="relative overflow-hidden px-3 py-2">
-          <p className="text-3xl md:text-lg lg:text-2xl font-bold">
-            {formatCUP(subtotal)}
-          </p>
-        </CardContent>
-
-        <CardFooter className="gap-x-2 md:gap-x-5 px-3 flex-col gap-y-3">
-          <WhatsAppCheckoutButton
-            cartItems={
-              data?.productsCollection.edges.flatMap(({ node }) => {
-                return Object.entries(cartItems)
-                  .filter(([key]) => getProductIdFromCartKey(key) === node.id)
-                  .map(([, item]) => ({
-                    productId: node.id,
-                    quantity: item.quantity,
-                    color: item.color,
-                    size: item.size,
-                    material: item.material,
-                  }));
-              }) || []
-            }
-            subtotal={subtotal}
-            disabled={isLoading}
-            className="w-full"
-          />
-        </CardFooter>
-      </Card>
-    </section>
+      {data?.productsCollection.edges.flatMap(({ node }) => {
+        // Encontrar todas las combinaciones de este producto en el carrito
+        return Object.entries(cartItems)
+          .filter(([key]) => getProductIdFromCartKey(key) === node.id)
+          .map(([cartKey, item]) => (
+            <CartItemCard
+              key={cartKey}
+              id={cartKey}
+              product={node}
+              quantity={item.quantity}
+              selectedColor={item.color}
+              selectedSize={item.size}
+              selectedMaterial={item.material}
+              addOneHandler={() => addOneHandler(cartKey, item.quantity)}
+              minusOneHandler={() => minusOneHandler(cartKey, item.quantity)}
+              removeHandler={() => removeHandler(cartKey)}
+              disabled={isLoading}
+            />
+          ));
+      })}
+    </CartLayout>
   );
 }
 
@@ -211,33 +188,25 @@ export default GuestCartSection;
 
 export const LoadingCartSection = () => (
   <section
-    className="grid grid-cols-12 gap-x-6 gap-y-5"
-    aria-label="Loading Skeleton"
+    className="grid items-start gap-5 md:grid-cols-[minmax(0,1fr)_360px] lg:gap-8"
+    aria-label="Cargando carrito"
   >
-    <div className="col-span-12 md:col-span-9 space-y-8">
-      {[...Array(4)].map((_, index) => (
+    <div className="rounded-[18px] border border-line bg-white px-4 md:px-5">
+      {[...Array(3)].map((_, index) => (
         <div
-          className="flex items-center justify-between gap-x-6 gap-y-8 border-b p-5"
+          className="flex gap-3.5 border-b border-line-soft py-3.5 last:border-b-0"
           key={index}
         >
-          <Skeleton className="h-[120px] w-[120px]" />
-          <div className="space-y-3 w-full">
-            <Skeleton className="h-6 max-w-xs" />
-            <Skeleton className="h-4" />
-            <Skeleton className="h-4 w-full max-w-xl" />
-            <Skeleton className="h-4 w-full max-w-lg" />
+          <Skeleton className="h-24 w-[76px] rounded-xl" />
+          <div className="flex-1 space-y-2.5">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-3 w-1/3" />
+            <Skeleton className="mt-4 h-9 w-[104px] rounded-full" />
           </div>
         </div>
       ))}
     </div>
-    <div className="w-full h-[180px] px-3 col-span-12 md:col-span-3 border p-5">
-      <div className="space-y-3 w-full">
-        <Skeleton className="h-6 max-w-xs" />
-        <Skeleton className="h-4" />
-        <Skeleton className="h-4 mb-6" />
-        <Skeleton className="h-4 mb-6 max-w-[280px]" />
-      </div>
-    </div>
+    <Skeleton className="hidden h-[240px] rounded-[18px] md:block" />
   </section>
 );
 

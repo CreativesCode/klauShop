@@ -6,19 +6,10 @@ import React from "react";
 
 import QuantityInput from "../../../components/layouts/QuantityInput";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
+import { colorName } from "@/lib/colorName";
 import { formatCUP, keytoUrl, stripHtml } from "@/lib/utils";
 import Link from "next/link";
 import { Icons } from "../../../components/layouts/icons";
-import { Button } from "../../../components/ui/button";
 import { getDiscountedUnitPrice } from "@/features/orders/utils/pricing";
 
 export const CartItemCardFragment = gql(/* GraphQL */ `
@@ -37,7 +28,7 @@ export const CartItemCardFragment = gql(/* GraphQL */ `
   }
 `);
 
-type CartItemCardProps = React.ComponentProps<typeof Card> & {
+type CartItemCardProps = React.HTMLAttributes<HTMLDivElement> & {
   product: DocumentType<typeof CartItemCardFragment>;
   disabled?: boolean;
   addOneHandler: () => void;
@@ -60,8 +51,6 @@ function CartItemCard({
   selectedSize,
   selectedMaterial,
 }: CartItemCardProps) {
-  const hasOptions = selectedColor || selectedSize || selectedMaterial;
-
   // Calcular el precio con descuento
   const discountValue = product.discount
     ? parseFloat(product.discount.toString())
@@ -71,109 +60,92 @@ function CartItemCard({
   // Same per-unit rounding as the server (order_lines.price)
   const discountedPrice = getDiscountedUnitPrice(priceValue, discountValue);
 
+  const variant = [
+    selectedSize && `Talla ${selectedSize}`,
+    selectedColor && colorName(selectedColor),
+    selectedMaterial,
+  ].filter(Boolean);
+
   return (
-    <Card className="flex items-center justify-between gap-x-6 gap-y-8 px-5 py-3 shadow-none border-0 border-b">
-      <div className="flex items-center gap-x-6">
-        <CardContent className="relative p-0 overflow-hidden ">
-          <Image
-            src={keytoUrl(product.featuredImage.key)}
-            alt={product.featuredImage.alt}
-            width={150}
-            height={150}
-            className="aspect-square object-cover rounded-md"
-          />
-        </CardContent>
+    <div className="flex gap-3.5 border-b border-line-soft py-3.5 last:border-b-0">
+      <Link
+        href={`/shop/${product.slug}`}
+        className="relative h-24 w-[76px] shrink-0 overflow-hidden rounded-xl bg-surface-tint"
+      >
+        <Image
+          src={keytoUrl(product.featuredImage.key)}
+          alt={product.featuredImage.alt || product.name}
+          fill
+          sizes="76px"
+          className="object-cover"
+        />
+      </Link>
 
-        <CardHeader className="p-0 mb-3 md:mb-5 grow max-w-lg">
-          <CardTitle>
-            <Link href={`/shop/${product.slug}`} className="hover:underline">
-              {product.name}
-            </Link>
-          </CardTitle>
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <div className="flex items-start gap-2">
+          <Link
+            href={`/shop/${product.slug}`}
+            className="line-clamp-2 flex-1 text-sm font-bold text-ink hover:text-primary"
+          >
+            {product.name}
+          </Link>
+          <button
+            type="button"
+            onClick={removeHandler}
+            disabled={disabled}
+            aria-label={`Quitar ${product.name} del carrito`}
+            className="-mr-2 -mt-2 flex size-11 shrink-0 items-center justify-center rounded-full text-neutral-500 transition-colors hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
+          >
+            <Icons.trash2 className="size-[18px]" aria-hidden />
+          </button>
+        </div>
 
-          {hasOptions ? (
-            <CardDescription className="grow space-y-1.5 mt-2">
-              {selectedColor && (
-                <div className="flex items-center gap-x-2 flex-wrap">
-                  <span className="text-xs font-medium text-muted-foreground">
-                    Color:
-                  </span>
-                  <div className="flex items-center gap-x-1.5">
-                    <div
-                      className="w-4 h-4 rounded-full border border-gray-300"
-                      style={{ backgroundColor: selectedColor }}
-                      title={selectedColor}
-                    />
-                    <span className="text-xs text-muted-foreground">
-                      {selectedColor}
-                    </span>
-                  </div>
-                </div>
-              )}
-              {selectedSize && (
-                <div className="flex items-center gap-x-2 flex-wrap">
-                  <span className="text-xs font-medium text-muted-foreground">
-                    Talla:
-                  </span>
-                  <span className="text-xs px-1.5 py-0.5 rounded border border-gray-300 bg-gray-50 text-gray-700">
-                    {selectedSize}
-                  </span>
-                </div>
-              )}
-              {selectedMaterial && (
-                <div className="flex items-center gap-x-2 flex-wrap">
-                  <span className="text-xs font-medium text-muted-foreground">
-                    Material:
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {selectedMaterial}
-                  </span>
-                </div>
-              )}
-            </CardDescription>
-          ) : (
-            <CardDescription className="grow line-clamp-2">
-              {stripHtml(product.description)}
-            </CardDescription>
-          )}
+        {variant.length > 0 ? (
+          <p className="flex items-center gap-1.5 text-[13px] text-neutral-500">
+            {selectedColor && (
+              <span
+                className="size-3 shrink-0 rounded-full ring-1 ring-inset ring-black/10"
+                style={{ backgroundColor: selectedColor }}
+                aria-hidden
+              />
+            )}
+            <span className="truncate first-letter:uppercase">
+              {variant.join(" · ")}
+            </span>
+          </p>
+        ) : (
+          <p className="line-clamp-1 text-[13px] text-neutral-500">
+            {stripHtml(product.description)}
+          </p>
+        )}
 
+        <div className="mt-auto flex items-end justify-between gap-2 pt-1.5">
           <QuantityInput
+            size="sm"
             value={quantity}
             addOneHandler={addOneHandler}
             minusOneHandler={minusOneHandler}
             disabled={disabled}
+            maxValue={8}
           />
-        </CardHeader>
-      </div>
-
-      <CardFooter className="gap-x-2 md:gap-x-5 p-0 flex-col items-end">
-        <div className="flex flex-col items-end gap-1">
-          {hasDiscount ? (
-            <>
-              <p className="text-lg font-bold text-red-600">
-                {formatCUP(discountedPrice)}
+          <div className="text-right tabular-nums">
+            <p className="text-[15px] font-extrabold text-ink">
+              {formatCUP(discountedPrice * quantity)}
+            </p>
+            {(quantity > 1 || hasDiscount) && (
+              <p className="text-xs text-neutral-500">
+                {formatCUP(discountedPrice)} c/u
+                {hasDiscount && (
+                  <span className="ml-1 font-bold text-accent-700">
+                    -{discountValue}%
+                  </span>
+                )}
               </p>
-              <p className="text-sm text-gray-500 line-through">
-                {formatCUP(priceValue)}
-              </p>
-              <span className="text-xs bg-red-500 text-white px-2 py-0.5 rounded">
-                -{discountValue}%
-              </span>
-            </>
-          ) : (
-            <p className="text-lg font-bold">{formatCUP(priceValue)}</p>
-          )}
+            )}
+          </div>
         </div>
-
-        <Button
-          aria-label="Remove Item Button"
-          variant="ghost"
-          onClick={removeHandler}
-        >
-          <Icons.trash className="text-destructive" size={20} />
-        </Button>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 }
 

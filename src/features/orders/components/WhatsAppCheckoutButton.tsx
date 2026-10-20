@@ -17,7 +17,7 @@ import { getShippingCostFor, useShippingZones } from "@/features/shipping";
 import { normalizePhone } from "@/lib/phone";
 import { SelectAddress } from "@/lib/supabase/schema";
 import { useAuth } from "@/providers/AuthProvider";
-import Image from "next/image";
+import { Icons } from "@/components/layouts/icons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CustomerInfoInput } from "../validations";
@@ -371,17 +371,14 @@ export function WhatsAppCheckoutButton({
       <DialogTrigger asChild>
         <Button
           variant="default"
+          size="xl"
+          elevated
           className={className}
           disabled={disabled || cartItems.length === 0}
         >
-          <Image
-            src="/assets/whatsapp.svg"
-            alt="WhatsApp"
-            width={20}
-            height={20}
-            className="mr-2 h-4 w-4"
-          />
-          Continuar con WhatsApp
+          <Icons.whatsapp className="size-5" aria-hidden />
+          <span className="md:hidden">Pedir por WhatsApp</span>
+          <span className="hidden md:inline">Hacer pedido por WhatsApp</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">

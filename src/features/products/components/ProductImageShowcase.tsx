@@ -1,13 +1,17 @@
 "use client";
 import { DocumentType, gql } from "@/gql";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
-import { keytoUrl } from "@/lib/utils";
+import { BADGE_LABEL, Badge } from "@/components/ui/badge";
+import { BadgeType } from "@/lib/supabase/schema";
+import { cn, keytoUrl } from "@/lib/utils";
 import Image from "next/image";
-import { Icons } from "../../../components/layouts/icons";
 
 type ProductImageShowcaseProps = React.HTMLAttributes<HTMLDivElement> & {
   data: DocumentType<typeof ProductImageShowcaseFragment>;
+  name: string;
+  badge?: string | null;
+  discount?: number;
 };
 
 const ProductImageShowcaseFragment = gql(/* GraphQL */ `
@@ -33,75 +37,128 @@ const ProductImageShowcaseFragment = gql(/* GraphQL */ `
   }
 `);
 
-function ProductImageShowcase({ data }: ProductImageShowcaseProps) {
+/**
+ * Product gallery: swipeable main image (native scroll-snap, works with touch on iOS)
+ * plus thumbnails (left column on desktop, row below on mobile).
+ */
+function ProductImageShowcase({
+  data,
+  name,
+  badge,
+  discount = 0,
+  className,
+}: ProductImageShowcaseProps) {
   const allImages = [
     data.featuredImage,
     ...(data.images?.edges.map(({ node }) => node.media) || []),
-  ];
+  ].filter(
+    (image, index, list) =>
+      image && list.findIndex((other) => other?.id === image.id) === index,
+  );
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const trackRef = useRef<HTMLDivElement>(null);
 
-  const nextImage = () => {
-    if (activeImageIndex < allImages.length - 1) {
-      setActiveImageIndex((prevIndex) => prevIndex + 1);
-    }
+  const goTo = (index: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+    track.scrollTo({ left: index * track.clientWidth, behavior: "smooth" });
+    setActiveImageIndex(index);
   };
 
-  // Function to navigate to the previous image
-  const prevImage = () => {
-    if (activeImageIndex > 0) {
-      setActiveImageIndex((prevIndex) => prevIndex - 1);
-    }
+  const onScroll = () => {
+    const track = trackRef.current;
+    if (!track || !track.clientWidth) return;
+    const index = Math.round(track.scrollLeft / track.clientWidth);
+    if (index !== activeImageIndex) setActiveImageIndex(index);
   };
+
   return (
-    <section className="flex md:flex-row flex-col items-start gap-x-8 gap-y-5">
-      {/* Active Image Display */}
-      <div className="w-full max-w-2xl order-1 md:order-3 grow">
-        {allImages[activeImageIndex] && (
-          <Image
-            src={keytoUrl(allImages[activeImageIndex].key)}
-            alt={allImages[activeImageIndex].alt || "Product image"}
-            className="w-full h-auto object-cover aspect-square mb-5"
-            width={1024}
-            height={1024}
-            // LCP image of the product page: load it first, at the rendered width
-            priority
-            sizes="(max-width: 768px) 100vw, 672px"
-          />
-        )}
-      </div>
-
-      {/* Thumbnails */}
-      <div className="relative order-2 overflow-x-auto w-full md:w-[100px] h-full">
-        <div className="flex overflow-x-auto gap-x-5 gapy-y-5 order-2 justify-start flex-row md:flex-col">
+    <section
+      className={cn(
+        "flex min-w-0 flex-col-reverse gap-3 md:flex-row",
+        className,
+      )}
+    >
+      {allImages.length > 1 && (
+        <div className="no-scrollbar flex shrink-0 gap-2 overflow-x-auto md:max-h-[640px] md:flex-col md:overflow-y-auto md:overflow-x-visible">
           {allImages.map((image, index) => (
-            <Image
+            <button
               key={image.id}
-              src={keytoUrl(image.key)}
-              alt={image.alt || "Product image thumbnail"}
-              width={100}
-              height={100}
-              className={` aspect-[1/1] object-cover cursor-pointer p-1 ${activeImageIndex === index ? "border-2 border-blue-500" : ""}`}
-              onClick={() => setActiveImageIndex(index)}
-            />
+              type="button"
+              onClick={() => goTo(index)}
+              aria-label={`Ver imagen ${index + 1}`}
+              aria-current={activeImageIndex === index}
+              className={cn(
+                "relative h-[90px] w-[72px] shrink-0 overflow-hidden rounded-xl border-2 bg-surface-tint transition-colors",
+                activeImageIndex === index
+                  ? "border-primary"
+                  : "border-transparent hover:border-line",
+              )}
+            >
+              <Image
+                src={keytoUrl(image.key)}
+                alt=""
+                fill
+                sizes="72px"
+                className="object-cover"
+              />
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className="relative min-w-0 flex-1">
+        <div
+          ref={trackRef}
+          onScroll={onScroll}
+          className="no-scrollbar flex aspect-[4/5] snap-x snap-mandatory overflow-x-auto overflow-y-hidden rounded-3xl bg-surface-tint"
+        >
+          {allImages.map((image, index) => (
+            <div
+              key={image.id}
+              className="relative h-full w-full shrink-0 snap-center"
+            >
+              <Image
+                src={keytoUrl(image.key)}
+                alt={image.alt || name}
+                fill
+                // LCP image of the product page: load it first, at the rendered width
+                priority={index === 0}
+                sizes="(max-width: 768px) 100vw, 620px"
+                className="object-cover"
+              />
+            </div>
           ))}
         </div>
 
-        <div className="md:hidden block">
-          <button
-            onClick={prevImage}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2"
-          >
-            <Icons.chevronLeft />
-          </button>
+        {(badge || discount > 0) && (
+          <div className="pointer-events-none absolute left-3 top-3 flex flex-col items-start gap-1.5">
+            {badge && (
+              <Badge variant={badge as BadgeType}>
+                {BADGE_LABEL[badge] ?? "Destacado"}
+              </Badge>
+            )}
+            {discount > 0 && <Badge variant="discount">-{discount}%</Badge>}
+          </div>
+        )}
 
-          <button
-            onClick={nextImage}
-            className="absolute right-0 top-1/2  md:top-unset transform -translate-y-1/2 bg-gray-800 text-white p-2"
-          >
-            <Icons.chevronRight />
-          </button>
-        </div>
+        {allImages.length > 1 && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center gap-1.5 md:hidden">
+            {allImages.map((image, index) => (
+              <span
+                key={image.id}
+                className={cn(
+                  "h-1.5 rounded-full transition-all",
+                  index === activeImageIndex
+                    ? "w-4 bg-white"
+                    : "w-1.5 bg-white/60",
+                )}
+                aria-hidden
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
