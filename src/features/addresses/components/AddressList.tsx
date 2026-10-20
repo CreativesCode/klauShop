@@ -82,11 +82,11 @@ export function AddressList({ addresses, onEdit }: AddressListProps) {
 
   if (addresses.length === 0) {
     return (
-      <div className="text-center py-12 border rounded-lg border-dashed">
-        <p className="text-muted-foreground">
+      <div className="rounded-[18px] border border-dashed border-neutral-300 bg-white px-6 py-12 text-center">
+        <p className="text-[15px] font-semibold text-ink">
           No tienes direcciones guardadas todavía
         </p>
-        <p className="text-sm text-muted-foreground mt-2">
+        <p className="mt-1 text-sm text-neutral-500">
           Crea tu primera dirección para agilizar tus pedidos
         </p>
       </div>

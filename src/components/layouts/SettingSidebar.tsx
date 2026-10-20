@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "../ui/button";
 
 interface SettingSidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   items: {
@@ -23,7 +22,7 @@ export function SettingSidebarNav({
   return (
     <nav
       className={cn(
-        "flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1",
+        "no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 lg:mx-0 lg:flex-col lg:gap-1 lg:px-0",
         className,
       )}
       {...props}
@@ -32,12 +31,12 @@ export function SettingSidebarNav({
         <Link
           key={item.href}
           href={item.href}
+          aria-current={pathname === item.href ? "page" : undefined}
           className={cn(
-            buttonVariants({ variant: "ghost" }),
+            "inline-flex h-10 shrink-0 items-center rounded-full border px-4 text-sm font-bold transition-colors lg:h-11 lg:rounded-xl lg:border-transparent",
             pathname === item.href
-              ? "bg-muted hover:bg-muted"
-              : "hover:bg-transparent hover:underline",
-            "justify-start",
+              ? "border-ink bg-ink text-white lg:bg-primary-50 lg:text-primary-700"
+              : "border-neutral-200 bg-white text-neutral-700 hover:border-ink lg:bg-transparent lg:hover:border-transparent lg:hover:bg-surface-hover",
           )}
         >
           {item.title}

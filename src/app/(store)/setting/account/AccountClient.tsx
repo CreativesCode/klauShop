@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import { updateAdminPhone } from "@/features/users";
 import supabaseClient from "@/lib/supabase/client";
@@ -185,15 +184,13 @@ export function AccountClient({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-5">
       <div>
-        <h3 className="text-lg font-medium">Cuenta</h3>
-        <p className="text-sm text-muted-foreground">
+        <h2 className="text-lg font-extrabold text-ink">Cuenta</h2>
+        <p className="text-sm text-neutral-500">
           Gestiona tu correo, contraseña y sesión.
         </p>
       </div>
-
-      <Separator />
 
       <Card>
         <CardHeader>
@@ -214,7 +211,7 @@ export function AccountClient({
                 autoComplete="email"
               />
             </div>
-            <Button disabled={!user || isChangingEmail} type="submit">
+            <Button size="lg" disabled={!user || isChangingEmail} type="submit">
               Guardar email
             </Button>
           </form>
@@ -249,7 +246,11 @@ export function AccountClient({
                 autoComplete="new-password"
               />
             </div>
-            <Button disabled={!user || isChangingPassword} type="submit">
+            <Button
+              size="lg"
+              disabled={!user || isChangingPassword}
+              type="submit"
+            >
               Cambiar contraseña
             </Button>
           </form>
@@ -278,7 +279,7 @@ export function AccountClient({
                   autoComplete="tel"
                 />
               </div>
-              <Button disabled={isSavingPhone} type="submit">
+              <Button size="lg" disabled={isSavingPhone} type="submit">
                 Guardar teléfono
               </Button>
             </form>
@@ -293,8 +294,9 @@ export function AccountClient({
         </CardHeader>
         <CardContent className="flex items-center gap-3">
           <Button
+            size="lg"
             disabled={!user || isSigningOut}
-            variant="destructive"
+            variant="destructiveSoft"
             onClick={onSignOut}
           >
             Cerrar sesión

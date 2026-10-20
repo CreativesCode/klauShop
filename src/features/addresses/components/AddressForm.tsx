@@ -187,7 +187,7 @@ export function AddressForm({
             control={form.control}
             name="isDefault"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-xl border border-line p-4">
                 <FormControl>
                   <Checkbox
                     checked={field.value}
@@ -208,7 +208,7 @@ export function AddressForm({
           />
         )}
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
           {isLoading ? "Guardando..." : submitLabel}
         </Button>
       </form>

@@ -28,10 +28,12 @@ async function AddressPage() {
     .orderBy(desc(address.isDefault), desc(address.createdAt));
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-5">
       <div>
-        <h3 className="text-lg font-medium">Direcciones de entrega</h3>
-        <p className="text-sm text-muted-foreground">
+        <h2 className="text-lg font-extrabold text-ink">
+          Direcciones de entrega
+        </h2>
+        <p className="text-sm text-neutral-500">
           Gestiona tus direcciones de entrega para agilizar tus pedidos
         </p>
       </div>

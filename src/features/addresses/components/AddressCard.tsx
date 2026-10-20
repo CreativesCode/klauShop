@@ -41,7 +41,11 @@ export function AddressCard({
   showActions = true,
 }: AddressCardProps) {
   return (
-    <Card className={address.isDefault ? "border-primary" : ""}>
+    <Card
+      className={
+        address.isDefault ? "border-primary ring-1 ring-inset ring-primary" : ""
+      }
+    >
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="space-y-1">
@@ -49,12 +53,12 @@ export function AddressCard({
               {address.name}
               {address.isDefault && (
                 <Badge variant="default" className="gap-1">
-                  <Star className="h-3 w-3 fill-current" />
+                  <Star className="size-3 fill-current" aria-hidden />
                   Predeterminada
                 </Badge>
               )}
             </CardTitle>
-            <p className="text-sm font-medium text-muted-foreground">
+            <p className="text-sm font-semibold text-neutral-600">
               {address.recipientName}
             </p>
           </div>
@@ -62,22 +66,22 @@ export function AddressCard({
       </CardHeader>
       <CardContent className="space-y-2">
         <div className="flex items-start gap-2 text-sm">
-          <Phone className="h-4 w-4 mt-0.5 text-muted-foreground" />
+          <Phone className="mt-0.5 size-4 text-neutral-400" aria-hidden />
           <span>{address.phone}</span>
         </div>
         <div className="flex items-start gap-2 text-sm">
-          <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground" />
+          <MapPin className="mt-0.5 size-4 text-neutral-400" aria-hidden />
           <div className="space-y-1">
-            <p className="font-medium">{address.zone}</p>
+            <p className="font-semibold text-ink">{address.zone}</p>
             {address.fullAddress && (
-              <p className="text-muted-foreground">{address.fullAddress}</p>
+              <p className="text-neutral-600">{address.fullAddress}</p>
             )}
           </div>
         </div>
         {address.notes && (
-          <div className="pt-2 border-t">
-            <p className="text-sm text-muted-foreground">
-              <span className="font-medium">Notas:</span> {address.notes}
+          <div className="rounded-xl bg-cream px-3.5 py-2.5">
+            <p className="text-sm text-neutral-600">
+              <span className="font-bold text-ink">Notas:</span> {address.notes}
             </p>
           </div>
         )}
@@ -87,35 +91,37 @@ export function AddressCard({
           {!address.isDefault && onSetDefault && (
             <Button
               variant="outline"
-              size="sm"
               onClick={() => onSetDefault(address.id)}
               disabled={isLoading}
-              className="flex-1"
+              className="h-10 flex-1 rounded-full"
             >
-              <Star className="h-4 w-4 mr-2" />
+              <Star className="size-4" aria-hidden />
               Predeterminada
             </Button>
           )}
           {onEdit && (
             <Button
               variant="outline"
-              size="sm"
+              size="icon"
               onClick={() => onEdit(address)}
               disabled={isLoading}
+              className="size-10"
+              aria-label="Editar dirección"
             >
-              <Pencil className="h-4 w-4" />
+              <Pencil className="size-4" aria-hidden />
             </Button>
           )}
           {onDelete && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
-                  variant="outline"
-                  size="sm"
+                  variant="destructiveSoft"
+                  size="icon"
                   disabled={isLoading}
-                  className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                  className="size-10"
+                  aria-label="Eliminar dirección"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="size-4" aria-hidden />
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -130,7 +136,7 @@ export function AddressCard({
                   <AlertDialogCancel>Cancelar</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={() => onDelete(address.id)}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    className="bg-red-600 text-white hover:bg-red-700"
                   >
                     Eliminar
                   </AlertDialogAction>

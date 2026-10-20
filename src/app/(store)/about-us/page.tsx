@@ -1,17 +1,10 @@
-import Header from "@/components/layouts/Header";
+import { Icons } from "@/components/layouts/icons";
 import { Shell } from "@/components/layouts/Shell";
 import { buttonVariants } from "@/components/ui/button";
 import { getPageMetadata, siteConfig } from "@/config/site";
+import { generateWhatsAppUrl } from "@/features/orders/utils/whatsapp";
 import { cn } from "@/lib/utils";
-import {
-  CheckCircle,
-  Heart,
-  ShoppingBag,
-  Sparkles,
-  Target,
-  Users,
-} from "lucide-react";
-import Image from "next/image";
+import { Heart, ShoppingBag, Target, Users } from "lucide-react";
 import Link from "next/link";
 
 export const metadata = getPageMetadata(
@@ -55,6 +48,23 @@ const missionPoints = [
   "Seguir trabajando con productos de calidad y precio justo",
 ];
 
+const highlights = [
+  {
+    title: "Envíos a domicilio",
+    description: `Entregas rápidas y confiables en ${siteConfig.zones}.`,
+  },
+  {
+    title: "Encargos internacionales",
+    description:
+      "Shein, Temu y Amazon: envías el link, te cotizamos y gestionamos todo.",
+  },
+  {
+    title: "Atención personalizada",
+    description:
+      "Te ayudamos a elegir talla, estilo y opciones según tu presupuesto.",
+  },
+];
+
 const whyChooseUs = [
   {
     title: "Selección cuidadosa",
@@ -77,270 +87,169 @@ const whyChooseUs = [
   },
 ];
 
+const sectionTitle =
+  "text-[clamp(22px,2.4vw,30px)] font-extrabold tracking-[-0.02em] text-ink";
+
 export default function AboutUsPage() {
+  const contactUrl = generateWhatsAppUrl("Hola, tengo una pregunta");
+
   return (
-    <main>
-      <Shell>
-        <Header
-          heading="Sobre Nosotros"
-          description={`Conoce más sobre ${siteConfig.name}, nuestra historia, misión y valores. Estamos aquí para hacer que la moda sea accesible para todos.`}
-          descriptionClassName="text-center max-w-4xl mx-auto"
-        />
-
-        {/* Hero Section */}
-        <section className="mb-16">
-          <div className="relative overflow-hidden rounded-2xl border border-primary-100/80 bg-gradient-to-br from-primary-50 via-white to-accent-50 p-6 md:p-10 lg:p-12">
-            <div className="pointer-events-none absolute inset-0 opacity-70 [mask-image:radial-gradient(ellipse_at_center,black,transparent_65%)]">
-              <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-primary-200 blur-3xl" />
-              <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-accent-200 blur-3xl" />
-            </div>
-
-            <div className="relative grid gap-10 lg:grid-cols-12 lg:items-center">
-              <div className="lg:col-span-7">
-                <div className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-xs font-medium text-primary-700 ring-1 ring-primary-200/60 backdrop-blur">
-                  <Sparkles className="h-4 w-4 text-accent-600" />
-                  Moda y accesorios con atención directa
-                </div>
-
-                <h2 className="mt-4 text-3xl font-semibold tracking-tight text-primary-950 md:text-4xl">
-                  Bienvenido a {siteConfig.name}
-                </h2>
-
-                <p className="mt-4 text-base leading-relaxed text-primary-800 md:text-lg">
-                  Somos una tienda online de ropa y accesorios pensada para que
-                  comprar sea fácil, rápido y seguro. Nuestro objetivo es
-                  seleccionar productos con excelente relación calidad-precio y
-                  ofrecer atención directa para ayudarte a elegir la mejor
-                  opción.
-                </p>
-                <p className="mt-4 text-sm leading-relaxed text-primary-800 md:text-base">
-                  Realizamos envíos a domicilio en{" "}
-                  <strong className="text-primary-900">
-                    {siteConfig.zones}
-                  </strong>{" "}
-                  y también gestionamos compras por encargo en Shein, Temu y
-                  Amazon: envíanos el link, te cotizamos y te lo llevamos.
-                </p>
-
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                  <Link
-                    href="/shop"
-                    className={cn(
-                      buttonVariants({ variant: "default", size: "lg" }),
-                      "bg-primary-600 text-white shadow-sm hover:bg-primary-700",
-                    )}
-                  >
-                    <ShoppingBag className="mr-2 h-5 w-5" />
-                    Ver Catálogo
-                  </Link>
-                  <Link
-                    href="/special-orders"
-                    className={cn(
-                      buttonVariants({ variant: "outline", size: "lg" }),
-                      "border-primary-200 bg-white/60 text-primary-800 shadow-sm hover:bg-accent-50 hover:text-primary-950",
-                    )}
-                  >
-                    Servicio de Encargos
-                  </Link>
-                </div>
-              </div>
-
-              <div className="lg:col-span-5">
-                <div className="grid gap-4">
-                  <div className="rounded-xl border border-primary-100/80 bg-white/70 p-5 shadow-sm ring-1 ring-primary-200/40 backdrop-blur">
-                    <p className="text-xs font-medium text-primary-700">
-                      Envíos a domicilio
-                    </p>
-                    <p className="mt-1 text-sm leading-relaxed text-primary-800">
-                      Entregas rápidas y confiables en{" "}
-                      <strong className="text-primary-900">
-                        {siteConfig.zones}
-                      </strong>
-                      .
-                    </p>
-                  </div>
-
-                  <div className="rounded-xl border border-primary-100/80 bg-white/70 p-5 shadow-sm ring-1 ring-primary-200/40 backdrop-blur">
-                    <p className="text-xs font-medium text-primary-700">
-                      Encargos internacionales
-                    </p>
-                    <p className="mt-1 text-sm leading-relaxed text-primary-800">
-                      Shein, Temu y Amazon: envías el link, te cotizamos y
-                      gestionamos todo.
-                    </p>
-                  </div>
-
-                  <div className="rounded-xl border border-primary-100/80 bg-white/70 p-5 shadow-sm ring-1 ring-primary-200/40 backdrop-blur">
-                    <p className="text-xs font-medium text-primary-700">
-                      Atención personalizada
-                    </p>
-                    <p className="mt-1 text-sm leading-relaxed text-primary-800">
-                      Te ayudamos a elegir talla, estilo y opciones según tu
-                      presupuesto.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Mission Section */}
-        <section className="mb-16">
-          <h2 className="text-2xl md:text-3xl font-semibold text-center mb-8 text-primary">
-            Nuestra Misión
-          </h2>
-          <div className="rounded-2xl border border-primary-100/80 bg-white p-6 shadow-sm md:p-10">
-            <p className="text-base md:text-lg text-primary-800 mb-8 text-center max-w-3xl mx-auto leading-relaxed">
-              En {siteConfig.name}, nuestra misión es hacer que la moda sea
-              accesible para todos, ofreciendo productos de calidad a precios
-              justos y proporcionando un servicio excepcional que supere las
-              expectativas de nuestros clientes.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
-              {missionPoints.map((point, index) => (
-                <div
-                  key={index}
-                  className="group flex items-start gap-3 rounded-xl border border-primary-100/80 bg-gradient-to-br from-primary-50 to-white p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
-                >
-                  <div className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-accent-100 text-accent-700 ring-1 ring-accent-200">
-                    <CheckCircle className="h-4 w-4" />
-                  </div>
-                  <p className="text-sm text-primary-800">{point}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Values Section */}
-        <section className="mb-16">
-          <h2 className="text-2xl md:text-3xl font-semibold text-center mb-12 text-primary">
-            Nuestros Valores
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {values.map((value, index) => {
-              const Icon = value.icon;
-              return (
-                <div
-                  key={index}
-                  className="group relative overflow-hidden rounded-2xl border border-primary-100/80 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg"
-                >
-                  <div className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-accent-100 blur-2xl opacity-0 transition-opacity group-hover:opacity-70" />
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center ring-1 ring-primary-200/70">
-                        <Icon className="h-6 w-6 text-primary-700" />
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-primary mb-2">
-                        {value.title}
-                      </h3>
-                      <p className="text-sm text-primary-800 leading-relaxed">
-                        {value.description}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* Why Choose Us Section */}
-        <section className="mb-16">
-          <h2 className="text-2xl md:text-3xl font-semibold text-center mb-12 text-primary">
-            ¿Por qué elegir {siteConfig.name}?
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {whyChooseUs.map((item, index) => (
-              <div
-                key={index}
-                className="flex gap-4 rounded-2xl border border-primary-100/80 bg-white p-6 shadow-sm"
-              >
-                <div className="flex-shrink-0">
-                  <div className="mt-1 flex h-10 w-10 items-center justify-center rounded-full bg-accent-100 text-accent-700 ring-1 ring-accent-200">
-                    <CheckCircle className="h-5 w-5" />
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-primary mb-2">
-                    {item.title}
-                  </h3>
-                  <p className="text-sm text-primary-800 leading-relaxed">
-                    {item.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="relative overflow-hidden rounded-2xl border border-primary-100/80 bg-gradient-to-br from-primary-50 via-white to-accent-50 p-6 text-center shadow-sm md:p-10">
-          <div className="pointer-events-none absolute inset-0 opacity-70 [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]">
-            <div className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-primary-200 blur-3xl" />
-          </div>
-          <h2 className="relative text-xl md:text-2xl font-semibold text-primary mb-4">
-            ¿Listo para empezar a comprar?
-          </h2>
-          <p className="relative text-sm md:text-base text-primary-800 mb-6 max-w-2xl mx-auto">
-            Explora nuestra colección de ropa y accesorios, o contáctanos si
-            necesitas ayuda para encontrar algo específico.
+    <Shell className="gap-12 md:gap-16">
+      <section className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,360px),1fr))] items-center gap-[clamp(28px,4vw,56px)] rounded-4xl bg-cream p-[clamp(28px,5vw,64px)]">
+        <div className="flex flex-col items-start gap-5">
+          <span className="text-xs font-extrabold uppercase tracking-[.14em] text-primary-700">
+            Sobre nosotros
+          </span>
+          <h1 className="font-display text-[clamp(38px,4.6vw,64px)] leading-none tracking-[-0.01em] text-ink">
+            Bienvenido a{" "}
+            <em className="italic text-primary">{siteConfig.name}</em>
+          </h1>
+          <p className="max-w-xl text-[15px] leading-relaxed text-neutral-700">
+            Somos una tienda online de ropa y accesorios pensada para que
+            comprar sea fácil, rápido y seguro. Seleccionamos productos con
+            excelente relación calidad-precio y te atendemos directamente para
+            ayudarte a elegir la mejor opción.
           </p>
-          <div className="relative flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="flex flex-wrap gap-3">
             <Link
               href="/shop"
-              className={cn(
-                buttonVariants({ variant: "default", size: "lg" }),
-                "bg-primary-600 hover:bg-primary-700 text-white shadow-sm",
-              )}
+              className={cn(buttonVariants({ size: "xl" }), "shadow-cta")}
             >
-              <ShoppingBag className="mr-2 h-5 w-5" />
-              Ver Catálogo
+              Ver catálogo
+              <Icons.arrowRight className="size-4" aria-hidden />
             </Link>
             <Link
               href="/special-orders"
               className={cn(
-                buttonVariants({ variant: "outline", size: "lg" }),
-                "border-primary-200 bg-white/60 text-primary-800 shadow-sm hover:bg-accent-50 hover:text-primary-950",
+                buttonVariants({ variant: "outline", size: "xl" }),
+                "border-cream-strong",
               )}
             >
-              Servicio de Encargos
+              Servicio de encargos
             </Link>
           </div>
-        </section>
+        </div>
+        <ul className="flex flex-col gap-3">
+          {highlights.map((item) => (
+            <li
+              key={item.title}
+              className="rounded-[18px] border border-cream-border bg-white px-5 py-[18px]"
+            >
+              <span className="block text-base font-bold text-ink">
+                {item.title}
+              </span>
+              <span className="mt-0.5 block text-sm text-neutral-600">
+                {item.description}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
 
-        {/* Contact Section */}
-        <section className="mt-12 text-center">
-          <p className="text-lg text-primary-800 mb-4">
-            ¿Tienes preguntas o sugerencias?
+      <section className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <h2 className={sectionTitle}>Nuestra misión</h2>
+          <p className="max-w-3xl text-[15px] leading-relaxed text-neutral-600">
+            En {siteConfig.name}, nuestra misión es hacer que la moda sea
+            accesible para todos, ofreciendo productos de calidad a precios
+            justos y proporcionando un servicio excepcional que supere las
+            expectativas de nuestros clientes.
           </p>
-          <p className="text-sm text-primary-700 mb-6">
-            Estamos aquí para ayudarte. Contáctanos y te responderemos lo antes
-            posible.
-          </p>
+        </div>
+        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {missionPoints.map((point) => (
+            <li
+              key={point}
+              className="flex items-start gap-3 rounded-[18px] border border-line bg-white p-4"
+            >
+              <Icons.circleCheck
+                className="mt-0.5 size-5 shrink-0 text-emerald-600"
+                aria-hidden
+              />
+              <span className="text-sm font-semibold text-ink">{point}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="flex flex-col gap-6">
+        <h2 className={sectionTitle}>Nuestros valores</h2>
+        <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {values.map((value) => {
+            const Icon = value.icon;
+            return (
+              <li
+                key={value.title}
+                className="flex items-start gap-4 rounded-[18px] border border-line bg-white p-5"
+              >
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-50">
+                  <Icon className="size-5 text-primary" aria-hidden />
+                </span>
+                <div>
+                  <h3 className="text-base font-extrabold text-ink">
+                    {value.title}
+                  </h3>
+                  <p className="mt-1 text-sm leading-relaxed text-neutral-600">
+                    {value.description}
+                  </p>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <section className="flex flex-col gap-6">
+        <h2 className={sectionTitle}>¿Por qué elegir {siteConfig.name}?</h2>
+        <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {whyChooseUs.map((item) => (
+            <li
+              key={item.title}
+              className="flex gap-4 rounded-[18px] border border-line bg-white p-5"
+            >
+              <Icons.circleCheck
+                className="mt-0.5 size-5 shrink-0 text-emerald-600"
+                aria-hidden
+              />
+              <div>
+                <h3 className="text-base font-extrabold text-ink">
+                  {item.title}
+                </h3>
+                <p className="mt-1 text-sm leading-relaxed text-neutral-600">
+                  {item.description}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="flex flex-col items-center gap-4 rounded-4xl bg-primary-950 px-6 py-12 text-center text-white">
+        <h2 className="font-display text-[clamp(30px,3.6vw,48px)] leading-none">
+          ¿Listo para empezar a comprar?
+        </h2>
+        <p className="max-w-2xl text-[15px] text-primary-200">
+          Explora nuestra colección de ropa y accesorios, o escríbenos si
+          necesitas ayuda para encontrar algo específico.
+        </p>
+        <div className="flex flex-wrap justify-center gap-3 pt-2">
           <Link
-            href={`https://wa.me/${siteConfig.whatsappPhone.replace(/[^0-9]/g, "")}?text=Hola, tengo una pregunta`}
+            href="/shop"
+            className={buttonVariants({ variant: "secondary", size: "lg" })}
+          >
+            Ver catálogo
+          </Link>
+          <a
+            href={contactUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className={cn(
-              buttonVariants({ variant: "default", size: "lg" }),
-              "bg-green-600 hover:bg-green-700 text-white",
-            )}
+            className={buttonVariants({ variant: "accent", size: "lg" })}
           >
-            <Image
-              src="/assets/whatsapp.svg"
-              alt="WhatsApp"
-              width={20}
-              height={20}
-              className="mr-2 h-5 w-5"
-            />
+            <Icons.whatsapp className="size-5" aria-hidden />
             Contáctanos por WhatsApp
-          </Link>
-        </section>
-      </Shell>
-    </main>
+          </a>
+        </div>
+      </section>
+    </Shell>
   );
 }

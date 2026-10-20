@@ -121,12 +121,12 @@ export function AddressManagementClient({
     <div className="space-y-4">
       <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
         <DialogTrigger asChild>
-          <Button className="w-full sm:w-auto">
-            <Plus className="h-4 w-4 mr-2" />
+          <Button size="lg" className="w-full sm:w-auto">
+            <Plus className="size-4" aria-hidden />
             Nueva dirección
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90dvh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingAddress ? "Editar dirección" : "Nueva dirección"}

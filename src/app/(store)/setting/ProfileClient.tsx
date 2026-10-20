@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import supabaseClient from "@/lib/supabase/client";
@@ -170,15 +169,13 @@ export function ProfileClient() {
   const resolvedAvatarForPreview = avatarPreviewUrl || resolvedAvatar;
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-5">
       <div>
-        <h3 className="text-lg font-medium">Perfil</h3>
-        <p className="text-sm text-muted-foreground">
+        <h2 className="text-lg font-extrabold text-ink">Perfil</h2>
+        <p className="text-sm text-neutral-500">
           Actualiza tu nombre y tu foto de perfil.
         </p>
       </div>
-
-      <Separator />
 
       <Card>
         <CardHeader>
@@ -215,7 +212,7 @@ export function ProfileClient() {
                   </Avatar>
                   <div className="min-w-0 flex-1">
                     <div className="font-medium truncate">{displayName}</div>
-                    <div className="text-sm text-muted-foreground truncate">
+                    <div className="text-sm text-neutral-500 truncate">
                       {user?.email}
                     </div>
                   </div>
@@ -238,6 +235,7 @@ export function ProfileClient() {
                       className="hidden"
                     />
                     <Button
+                      size="lg"
                       type="button"
                       variant="outline"
                       disabled={!user || isUploadingAvatar}
@@ -246,7 +244,7 @@ export function ProfileClient() {
                       {isUploadingAvatar ? "Subiendo..." : "Seleccionar foto"}
                     </Button>
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-neutral-500">
                     PNG, JPG o WebP. Máximo 2MB.
                   </p>
                 </TabsContent>
@@ -258,7 +256,7 @@ export function ProfileClient() {
                     placeholder="https://ejemplo.com/mi-avatar.jpg"
                     autoComplete="url"
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-neutral-500">
                     Ingresa la URL completa de una imagen. Si dejas vacío, se
                     usará el avatar por defecto.
                   </p>
@@ -268,12 +266,14 @@ export function ProfileClient() {
 
             <div className="pt-2 flex gap-3">
               <Button
+                size="lg"
                 disabled={!user || isSaving || isUploadingAvatar}
                 type="submit"
               >
                 Guardar cambios
               </Button>
               <Button
+                size="lg"
                 type="button"
                 variant="outline"
                 disabled={!user || isSaving || isUploadingAvatar}
