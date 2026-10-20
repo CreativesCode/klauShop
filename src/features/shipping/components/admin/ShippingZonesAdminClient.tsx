@@ -1,16 +1,10 @@
 "use client";
 
+import { Icons } from "@/components/layouts/icons";
+
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import { formatCUP } from "@/lib/utils";
 import { useMemo, useState } from "react";
@@ -145,33 +139,46 @@ export default function ShippingZonesAdminClient({ initialZones }: Props) {
     }
   };
 
+  const updateZone = (id: string, patch: Partial<(typeof zones)[number]>) =>
+    setZones((prev) => prev.map((x) => (x.id === id ? { ...x, ...patch } : x)));
+
   return (
-    <div className="space-y-6">
-      <div className="rounded-md border p-4 space-y-3">
-        <div className="font-medium">Nueva zona</div>
-        <div className="grid gap-3 md:grid-cols-3">
-          <div className="space-y-1">
-            <div className="text-sm text-muted-foreground">Nombre</div>
+    <div className="flex flex-col gap-[18px]">
+      <section className="flex flex-col gap-4 rounded-[18px] border border-line bg-white p-5">
+        <div>
+          <h2 className="text-[15px] font-extrabold text-ink">Nueva zona</h2>
+          <p className="mt-0.5 text-[13px] text-neutral-500">
+            Usa 0 si el envío a esa zona es gratis.
+          </p>
+        </div>
+        <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_200px_auto]">
+          <label className="flex flex-col gap-1.5">
+            <span className="text-[13px] font-bold text-neutral-600">
+              Nombre
+            </span>
             <Input
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               placeholder="Ej: Santa Clara"
               disabled={isSubmitting}
             />
-          </div>
-          <div className="space-y-1">
-            <div className="text-sm text-muted-foreground">Costo (CUP)</div>
+          </label>
+          <label className="flex flex-col gap-1.5">
+            <span className="text-[13px] font-bold text-neutral-600">
+              Costo (CUP)
+            </span>
             <Input
               type="number"
               min={0}
               step="0.01"
+              inputMode="decimal"
               value={newCost}
               onChange={(e) => setNewCost(e.target.value)}
               disabled={isSubmitting}
             />
-          </div>
+          </label>
           <div className="flex items-end gap-3">
-            <label className="flex items-center gap-2 text-sm">
+            <label className="flex h-[46px] items-center gap-2 text-sm font-semibold text-ink">
               <Checkbox
                 checked={newIsActive}
                 onCheckedChange={(v) => setNewIsActive(Boolean(v))}
@@ -183,111 +190,92 @@ export default function ShippingZonesAdminClient({ initialZones }: Props) {
               type="button"
               onClick={createZone}
               disabled={!canCreate || isSubmitting}
+              className="h-[46px]"
             >
-              Crear
+              <Icons.add className="size-4" aria-hidden />
+              Crear zona
             </Button>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Zona</TableHead>
-              <TableHead className="w-[180px]">Costo</TableHead>
-              <TableHead className="w-[120px]">Activa</TableHead>
-              <TableHead className="w-[220px]">Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {zones.map((z) => (
-              <TableRow key={z.id}>
-                <TableCell>
-                  <Input
-                    value={z.name}
-                    onChange={(e) => {
-                      const v = e.target.value;
-                      setZones((prev) =>
-                        prev.map((x) =>
-                          x.id === z.id ? { ...x, name: v } : x,
-                        ),
-                      );
-                    }}
-                    disabled={isSubmitting}
-                  />
-                </TableCell>
-                <TableCell>
-                  <div className="space-y-2">
-                    <Input
-                      type="number"
-                      min={0}
-                      step="0.01"
-                      value={z.cost}
-                      onChange={(e) => {
-                        const v = e.target.value;
-                        setZones((prev) =>
-                          prev.map((x) =>
-                            x.id === z.id ? { ...x, cost: v } : x,
-                          ),
-                        );
-                      }}
-                      disabled={isSubmitting}
-                    />
-                    <div className="text-xs text-muted-foreground">
-                      Vista: {formatCUP(Number(z.cost || 0))}
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Checkbox
-                    checked={z.isActive}
-                    onCheckedChange={(v) => {
-                      setZones((prev) =>
-                        prev.map((x) =>
-                          x.id === z.id ? { ...x, isActive: Boolean(v) } : x,
-                        ),
-                      );
-                    }}
-                    disabled={isSubmitting}
-                  />
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    <Button
-                      type="button"
-                      variant="default"
-                      onClick={() => saveZone(z)}
-                      disabled={isSubmitting || z.name.trim().length < 2}
-                    >
-                      Guardar
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      onClick={() => deleteZone(z.id)}
-                      disabled={isSubmitting}
-                    >
-                      Eliminar
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-
-            {zones.length === 0 && (
-              <TableRow>
-                <TableCell
-                  colSpan={4}
-                  className="text-sm text-muted-foreground"
+      <section className="overflow-hidden rounded-[18px] border border-line bg-white">
+        <h2 className="px-5 pb-3 pt-5 text-[15px] font-extrabold text-ink">
+          Zonas ({zones.length})
+        </h2>
+        <ul>
+          {zones.map((z) => (
+            <li
+              key={z.id}
+              className="grid gap-3 border-t border-line-soft px-5 py-4 md:grid-cols-[minmax(0,1fr)_200px_auto_auto] md:items-end"
+            >
+              <label className="flex flex-col gap-1.5">
+                <span className="text-[13px] font-bold text-neutral-600">
+                  Zona
+                </span>
+                <Input
+                  value={z.name}
+                  onChange={(e) => updateZone(z.id, { name: e.target.value })}
+                  disabled={isSubmitting}
+                />
+              </label>
+              <label className="flex flex-col gap-1.5">
+                <span className="text-[13px] font-bold text-neutral-600">
+                  Costo ·{" "}
+                  <span className="font-semibold text-neutral-500">
+                    {formatCUP(Number(z.cost || 0))}
+                  </span>
+                </span>
+                <Input
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  inputMode="decimal"
+                  value={z.cost}
+                  onChange={(e) => updateZone(z.id, { cost: e.target.value })}
+                  disabled={isSubmitting}
+                />
+              </label>
+              <label className="flex h-[46px] items-center gap-2 text-sm font-semibold text-ink">
+                <Checkbox
+                  checked={z.isActive}
+                  onCheckedChange={(v) =>
+                    updateZone(z.id, { isActive: Boolean(v) })
+                  }
+                  disabled={isSubmitting}
+                />
+                Activa
+              </label>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="dark"
+                  onClick={() => saveZone(z)}
+                  disabled={isSubmitting || z.name.trim().length < 2}
+                  className="h-[46px] flex-1 md:flex-none"
                 >
-                  Aún no hay zonas. Crea la primera arriba.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+                  Guardar
+                </Button>
+                <Button
+                  type="button"
+                  variant="destructiveSoft"
+                  onClick={() => deleteZone(z.id)}
+                  disabled={isSubmitting}
+                  className="h-[46px]"
+                >
+                  Eliminar
+                </Button>
+              </div>
+            </li>
+          ))}
+
+          {zones.length === 0 && (
+            <li className="border-t border-line-soft py-12 text-center text-[15px] text-neutral-500">
+              Aún no hay zonas. Crea la primera arriba.
+            </li>
+          )}
+        </ul>
+      </section>
     </div>
   );
 }
