@@ -30,3 +30,4 @@
 - [subida-imagenes.md](reference/subida-imagenes.md) — Limite 4.5MB de Vercel, recorte/compresion en cliente, estados por archivo, /api/medias solo admin
 - [modales-slots-paralelos.md](reference/modales-slots-paralelos.md) — Cerrar modales @slot con router.back(); push+refresh re-renderiza el slot viejo -> 404
 - [supabase-mcp-token.md](reference/supabase-mcp-token.md) — MCP Supabase via scripts/supabase-mcp.mjs + SUPABASE_ACCESS_TOKEN en .env.local (cuenta robert)
+- [capturas-web-fullkod.md](reference/capturas-web-fullkod.md) — Capturas para la web de Fullkod: cómo se tomaron (dev en :3105) y qué se difuminó
